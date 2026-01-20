@@ -73,27 +73,73 @@ document.addEventListener('DOMContentLoaded', () =>
         signupModal.style.display = 'block';
     });
 
-    logoutBtn.addEventListener('click', () =>
+    logoutBtn.addEventListener('click', async () =>
     {
         // 1. Instant Feedback
         logoutBtn.textContent = 'Logging out...';
         logoutBtn.disabled = true;
 
-        // 2. Clear Local State Immediately
+        const supabaseClient = window.getSupabaseClient();
+        let signOutError = null;
+
+        // 2. Trigger Sign Out and wait for it to complete
+        try
+        {
+            const result = await window.authModule.signOut();
+            if (result && result.error) signOutError = result.error;
+        } catch (err)
+        {
+            signOutError = err;
+            console.error('Error during signOut:', err);
+        }
+
+        // 3. Clear Local State Immediately
         localStorage.removeItem('activeOrganizationId');
         localStorage.removeItem('activeOrganizationName');
-        // Clear Supabase session explicitly if possible, or just all app data
-        // localStorage.clear(); // Too aggressive? Maybe.
+        window.activeOrganizationId = null;
 
-        // 3. Trigger Sign Out (Fire and Forget)
-        window.authModule.signOut();
-
-        // 4. Force "Instant" Reload/Redirect
-        // We give it a tiny buffer (50ms) just to let the signOut function *start* clearing local storage
-        setTimeout(() =>
+        // 4. Update UI immediately to logged-out state and clear songs/setlist
+        try
         {
-            window.location.reload();
-        }, 50);
+            window.authModule.updateAuthState(null);
+            if (window.songsModule && window.songsModule.populateSongDatabaseTable)
+            {
+                window.songsModule.populateSongDatabaseTable(null);
+            }
+            if (window.setlistModule && window.setlistModule.loadSetlistFromSupabase)
+            {
+                window.setlistModule.loadSetlistFromSupabase(null);
+            }
+
+            // Ensure primary buttons visibility matches logged-out state
+            const loginModalBtn = document.getElementById('login-modal-btn');
+            const signupModalBtn = document.getElementById('signup-modal-btn');
+            const switchChurchBtn = document.getElementById('switch-church-btn');
+            const manageSetlistBtn = document.getElementById('manage-setlist-btn');
+            const addSongBtnTrigger = document.getElementById('add-song-btn');
+            const userManagementBtn = document.getElementById('user-management-btn');
+            const logoutBtnEl = document.getElementById('logout-btn');
+
+            if (loginModalBtn) loginModalBtn.style.display = 'inline-block';
+            if (signupModalBtn) signupModalBtn.style.display = 'inline-block';
+            if (switchChurchBtn) switchChurchBtn.style.display = 'none';
+            if (manageSetlistBtn) manageSetlistBtn.style.display = 'none';
+            if (addSongBtnTrigger) addSongBtnTrigger.style.display = 'none';
+            if (userManagementBtn) userManagementBtn.style.display = 'none';
+            if (logoutBtnEl) logoutBtnEl.style.display = 'none';
+        } catch (err)
+        {
+            console.error('Error updating UI after signOut:', err);
+        }
+
+        // 5. Restore button state locally (no forced reload)
+        logoutBtn.disabled = false;
+        logoutBtn.textContent = 'Logout';
+
+        if (signOutError)
+        {
+            console.warn('Sign out reported an error:', signOutError);
+        }
     });
 
     loginBtn.addEventListener('click', async () =>
