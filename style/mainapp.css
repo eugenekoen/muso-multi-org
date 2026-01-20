@@ -121,7 +121,7 @@ input[type="text"]#myInput {
 #setlist-management-container button {
     border: none;
     border-radius: 5px;
-    color: white;
+    color: black;
     padding: 12px 18px;
     /* Reduced padding */
     font-size: 14px;

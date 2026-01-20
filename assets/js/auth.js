@@ -111,6 +111,7 @@ async function updateAuthState(user)
     const manageSetlistBtn = document.getElementById('manage-setlist-btn');
     const addSongBtnTrigger = document.getElementById('add-song-btn');
     const userManagementBtn = document.getElementById('user-management-btn');
+    const keyManagerBtn = document.getElementById('key-manager-btn');
 
     document.body.classList.toggle('logged-in', !!user);
 
@@ -140,6 +141,7 @@ async function updateAuthState(user)
         manageSetlistBtn.style.display = 'none';
         addSongBtnTrigger.style.display = 'none';
         userManagementBtn.style.display = 'none';
+        if (keyManagerBtn) keyManagerBtn.style.display = 'none';
     }
 }
 
@@ -185,6 +187,7 @@ function updateUIForRole(isLoggedIn)
     const manageSetlistBtn = document.getElementById('manage-setlist-btn');
     const addSongBtnTrigger = document.getElementById('add-song-btn');
     const userManagementBtn = document.getElementById('user-management-btn');
+    const keyManagerBtn = document.getElementById('key-manager-btn');
 
     if (!isLoggedIn)
     {
@@ -209,4 +212,12 @@ function updateUIForRole(isLoggedIn)
     if (manageSetlistBtn) manageSetlistBtn.style.display = canEdit ? 'inline-block' : 'none';
     if (addSongBtnTrigger) addSongBtnTrigger.style.display = canEdit ? 'inline-block' : 'none';
     if (userManagementBtn) userManagementBtn.style.display = isAdmin ? 'inline-block' : 'none';
+
+    // Master Admin (Fixed email)
+    const supabaseClient = window.getSupabaseClient();
+    supabaseClient.auth.getUser().then(({ data: { user } }) =>
+    {
+        const isMasterAdmin = user?.email === 'eugenekoenn@gmail.com';
+        if (keyManagerBtn) keyManagerBtn.style.display = isMasterAdmin ? 'inline-block' : 'none';
+    });
 }

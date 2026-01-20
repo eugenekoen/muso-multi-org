@@ -337,9 +337,24 @@ async function joinOrganization()
     }
 
     const { data: { user } } = await supabaseClient.auth.getUser();
+
+    // Check if any members already exist for this organization
+    // Note: This relies on the SELECT policy allowing this check.
+    const { count, error: countError } = await supabaseClient
+        .from('organization_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', org.id);
+
+    if (countError)
+    {
+        console.warn("Could not check member count, defaulting to User:", countError);
+    }
+
+    const initialRole = (count === 0) ? 'Admin' : 'User';
+
     const { error: insertError } = await supabaseClient
         .from('organization_members')
-        .insert({ organization_id: org.id, user_id: user.id, role: 'User' });
+        .insert({ organization_id: org.id, user_id: user.id, role: initialRole });
 
     if (insertError)
     {

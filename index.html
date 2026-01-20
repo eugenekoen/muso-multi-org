@@ -33,8 +33,52 @@
     <script type="text/javascript" src="./assets/js/setlist.js"></script>
     <script type="text/javascript" src="./assets/js/ui.js"></script>
     <script type="text/javascript" src="./assets/js/organization.js"></script>
+    <script type="text/javascript" src="./assets/js/keyManager.js"></script>
     <script type="text/javascript" src="./assets/js/init.js"></script>
+    <style>
+        /* Key Manager Specific Styles */
+        #org-management-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
+        #org-management-table th,
+        #org-management-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #org-management-table .name-col {
+            width: 35%;
+        }
+
+        #org-management-table .code-col {
+            width: 35%;
+        }
+
+        /* Widening as requested (3x relative to default narrowness) */
+        #org-management-table .actions-col {
+            width: 30%;
+        }
+
+        #org-management-table input.org-code-input {
+            width: 95%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .key-manager-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 250px;
+        }
+    </style>
 </head>
 
 <body>
@@ -55,6 +99,8 @@
         <button id="add-song-btn" style="display: none;" aria-label="Add a new song to database">Add New Song</button>
         <button id="user-management-btn" style="display: none;" aria-label="Manage user roles and permissions">User
             Management</button>
+        <button id="key-manager-btn" style="display: none;" aria-label="Manage organizations and signup codes">Key
+            Manager</button>
         <button id="logout-btn" style="display: none;" aria-label="Log out of account">Logout</button>
     </div>
 
@@ -295,6 +341,53 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- Key Manager Modal -->
+    <div id="key-manager-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="key-manager-title">
+        <div class="modal-content large">
+            <span class="close-key-manager-modal-btn close-modal-btn" aria-label="Close Key Manager dialog">×</span>
+            <h2 id="key-manager-title">Key Manager (Master Admin)</h2>
+            <p id="key-manager-msg" class="feedback-msg" role="status"></p>
+
+            <div id="add-org-section">
+                <h3>Add New Organization</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                    <div class="key-manager-input-group">
+                        <label for="new-org-name" style="font-weight: 600;">Church Name:</label>
+                        <input type="text" id="new-org-name" placeholder="e.g., Grace Church"
+                            style="padding: 8px; box-sizing: border-box; height: 38px;">
+                    </div>
+                    <div class="key-manager-input-group">
+                        <label for="new-org-code" style="font-weight: 600;">Signup Code:</label>
+                        <input type="text" id="new-org-code" placeholder="e.g., GCC2026"
+                            style="padding: 8px; box-sizing: border-box; height: 38px;">
+                    </div>
+                    <button id="save-new-org-btn" class="modal-btn"
+                        style="height: 38px; padding: 0 20px; white-space: nowrap;">Add Church</button>
+                </div>
+            </div>
+
+            <hr style="margin: 25px 0;">
+
+            <h3>Organizations Management</h3>
+            <div class="table-container">
+                <table id="org-management-table">
+                    <thead>
+                        <tr>
+                            <th class="name-col">Church Name</th>
+                            <th class="code-col">Signup Code</th>
+                            <th class="actions-col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3">Loading organizations...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
 </body>

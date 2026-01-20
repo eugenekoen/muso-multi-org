@@ -478,12 +478,54 @@ document.addEventListener('DOMContentLoaded', () =>
         }
     });
 
+    // --- KEY MANAGER LISTENERS ---
+    const keyManagerBtn = document.getElementById('key-manager-btn');
+    const keyManagerModal = document.getElementById('key-manager-modal');
+    const orgManagementTableBody = document.querySelector('#org-management-table tbody');
+
+    if (keyManagerBtn)
+    {
+        keyManagerBtn.addEventListener('click', () =>
+        {
+            keyManagerModal.style.display = 'block';
+            window.keyManagerModule.populateKeyManagerModal();
+        });
+    }
+
+    document.getElementById('save-new-org-btn')?.addEventListener('click', () =>
+    {
+        window.keyManagerModule.saveNewOrganization();
+    });
+
+    if (orgManagementTableBody)
+    {
+        orgManagementTableBody.addEventListener('click', async (event) =>
+        {
+            const target = event.target;
+            const orgId = target.dataset.orgId;
+
+            if (target.classList.contains('update-org-code-btn'))
+            {
+                const input = orgManagementTableBody.querySelector(`.org-code-input[data-org-id="${orgId}"]`);
+                if (input)
+                {
+                    await window.keyManagerModule.updateOrganizationCode(orgId, input.value.trim());
+                }
+            }
+            else if (target.classList.contains('delete-org-btn'))
+            {
+                await window.keyManagerModule.deleteOrganization(orgId);
+            }
+        });
+    }
+
     // --- MODAL CLOSE LISTENERS ---
     document.querySelector('.close-login-modal-btn').addEventListener('click', () => loginModal.style.display = 'none');
     document.querySelector('.close-signup-modal-btn').addEventListener('click', () => signupModal.style.display = 'none');
     document.querySelector('.close-edit-modal-btn').addEventListener('click', () => editSongModal.style.display = 'none');
     document.querySelector('.close-add-modal-btn').addEventListener('click', () => addSongModal.style.display = 'none');
     document.querySelector('.close-user-management-modal-btn').addEventListener('click', () => userManagementModal.style.display = 'none');
+    document.querySelector('.close-key-manager-modal-btn')?.addEventListener('click', () => keyManagerModal.style.display = 'none');
 
     const closeSetlistModalBtn = setlistModal?.querySelector('.close-modal-btn');
     if (closeSetlistModalBtn)
@@ -506,6 +548,7 @@ document.addEventListener('DOMContentLoaded', () =>
             window.setlistModule.updateTableOneWithSetlist();
         }
         if (event.target == userManagementModal) userManagementModal.style.display = 'none';
+        if (event.target == keyManagerModal) keyManagerModal.style.display = 'none';
     });
 
     // --- NEW ORGANIZATION LISTENERS ---
