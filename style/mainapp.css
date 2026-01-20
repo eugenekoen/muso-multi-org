@@ -1,0 +1,876 @@
+/* ===== GENERAL BODY & NAVIGATION ===== */
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url("../style/images/background.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-family: 'Montserrat', sans-serif;
+}
+
+#navigation {
+    background-color: rgb(252, 167, 152);
+    height: auto;
+    width: 100%;
+    margin-top: 0;
+}
+
+#textdiv {
+    font-size: 25px;
+    font-weight: 500;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* ===== TABLES ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+caption {
+    color: white;
+    text-align: left;
+    padding: 10px;
+    background-color: rgba(30, 168, 210, 0.295);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+thead {
+    background-color: #4CAF50;
+    color: white;
+}
+
+table thead td {
+    border: 1px solid rgba(49, 104, 50, 0.63);
+    color: white;
+    padding: 8px;
+    text-align: left;
+}
+
+table tbody td {
+    border: 1px solid rgba(76, 175, 79, 0.63);
+    padding: 8px;
+    text-align: left;
+    color: aqua;
+}
+
+table a {
+    text-decoration: none;
+    color: aqua;
+    font-weight: 500;
+}
+
+table a:hover {
+    text-decoration: underline;
+}
+
+table td:nth-child(2),
+table td:nth-child(3),
+table td:nth-child(4) {
+    /* Adjusted to include lyrics column */
+    text-align: center;
+    width: 8%;
+}
+
+/* Selected Key column styling */
+table td.selected-key {
+    text-align: center;
+    width: 8%;
+    font-weight: 600;
+    color: aqua;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Icon styling in tables */
+table i {
+    font-size: 1.2em;
+    vertical-align: middle;
+}
+
+tr:nth-child(even) {
+    background-color: #1cb9be21;
+}
+
+tr:nth-child(odd) {
+    background-color: #f2f2f200;
+}
+
+/* ===== INPUTS & BUTTONS ===== */
+input[type="text"]#myInput {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    height: 30px;
+    border: none;
+    border-radius: 3px;
+    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: honeydew;
+    width: 300px;
+    padding: 0 10px;
+}
+
+#setlist-management-container {
+    padding: 20px 15px;
+    text-align: center;
+}
+
+#setlist-management-container button {
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 12px 18px;
+    /* Reduced padding */
+    font-size: 14px;
+    /* Reduced font size */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 5px;
+    /* Added small vertical margin for wrapping */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#setlist-management-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* MODIFICATION: Style for new Manage Setlist button */
+#manage-setlist-btn {
+    background-color: #4CAF50;
+    /* Green */
+}
+
+/* New Sign Up Button Style */
+#signup-modal-btn {
+    background-color: #9c27b0;
+    /* Purple */
+}
+
+#login-modal-btn {
+    background-color: #008CBA;
+    /* Blue */
+}
+
+#logout-btn {
+    background-color: #f44336;
+    /* Red */
+}
+
+#add-song-btn {
+    background-color: #f0ad4e;
+    /* Orange */
+}
+
+#switch-church-btn {
+    background-color: #ff9800;
+    /* A nice orange/amber distinct from add song */
+}
+
+/* ===== MODAL STYLES (MOVED FROM INDEX.HTML) ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 25px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    max-height: 85vh;
+    overflow-y: auto;
+    color: #333;
+    /* Added for better text readability */
+}
+
+.close-modal-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.close-modal-btn:hover,
+.close-modal-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Modal Specific Inputs and Buttons */
+.modal-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="password"],
+.modal-content input[type="email"],
+.modal-content select,
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#password-error-msg,
+#login-error-msg,
+#add-song-error-msg,
+#edit-song-msg,
+#signup-msg {
+    color: red;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    height: 16px;
+}
+
+/* Style for success messages */
+#edit-song-msg,
+#signup-msg.success {
+    color: green;
+}
+
+
+#edit-song-msg {
+    color: green;
+}
+
+/* Setlist Modal */
+#current-setlist-items {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+}
+
+#current-setlist-items li {
+    padding: 8px 5px;
+    border-bottom: 1px dashed #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.remove-song-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 15px;
+}
+
+/* Song Search in Modal */
+#song-search-results .results-list {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: -10px;
+    position: absolute;
+    z-index: 1001;
+}
+
+#song-search-results .result-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+#song-search-results .result-item:last-child {
+    border-bottom: none;
+}
+
+#song-search-results .result-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Edit/Add Song Modals */
+#edit-song-modal textarea,
+#add-song-modal textarea {
+    width: 100%;
+    height: 25vh;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#edit-song-modal .modal-footer,
+#add-song-modal .modal-footer {
+    text-align: right;
+    margin-top: 15px;
+}
+
+/* ===== DESKTOP LAYOUT FOR SONG MODALS ===== */
+@media (min-width: 900px) {
+
+    /* Wider modal for song editing on desktop */
+    #edit-song-modal .modal-content,
+    #add-song-modal .modal-content {
+        max-width: 950px;
+        width: 90%;
+    }
+
+    /* Grid container for the textarea sections */
+    #edit-song-modal .textarea-row,
+    #add-song-modal .textarea-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    /* Make textareas taller on desktop since they're now side-by-side */
+    #edit-song-modal textarea,
+    #add-song-modal textarea {
+        height: 45vh;
+    }
+}
+
+#save-song-btn,
+#save-new-song-btn {
+    background-color: #28a745;
+}
+
+#cancel-edit-btn,
+#cancel-add-btn {
+    background-color: #6c757d;
+    margin-right: 10px;
+}
+
+/* ===== VISIBILITY LOGIC ===== */
+#tabletwo .edit-col {
+    display: none;
+}
+
+body.logged-in #tabletwo .edit-col {
+    display: table-cell;
+}
+
+body.logged-in #switch-church-btn,
+body.logged-in #add-song-btn {
+    display: inline-block;
+}
+
+/* Hide login/signup when logged in */
+body.logged-in #login-modal-btn,
+body.logged-in #signup-modal-btn {
+    display: none;
+}
+
+/* Hide logout when logged out */
+body:not(.logged-in) #logout-btn {
+    display: none;
+}
+
+
+/* ===== USER MANAGEMENT STYLES (REFINED) ===== */
+
+/* New Button Color */
+#user-management-btn {
+    background-color: #6f42c1;
+    /* A nice purple */
+}
+
+/* Make the User Management modal wider and styled to match the app theme */
+.modal-content.large {
+    max-width: 800px;
+    background-color: #1a2634;
+    /* Solid dark blue-grey for a cleaner look */
+    border-radius: 8px;
+    border: 1px solid #34495e;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border-top: 4px solid #4CAF50;
+    color: #ecf0f1;
+}
+
+/* Theming the modal's titles */
+#user-management-modal h2,
+#user-management-modal h3 {
+    color: #ffffff;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #34495e;
+    font-weight: 500;
+}
+
+#user-management-modal h3 {
+    font-size: 1.1em;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.table-container {
+    max-height: 40vh;
+    overflow-y: auto;
+    border-radius: 5px;
+    margin-top: 15px;
+    border: 1px solid #34495e;
+}
+
+/* User list table styling */
+#user-list-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#user-list-table th,
+#user-list-table td {
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 1px solid #34495e;
+    vertical-align: middle;
+}
+
+#user-list-table th {
+    background-color: #2c3e50;
+    color: #bdc3c7;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* Set a specific width for the Role column */
+#user-list-table th:nth-child(2),
+#user-list-table td:nth-child(2) {
+    width: 180px;
+}
+
+#user-list-table td {
+    color: #ecf0f1;
+}
+
+/* Alternating row colors for readability */
+#user-list-table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+#user-list-table tbody tr:nth-child(odd) {
+    background-color: transparent;
+}
+
+
+/* Hover effect for rows */
+#user-list-table tbody tr:hover {
+    background-color: #2c3e50;
+}
+
+/* Styling for the 'Add New User' section */
+.add-user-section {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.add-user-section>* {
+    flex-grow: 1;
+}
+
+.add-user-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+/* Inputs and Selects within the modal */
+#user-management-modal input[type="email"],
+#user-management-modal select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid rgba(76, 175, 79, 0.6);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+}
+
+#user-management-modal select {
+    cursor: pointer;
+}
+
+#user-management-modal input[type="email"]:focus,
+#user-management-modal select:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 79, 0.5);
+}
+
+/* Style the invite button */
+#invite-user-btn {
+    background-color: #f0ad4e;
+    /* Orange from theme */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex-grow: 0.5;
+    /* Make button not as wide */
+    align-self: flex-end;
+    /* Align with bottom of inputs */
+    margin-bottom: 0;
+    /* Override default modal input margin */
+}
+
+#invite-user-btn:hover {
+    background-color: #ec9b3b;
+}
+
+/* Feedback message styling */
+#user-management-msg {
+    height: 20px;
+    font-weight: 500;
+    margin-top: 15px;
+    text-align: center;
+}
+
+#user-management-msg.error {
+    color: #f44336;
+    /* Red from theme */
+}
+
+#user-management-msg.success {
+    color: #4CAF50;
+    /* Green from theme */
+}
+
+/* Role select dropdown in the table */
+.role-select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #34495e;
+    background-color: #1a2634;
+    color: #ecf0f1;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.role-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #2c3e50;
+}
+
+.role-select:focus {
+    border-color: #4CAF50;
+}
+
+.user-email-hint {
+    font-size: 0.85em;
+    color: #95a5a6;
+    margin-left: 8px;
+    font-weight: 400;
+}
+
+.delete-user-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-user-btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.feedback-msg {
+    height: 20px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+#current-setlist-items {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    max-height: 250px;
+    /* Increased height slightly */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+}
+
+/* NEW: Style for each song item as a distinct 'box' */
+#current-setlist-items li {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 8px;
+    /* Spacing between items */
+    user-select: none;
+    /* Prevents text selection during drag */
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* NEW: Style for the drag handle */
+.drag-handle {
+    display: flex;
+    align-items: center;
+    padding-right: 12px;
+    cursor: move;
+    color: #888;
+}
+
+.drag-handle:hover {
+    color: #333;
+}
+
+/* NEW: The song name span should take up the available space */
+.song-name {
+    flex-grow: 1;
+    /* Pushes the remove button to the far right */
+    text-align: left;
+    /*  <-- ADD THIS LINE */
+}
+
+.remove-song-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 15px;
+}
+
+/* NEW: Enhanced style for the item being dragged */
+#current-setlist-items li.dragging {
+    opacity: 0.9;
+    background: #e7f3ff;
+    border-color: #9acffa;
+    box-shadow: 0 4px 12px rgba(0, 80, 150, 0.2);
+    transform: scale(1.02);
+    /* Lifts the item slightly */
+}
+
+/* ===== RESPONSIVE LAYOUT FOR BUTTONS ===== */
+@media (max-width: 768px) {
+
+    #setlist-management-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        /* Creates a 2-column grid */
+        gap: 12px;
+        /* Sets the space between buttons */
+
+        /* Optional: Constrain width and center the grid on mobile */
+        max-width: 450px;
+        margin: 0 auto;
+    }
+
+    #setlist-management-container button {
+        margin: 0;
+        /* The 'gap' property now handles spacing */
+        width: 100%;
+        /* Makes buttons fill their grid cell */
+        padding: 15px 10px;
+        /* Adjust padding for better look on mobile */
+    }
+
+    /* This rule targets the 5th button (User Management for Admins)
+       and ensures it starts in the first column of the third row,
+       leaving the non-admin view clean. */
+    #user-management-btn {
+        grid-column: 1 / 2;
+    }
+
+    /* --- Styles for Add Song Modal on Mobile --- */
+    #add-song-modal .modal-content {
+        width: 95%;
+        /* Make modal almost full width */
+        max-width: none;
+        /* Remove the desktop max-width limit */
+        margin: 20px auto;
+        /* Adjust top/bottom margin */
+        padding: 15px;
+        /* Slightly reduce padding on smaller screens */
+    }
+
+    #add-song-modal textarea {
+        height: 35vh;
+        /* Increase height (approx 2-3 lines more than before) */
+        font-size: 13px;
+        /* Make font one size smaller */
+    }
+}
+
+/* ===== ENHANCED MOBILE MODAL RESPONSIVENESS ===== */
+@media (max-width: 600px) {
+    .modal {
+        padding-top: 20px;
+        /* Reduced from 60px for better modal positioning */
+    }
+
+    .modal-content {
+        width: 95%;
+        /* Use more screen space */
+        max-width: none;
+        /* Remove desktop max-width constraint */
+        margin: 10px auto;
+        /* Tighter top/bottom spacing */
+        padding: 15px;
+        /* Reduced from 25px */
+        max-height: 90vh;
+        /* Increased from 85vh */
+    }
+
+    .modal-content textarea {
+        height: 40vh;
+        /* More consistent sizing for mobile */
+        font-size: 16px;
+        /* Prevents browser auto-zoom on input focus (iOS) */
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 10px;
+        flex-direction: row;
+        margin-top: 15px;
+    }
+
+    .modal-footer button {
+        flex: 1;
+        /* Equal button widths */
+        padding: 12px 10px;
+    }
+
+    #edit-song-modal textarea,
+    #add-song-modal textarea {
+        height: 40vh;
+    }
+
+    #setlist-modal .modal-content {
+        padding: 15px;
+    }
+
+    #current-setlist-items {
+        max-height: 40vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 12px;
+        margin: 5px auto;
+    }
+
+    .modal-content input[type="text"],
+    .modal-content input[type="password"],
+    .modal-content input[type="email"],
+    .modal-content select,
+    .modal-content textarea {
+        font-size: 16px;
+        /* Prevents iOS zoom on focus */
+    }
+
+    .modal-content textarea {
+        height: 45vh;
+        /* Slightly larger for better usability */
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        /* Stack buttons vertically on tiny screens */
+        gap: 8px;
+    }
+
+    .modal-footer button {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .modal-btn {
+        width: 100%;
+        padding: 12px;
+    }
+
+    #setlist-management-container button {
+        padding: 12px 10px;
+        font-size: 13px;
+    }
+
+    #current-setlist-items li {
+        padding: 8px;
+        margin-bottom: 6px;
+    }
+
+    .drag-handle {
+        padding-right: 8px;
+    }
+
+    .song-name {
+        font-size: 14px;
+    }
+
+    .remove-song-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        margin-left: 8px;
+    }
+}

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turningpoint Musos</title>
+
+    <!-- Stylesheets -->
+    <link rel="shortcut icon" href="./style/images/LOGO.jpg" />
+    <link rel="stylesheet" href="./style/mainapp.css">
+    <link rel="stylesheet" href="./style/jquery.transposer.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SUPABASE CLIENT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="./assets/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="./assets/jquery/jquery.transposer.js"></script>
+
+    <!-- Modular JavaScript -->
+    <script type="text/javascript" src="./assets/js/supabaseClient.js"></script>
+    <script type="text/javascript" src="./assets/js/auth.js"></script>
+    <script type="text/javascript" src="./assets/js/songs.js"></script>
+    <script type="text/javascript" src="./assets/js/setlist.js"></script>
+    <script type="text/javascript" src="./assets/js/ui.js"></script>
+    <script type="text/javascript" src="./assets/js/organization.js"></script>
+    <script type="text/javascript" src="./assets/js/init.js"></script>
+
+</head>
+
+<body>
+    <div id="navigation">
+        <div id="textdiv">
+            TURNING POINT MUSOS
+        </div>
+    </div>
+
+    <div id="setlist-management-container">
+        <!-- New Sign Up Button -->
+        <button id="signup-modal-btn" aria-label="Open sign up dialog">Sign Up</button>
+        <button id="switch-church-btn" style="display: none;" aria-label="Switch or Join Church">Switch/Join
+            Church</button>
+        <button id="login-modal-btn" aria-label="Open login dialog">Login</button>
+        <button id="manage-setlist-btn" style="display: none;" aria-label="Manage weekend setlist">Manage
+            Setlist</button>
+        <button id="add-song-btn" style="display: none;" aria-label="Add a new song to database">Add New Song</button>
+        <button id="user-management-btn" style="display: none;" aria-label="Manage user roles and permissions">User
+            Management</button>
+        <button id="logout-btn" style="display: none;" aria-label="Log out of account">Logout</button>
+    </div>
+
+    <!-- New Sign Up Modal -->
+    <div id="signup-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="signup-modal-title">
+        <div class="modal-content">
+            <span class="close-signup-modal-btn close-modal-btn" aria-label="Close sign up dialog">×</span>
+            <h2 id="signup-modal-title">Create an Account</h2>
+            <div><label for="signup-name">Full Name:</label><input type="text" id="signup-name" placeholder="John Doe"
+                    aria-required="true">
+            </div>
+            <div><label for="signup-email">Email:</label><input type="email" id="signup-email"
+                    placeholder="you@example.com" aria-required="true"></div>
+            <div><label for="signup-password">Password:</label><input type="password" id="signup-password"
+                    aria-required="true"></div>
+            <p id="signup-msg" style="height: auto;" role="status"></p>
+            <button id="signup-btn" class="modal-btn" aria-label="Submit sign up form">Sign Up</button>
+        </div>
+    </div>
+
+    <!-- Organization Modal -->
+    <div id="organization-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal-btn" id="close-org-modal-btn">&times;</span>
+            <h2>Your Churches</h2>
+            <p>Select a church to load its song database and setlists.</p>
+
+            <ul id="organization-list" style="list-style: none; padding: 0;">
+                <!-- Memberships will be populated here by JavaScript -->
+            </ul>
+
+            <hr style="margin: 20px 0;">
+
+            <h3>Join a New Church</h3>
+            <div style="margin-top: 10px;">
+                <label for="join-code-input">Enter Church Code:</label>
+                <input type="text" id="join-code-input" placeholder="e.g., GCC2024" style="margin-top: 5px;">
+                <button id="join-org-btn" class="modal-btn" style="margin-top: 10px;">Join Church</button>
+                <div id="join-org-msg" class="feedback-msg" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="login-modal-title">
+        <div class="modal-content">
+            <span class="close-login-modal-btn close-modal-btn" aria-label="Close login dialog">×</span>
+            <h2 id="login-modal-title">Administrator Login</h2>
+            <div><label for="login-email">Email:</label><input type="email" id="login-email"
+                    placeholder="you@example.com" aria-required="true"></div>
+            <div><label for="login-password">Password:</label><input type="password" id="login-password"
+                    aria-required="true"></div>
+            <p id="login-error-msg" role="alert"></p>
+            <button id="login-btn" class="modal-btn" aria-label="Submit login form">Login</button>
+        </div>
+    </div>
+
+    <!-- Setlist Modal -->
+    <div id="setlist-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="setlist-modal-title">
+        <div class="modal-content">
+            <span class="close-modal-btn" aria-label="Close setlist management dialog">×</span>
+            <h2 id="setlist-modal-title">Weekend Setlist Management</h2>
+            <div id="current-setlist-display">
+                <h3>Current Setlist:</h3>
+                <ul id="current-setlist-items" aria-label="Current setlist items">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+            <hr>
+            <div id="add-song-section">
+                <h3>Add Song:</h3>
+                <div>
+                    <label for="song-search-input">Song:</label>
+                    <input type="text" id="song-search-input" placeholder="Type to search..." autocomplete="off"
+                        aria-label="Search for songs to add">
+                    <div id="song-search-results" style="position: relative;" role="region" aria-live="polite"
+                        aria-label="Search results">
+                        <div class="results-list"></div>
+                    </div>
+                    <input type="hidden" id="selected-song-identifier">
+                    <input type="hidden" id="selected-song-display-name">
+                </div>
+                <div>
+                    <label for="key-select-dropdown">Key:</label>
+                    <select id="key-select-dropdown" aria-label="Select key for song">
+                        <option value="C">C</option>
+                        <option value="Db">Db</option>
+                        <option value="D">D</option>
+                        <option value="Eb">Eb</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="Gb">Gb</option>
+                        <option value="G">G</option>
+                        <option value="Ab">Ab</option>
+                        <option value="A">A</option>
+                        <option value="Bb">Bb</option>
+                        <option value="B">B</option>
+                    </select>
+                </div>
+                <button id="add-song-to-setlist-btn">Add to Setlist</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Modal -->
+    <div id="user-management-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="user-mgmt-title">
+        <div class="modal-content large">
+            <span class="close-user-management-modal-btn close-modal-btn"
+                aria-label="Close user management dialog">×</span>
+            <h2 id="user-mgmt-title">User Management</h2>
+            <p id="user-management-msg" class="feedback-msg" role="status"></p>
+            <!-- Note: The "Add User" section has been removed as users now sign themselves up. -->
+            <h3>Existing Users</h3>
+            <div class="table-container">
+                <table id="user-list-table" aria-label="List of users and their roles">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Edit Song Modal -->
+    <div id="edit-song-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="edit-song-title">
+        <div class="modal-content">
+            <span class="close-edit-modal-btn close-modal-btn" aria-label="Close edit song dialog">×</span>
+            <h2 id="edit-song-title">Edit Song</h2>
+            <div class="textarea-row">
+                <div>
+                    <label for="edit-song-textarea">Chords:</label>
+                    <textarea id="edit-song-textarea" aria-label="Edit song chords"></textarea>
+                </div>
+                <div>
+                    <label for="edit-song-lyrics-textarea">Lyrics:</label>
+                    <textarea id="edit-song-lyrics-textarea" aria-label="Edit song lyrics"></textarea>
+                </div>
+            </div>
+            <p id="edit-song-msg" style="height: 16px; color: green;" role="status"></p>
+            <div class="modal-footer">
+                <button id="cancel-edit-btn" class="modal-btn" aria-label="Cancel edit">Cancel</button>
+                <button id="save-song-btn" class="modal-btn" aria-label="Save song changes">Save Changes</button>
+                <button id="delete-song-btn" class="modal-btn" style="background-color: #f44336; margin-left: auto;"
+                    aria-label="Delete this song permanently">Delete Song</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Song Modal -->
+    <div id="add-song-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="add-song-title">
+        <div class="modal-content">
+            <span class="close-add-modal-btn close-modal-btn" aria-label="Close add song dialog">×</span>
+            <h2 id="add-song-title">Add a New Song</h2>
+
+            <div>
+                <label for="new-song-display-name">Song Title:</label>
+                <input type="text" id="new-song-display-name" placeholder="e.g., What A Beautiful Name"
+                    aria-required="true">
+            </div>
+
+            <div>
+                <label for="new-song-identifier">File Identifier:</label>
+                <input type="text" id="new-song-identifier" placeholder="e.g., what-a-beautiful-name"
+                    aria-required="true" aria-describedby="identifier-help">
+                <p style="font-size: 12px; color: #666; margin-top: -10px;" id="identifier-help">(Required. Use
+                    lowercase letters and
+                    hyphens-for-spaces only).</p>
+            </div>
+
+            <div class="textarea-row">
+                <div>
+                    <label for="new-song-chords">Chords:</label>
+                    <textarea id="new-song-chords" aria-label="Enter song chords"></textarea>
+                </div>
+
+                <div>
+                    <label for="new-song-lyrics">Lyrics:</label>
+                    <textarea id="new-song-lyrics" aria-label="Enter song lyrics"></textarea>
+                </div>
+            </div>
+
+            <p id="add-song-error-msg" style="height: 16px; color: red;" role="alert"></p>
+
+            <div class="modal-footer">
+                <button id="cancel-add-btn" class="modal-btn" aria-label="Cancel adding song">Cancel</button>
+                <button id="save-new-song-btn" class="modal-btn" aria-label="Save new song to database">Save New
+                    Song</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table One (Setlist) -->
+    <div>
+        <table id="tableone">
+            <caption>SONG LIST (This Weekend's Setlist)</caption>
+            <thead>
+                <tr>
+                    <td>NAME OF SONG</td>
+                    <td>KEY</td>
+                    <td class="text-center"><i class="fa-solid fa-music" title="Chords"></i></td>
+                    <td class="text-center"><i class="fa-solid fa-bars" title="Lyrics"></i></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4" class="text-center">Loading setlist...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table Two (Song Database) -->
+    <div>
+        <input id="myInput" onkeyup="myFunction()" placeholder="Search for a song name" type="text">
+        <table id="tabletwo">
+            <caption>SONG DATABASE</caption>
+            <thead>
+                <tr>
+                    <td>NAME OF SONG</td>
+                    <td class="edit-col">EDIT</td>
+                    <td class="text-center"><i class="fa-solid fa-music" title="Chords"></i></td>
+                    <td class="text-center"><i class="fa-solid fa-bars" title="Lyrics"></i></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4" class="text-center">Loading song database...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
