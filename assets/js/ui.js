@@ -184,15 +184,15 @@ async function populateUserManagementModal()
             // But let's allow it if the logic permits.
 
             // Delete Button Logic:
-            // "Ensure I cannot delete my profile" -> Hide the button entirely or show text
             let deleteActionHtml = '';
             if (isCurrentUser)
             {
-                // Hide button, maybe show text? Or just empty.
-                deleteActionHtml = `<span style="color: #999; font-style: italic; font-size: 12px;">N/A</span>`;
+                deleteActionHtml = `<span style="color: #999; font-style: italic; font-size: 12px; display: inline-block; min-width: 60px; text-align: center;">N/A</span>`;
             } else if (currentUserIsAdmin)
             {
-                deleteActionHtml = `<button class="delete-user-btn" data-user-id="${member.user_id}" aria-label="Remove ${profile.full_name || 'user'}">Remove</button>`;
+                // Use a clean label without any HTML to avoid breaking the attribute
+                const cleanLabel = (profile.full_name || profile.email || 'user').replace(/"/g, '&quot;');
+                deleteActionHtml = `<button class="delete-user-btn" data-user-id="${member.user_id}" aria-label="Remove ${cleanLabel}">Remove</button>`;
             } else
             {
                 deleteActionHtml = `<span style="color: #ccc;">-</span>`;
