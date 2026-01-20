@@ -94,7 +94,7 @@ function renderSongTable()
         return;
     }
     const currentUserRole = window.authModule ? window.authModule.getCurrentUserRole() : null;
-    const canEdit = (currentUserRole === 'Admin');
+    const canEdit = !!(currentUserRole && String(currentUserRole).toLowerCase() === 'admin');
 
     allSongsData.forEach(song =>
     {
@@ -138,7 +138,8 @@ async function openEditModal(songIdentifier, displayName)
     if (deleteSongBtn)
     {
         const currentUserRole = window.authModule ? window.authModule.getCurrentUserRole() : null;
-        if (currentUserRole === 'Admin')
+        const isAdmin = !!(currentUserRole && String(currentUserRole).toLowerCase() === 'admin');
+        if (isAdmin)
         {
             deleteSongBtn.style.display = 'inline-block';
             deleteSongBtn.disabled = false;
@@ -210,7 +211,8 @@ async function deleteSong()
 
     // Security check
     const currentUserRole = window.authModule ? window.authModule.getCurrentUserRole() : null;
-    if (currentUserRole !== 'Admin')
+    const isAdmin = !!(currentUserRole && String(currentUserRole).toLowerCase() === 'admin');
+    if (!isAdmin)
     {
         alert('You do not have permission to delete songs.');
         return;

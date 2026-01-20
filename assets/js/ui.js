@@ -59,8 +59,9 @@ function setupSongLinkHandlers()
         const songLink = event.target.closest('a[data-song-identifier]');
         const editLink = event.target.closest('a.edit-btn');
         const currentUserRole = window.authModule.getCurrentUserRole();
+        const role = currentUserRole ? String(currentUserRole).toLowerCase() : '';
 
-        if (editLink && (currentUserRole === 'Admin' || currentUserRole === 'User'))
+        if (editLink && (role === 'admin' || role === 'user'))
         {
             event.preventDefault();
             window.songsModule.openEditModal(editLink.dataset.songIdentifier, editLink.dataset.displayName);
@@ -147,6 +148,7 @@ async function populateUserManagementModal()
         userListTableBody.innerHTML = '';
         const { data: { user: currentUser } } = await supabaseClient.auth.getUser();
         const currentUserRole = window.authModule ? window.authModule.getCurrentUserRole() : null;
+        const currentUserIsAdmin = !!(currentUserRole && String(currentUserRole).toLowerCase() === 'admin');
 
         members.forEach(member =>
         {
@@ -165,12 +167,12 @@ async function populateUserManagementModal()
                 <td>${displayName}</td>
                 <td>
                     <select class="role-select" data-user-id="${member.user_id}" aria-label="Role for ${displayName}" ${isCurrentUser ? 'disabled' : ''}>
-                        <option value="User" ${member.role === 'User' ? 'selected' : ''}>User</option>
-                        <option value="Admin" ${member.role === 'Admin' ? 'selected' : ''}>Admin</option>
+                        <option value="User" ${member.role && member.role.toLowerCase() === 'user' ? 'selected' : ''}>User</option>
+                        <option value="Admin" ${member.role && member.role.toLowerCase() === 'admin' ? 'selected' : ''}>Admin</option>
                     </select>
                 </td>
                 <td>
-                    <button class="delete-user-btn" data-user-id="${member.user_id}" aria-label="Remove ${displayName}" ${isCurrentUser || currentUserRole !== 'Admin' ? 'disabled' : ''}>Remove</button>
+                    <button class="delete-user-btn" data-user-id="${member.user_id}" aria-label="Remove ${displayName}" ${isCurrentUser || !currentUserIsAdmin ? 'disabled' : ''}>Remove</button>
                 </td>
             `;
         });
