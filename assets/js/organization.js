@@ -109,7 +109,7 @@ async function initializeOrganizationState(passedUser)
         // and stick with optimistic data (if any).
         const fetchPromise = supabaseClient
             .from('organization_members')
-            .select('id, organization_id, role, joined_at')
+            .select('id, user_id, organization_id, role, joined_at')
             .eq('user_id', user.id);
 
         const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 8000));
