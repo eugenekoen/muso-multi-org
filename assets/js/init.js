@@ -558,8 +558,16 @@ document.addEventListener('DOMContentLoaded', () =>
         {
             if (lastSessionUserId === currentUserId)
             {
-                console.log("Skipping redundant init for same user");
-                return;
+                // Only skip if we already have an active organization and a known role.
+                // On page reload (or bfcache) we may receive duplicate events but still
+                // need to re-run initialization if role/org state was lost.
+                const knownRole = window.authModule && window.authModule.getCurrentUserRole ? window.authModule.getCurrentUserRole() : null;
+                if (window.activeOrganizationId && knownRole)
+                {
+                    console.log("Skipping redundant init for same user (state intact)");
+                    return;
+                }
+                // Otherwise fall through and re-run initialization to restore UI.
             }
         }
 
