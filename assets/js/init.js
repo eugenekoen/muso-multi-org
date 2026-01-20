@@ -76,29 +76,18 @@ document.addEventListener('DOMContentLoaded', () =>
     logoutBtn.addEventListener('click', async () =>
     {
         // 1. Instant Feedback
+        // 1. Instant Feedback & Clear Local State
         logoutBtn.textContent = 'Logging out...';
         logoutBtn.disabled = true;
 
         const supabaseClient = window.getSupabaseClient();
-        let signOutError = null;
 
-        // 2. Trigger Sign Out and wait for it to complete
-        try
-        {
-            const result = await window.authModule.signOut();
-            if (result && result.error) signOutError = result.error;
-        } catch (err)
-        {
-            signOutError = err;
-            console.error('Error during signOut:', err);
-        }
-
-        // 3. Clear Local State Immediately
+        // --- MOVED UP: Clear UI Immediately ---
+        // 2. Clear Local State & UI Immediately
         localStorage.removeItem('activeOrganizationId');
         localStorage.removeItem('activeOrganizationName');
         window.activeOrganizationId = null;
 
-        // 4. Update UI immediately to logged-out state and clear songs/setlist
         try
         {
             window.authModule.updateAuthState(null);
@@ -132,7 +121,19 @@ document.addEventListener('DOMContentLoaded', () =>
             console.error('Error updating UI after signOut:', err);
         }
 
-        // 5. Restore button state locally (no forced reload)
+        // 3. Trigger Sign Out (Backend) - Wait for it but UI is already clear
+        let signOutError = null;
+        try
+        {
+            const result = await window.authModule.signOut();
+            if (result && result.error) signOutError = result.error;
+        } catch (err)
+        {
+            signOutError = err;
+            console.error('Error during signOut:', err);
+        }
+
+        // 4. Restore button state (Optional, since button is usually hidden now)
         logoutBtn.disabled = false;
         logoutBtn.textContent = 'Logout';
 

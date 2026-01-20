@@ -18,6 +18,9 @@ async function populateSongDatabaseTable(organizationId)
     {
         tableTwoBody.innerHTML = '<tr><td colspan="4" class="text-center">Please select a church to view songs.</td></tr>';
         allSongsData = [];
+        // Ensure Edit header is hidden if we are logged out / no org selected
+        const editHeader = document.querySelector('#tabletwo thead .edit-col');
+        if (editHeader) editHeader.style.display = 'none';
         return;
     }
 
@@ -96,16 +99,41 @@ function renderSongTable()
     const currentUserRole = window.authModule ? window.authModule.getCurrentUserRole() : null;
     const canEdit = !!(currentUserRole && String(currentUserRole).toLowerCase() === 'admin');
 
+    // Toggle Header Visibility
+    const editHeader = document.querySelector('#tabletwo thead .edit-col');
+    if (editHeader)
+    {
+        editHeader.style.display = canEdit ? '' : 'none';
+    }
+
     allSongsData.forEach(song =>
     {
         const row = tableTwoBody.insertRow();
-        const editCellContent = canEdit
-            ? `<a href="#" class="edit-btn" data-song-identifier="${song.identifier}" data-display-name="${song.displayName}">Edit</a>`
-            : `<span style="color:#ccc;">-</span>`;
+
+        let editCellHtml = '';
+        if (canEdit)
+        {
+            editCellHtml = `<td class="edit-col text-center"><a href="#" class="edit-btn" data-song-identifier="${song.identifier}" data-display-name="${song.displayName}">Edit</a></td>`;
+        } else
+        {
+            // If not admin, we don't render the cell at all if we are hiding the column. 
+            // However, the header is "display: none". So we should prob make the cell "display: none" too 
+            // OR just not render it if the table structure requires matching columns.
+            // Better to match the existing structure: use class edit-col and toggle display via CSS or JS loop?
+            // Since we are rebuilding the row, let's just make the cell hidden style if !canEdit
+            editCellHtml = `<td class="edit-col text-center" style="display: none;"><span style="color:#ccc;">-</span></td>`;
+        }
+
+        // Wait, if we use display:none on the header, we must use it on the cell too.
+        // Or we can just omit the column entirely from HTML?
+        // But the original code had 4 columns.
+        // Let's use the style approach for simplest integration.
 
         row.innerHTML = `
             <td>${song.displayName}</td>
-            <td class="edit-col text-center">${editCellContent}</td>
+            <td class="edit-col text-center" style="${canEdit ? '' : 'display:none'}">
+                <a href="#" class="edit-btn" data-song-identifier="${song.identifier}" data-display-name="${song.displayName}">Edit</a>
+            </td>
             <td class="text-center">
                 <a href="#" data-song-identifier="${song.identifier}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a>
             </td>

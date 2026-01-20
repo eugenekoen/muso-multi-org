@@ -84,7 +84,20 @@ async function initializeOrganizationState(passedUser)
             console.log('Optimistic load: found saved org ID', savedOrgId);
             window.activeOrganizationId = savedOrgId; // Set temporarilly
 
+            // --- NEW: Optimistic Role Update ---
+            // If we have cached memberships, we know the role!
+            // DO THIS BEFORE loading songs so the render knows we are admin
+            const cachedMem = userMemberships.find(m => m.organization_id === savedOrgId);
+            if (cachedMem && window.authModule && window.authModule.refreshUserRole)
+            {
+                // We await this briefly or just fire it. refreshUserRole is async but sets the global var synchronously if possible?
+                // Actually refreshUserRole is async. We should await it if we want to be sure.
+                // But since we are inside an async function, let's await it to be safe.
+                await window.authModule.refreshUserRole(user.id, savedOrgId, cachedMem.role);
+            }
+
             // Trigger data load in background (optimistic)
+            // Now that role is set, this render will be correct
             window.songsModule.populateSongDatabaseTable(savedOrgId);
             if (window.setlistModule) window.setlistModule.loadSetlistFromSupabase(savedOrgId);
 
@@ -93,14 +106,6 @@ async function initializeOrganizationState(passedUser)
             if (churchNameDisplay)
             {
                 churchNameDisplay.textContent = savedName ? `Church: ${savedName}` : 'Loading Church...';
-            }
-
-            // --- NEW: Optimistic Role Update ---
-            // If we have cached memberships, we know the role!
-            const cachedMem = userMemberships.find(m => m.organization_id === savedOrgId);
-            if (cachedMem && window.authModule && window.authModule.refreshUserRole)
-            {
-                window.authModule.refreshUserRole(user.id, savedOrgId, cachedMem.role);
             }
         }
 

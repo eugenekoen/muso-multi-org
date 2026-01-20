@@ -150,10 +150,22 @@ async function populateUserManagementModal()
         const currentUserRole = window.authModule ? window.authModule.getCurrentUserRole() : null;
         const currentUserIsAdmin = !!(currentUserRole && String(currentUserRole).toLowerCase() === 'admin');
 
-        members.forEach(member =>
+        console.log(`UserMgmt: Found ${members.length} members. Admin: ${currentUserIsAdmin}`);
+
+        // Prepare data for sorting
+        const memberRows = members.map(member =>
         {
-            // Lookup profile from map
             const profile = profileMap[member.user_id] || { full_name: 'Unknown', email: 'Unknown' };
+            let nameForSort = profile.full_name || profile.email || 'zzzz';
+            return { member, profile, nameForSort: nameForSort.toLowerCase() };
+        });
+
+        // Sort alphabetically
+        memberRows.sort((a, b) => a.nameForSort.localeCompare(b.nameForSort));
+
+        memberRows.forEach(item =>
+        {
+            const { member, profile } = item;
             const isCurrentUser = member.user_id === currentUser?.id;
 
             let displayName = profile.full_name || profile.email || 'N/A';
@@ -162,17 +174,41 @@ async function populateUserManagementModal()
                 displayName = `${profile.full_name} <span class="user-email-hint">(${profile.email})</span>`;
             }
 
+            if (isCurrentUser)
+            {
+                displayName += ` <span style="font-weight: bold; color: #4CAF50; margin-left: 5px;">(You)</span>`;
+            }
+
+            // Roles Logic: Current user cannot change their own role here to prevent accidents? 
+            // Usually you can't demote yourself if you are the only admin. 
+            // But let's allow it if the logic permits.
+
+            // Delete Button Logic:
+            // "Ensure I cannot delete my profile" -> Hide the button entirely or show text
+            let deleteActionHtml = '';
+            if (isCurrentUser)
+            {
+                // Hide button, maybe show text? Or just empty.
+                deleteActionHtml = `<span style="color: #999; font-style: italic; font-size: 12px;">N/A</span>`;
+            } else if (currentUserIsAdmin)
+            {
+                deleteActionHtml = `<button class="delete-user-btn" data-user-id="${member.user_id}" aria-label="Remove ${profile.full_name || 'user'}">Remove</button>`;
+            } else
+            {
+                deleteActionHtml = `<span style="color: #ccc;">-</span>`;
+            }
+
             const row = userListTableBody.insertRow();
             row.innerHTML = `
                 <td>${displayName}</td>
                 <td>
-                    <select class="role-select" data-user-id="${member.user_id}" aria-label="Role for ${displayName}" ${isCurrentUser ? 'disabled' : ''}>
+                    <select class="role-select" data-user-id="${member.user_id}" aria-label="Role" ${isCurrentUser ? 'disabled' : ''}>
                         <option value="User" ${member.role && member.role.toLowerCase() === 'user' ? 'selected' : ''}>User</option>
                         <option value="Admin" ${member.role && member.role.toLowerCase() === 'admin' ? 'selected' : ''}>Admin</option>
                     </select>
                 </td>
                 <td>
-                    <button class="delete-user-btn" data-user-id="${member.user_id}" aria-label="Remove ${displayName}" ${isCurrentUser || !currentUserIsAdmin ? 'disabled' : ''}>Remove</button>
+                    ${deleteActionHtml}
                 </td>
             `;
         });
