@@ -35,7 +35,7 @@ async function loadSetlistFromSupabase(organizationId)
     try
     {
         const abortController = new AbortController();
-        const timeoutId = setTimeout(() => abortController.abort(), 7000);
+        const timeoutId = setTimeout(() => abortController.abort(), 3000);
 
         const { data, error } = await supabaseClient.from('setlists').select('songs')
             .eq('organization_id', organizationId)

@@ -204,8 +204,12 @@ function updateUIForRole(isLoggedIn)
 
     // Master Admin (Fixed email)
     const supabaseClient = window.getSupabaseClient();
-    supabaseClient.auth.getUser().then(({ data: { user } }) =>
+
+    // Use getSession() which is synchronous if the session is already loaded in memory
+    // This makes the UI update much faster than getUser()
+    supabaseClient.auth.getSession().then(({ data: { session } }) =>
     {
+        const user = session?.user;
         const isMasterAdmin = user?.email === 'eugenekoenn@gmail.com';
 
         // Case-insensitive check to be safe

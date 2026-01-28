@@ -44,7 +44,7 @@ async function populateSongDatabaseTable(organizationId)
     {
         // Add 7s timeout to prevent hanging "Loading..."
         const abortController = new AbortController();
-        const timeoutId = setTimeout(() => abortController.abort(), 7000);
+        const timeoutId = setTimeout(() => abortController.abort(), 3000);
 
         const { data, error } = await supabaseClient.from('songs')
             .select('song_identifier, display_name')

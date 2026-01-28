@@ -117,7 +117,7 @@ async function initializeOrganizationState(passedUser)
             .select('id, user_id, organization_id, role, joined_at')
             .eq('user_id', user.id);
 
-        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 8000));
+        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 1500));
 
         const raceResult = await Promise.race([fetchPromise, timeoutPromise]);
 

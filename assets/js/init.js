@@ -266,42 +266,47 @@ document.addEventListener('DOMContentLoaded', () =>
     });
 
     // Song search in setlist modal
+    let setlistSearchTimeout;
     if (songSearchInput)
     {
         songSearchInput.addEventListener('input', () =>
         {
-            const searchTerm = songSearchInput.value.trim().toLowerCase();
-            resultsListDiv.innerHTML = '';
-            selectedSongIdentifierInput.value = '';
-            selectedSongDisplayNameInput.value = '';
-            if (searchTerm.length < 1)
+            clearTimeout(setlistSearchTimeout);
+            setlistSearchTimeout = setTimeout(() =>
             {
-                resultsListDiv.style.display = 'none';
-                return;
-            }
-            const allSongs = window.songsModule.getAllSongsData();
-            const matchedSongs = allSongs.filter(song => song.displayName.toLowerCase().includes(searchTerm));
-            if (matchedSongs.length > 0)
-            {
-                matchedSongs.forEach(song =>
+                const searchTerm = songSearchInput.value.trim().toLowerCase();
+                resultsListDiv.innerHTML = '';
+                selectedSongIdentifierInput.value = '';
+                selectedSongDisplayNameInput.value = '';
+                if (searchTerm.length < 1)
                 {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'result-item';
-                    itemDiv.textContent = song.displayName;
-                    itemDiv.addEventListener('click', () =>
+                    resultsListDiv.style.display = 'none';
+                    return;
+                }
+                const allSongs = window.songsModule.getAllSongsData();
+                const matchedSongs = allSongs.filter(song => song.displayName.toLowerCase().includes(searchTerm));
+                if (matchedSongs.length > 0)
+                {
+                    matchedSongs.forEach(song =>
                     {
-                        songSearchInput.value = song.displayName;
-                        selectedSongIdentifierInput.value = song.identifier;
-                        selectedSongDisplayNameInput.value = song.displayName;
-                        resultsListDiv.style.display = 'none';
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'result-item';
+                        itemDiv.textContent = song.displayName;
+                        itemDiv.addEventListener('click', () =>
+                        {
+                            songSearchInput.value = song.displayName;
+                            selectedSongIdentifierInput.value = song.identifier;
+                            selectedSongDisplayNameInput.value = song.displayName;
+                            resultsListDiv.style.display = 'none';
+                        });
+                        resultsListDiv.appendChild(itemDiv);
                     });
-                    resultsListDiv.appendChild(itemDiv);
-                });
-                resultsListDiv.style.display = 'block';
-            } else
-            {
-                resultsListDiv.style.display = 'none';
-            }
+                    resultsListDiv.style.display = 'block';
+                } else
+                {
+                    resultsListDiv.style.display = 'none';
+                }
+            }, 300); // 300ms debounce
         });
     }
 
