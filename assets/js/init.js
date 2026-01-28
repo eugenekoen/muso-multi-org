@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () =>
             signupMsg.textContent = error.message;
         } else
         {
-            signupMsg.textContent = "Success! Please check your email to confirm your account, then you can log in.";
+            signupMsg.textContent = "Congratulations, successfully signed up!";
             signupMsg.classList.add('success');
             signupNameInput.value = '';
             signupEmailInput.value = '';
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () =>
                 // Show Login modal automatically after successful signup
                 loginErrorMsg.textContent = '';
                 loginModal.style.display = 'block';
-            }, 3000);
+            }, 3000); // Increased to 5s to allow user to read the message
         }
     });
 
