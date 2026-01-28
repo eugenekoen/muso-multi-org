@@ -202,22 +202,24 @@ function updateUIForRole(isLoggedIn)
     // Admin: Full Access
     // User: Read Only (Can see Switch Church, Logout, but NO editing/adding)
 
-    // Case-insensitive check to be safe
-    const role = currentUserRole ? currentUserRole.toLowerCase() : '';
-    const isAdmin = (role === 'admin');
-    const canEdit = isAdmin;
-
-    console.log(`UpdateUIForRole: Role='${currentUserRole}', IsAdmin=${isAdmin}`);
-
-    if (manageSetlistBtn) manageSetlistBtn.style.display = canEdit ? 'inline-block' : 'none';
-    if (addSongBtnTrigger) addSongBtnTrigger.style.display = canEdit ? 'inline-block' : 'none';
-    if (userManagementBtn) userManagementBtn.style.display = isAdmin ? 'inline-block' : 'none';
-
     // Master Admin (Fixed email)
     const supabaseClient = window.getSupabaseClient();
     supabaseClient.auth.getUser().then(({ data: { user } }) =>
     {
         const isMasterAdmin = user?.email === 'eugenekoenn@gmail.com';
+
+        // Case-insensitive check to be safe
+        const role = currentUserRole ? currentUserRole.toLowerCase() : '';
+        const isAdmin = (role === 'admin');
+
+        // Super Admin (eugenekoenn@gmail.com) gets admin permissions if ANY organization is selected
+        const canEdit = isAdmin || (isMasterAdmin && window.activeOrganizationId);
+
+        console.log(`UpdateUIForRole: Role='${currentUserRole}', IsAdmin=${isAdmin}, IsMasterAdmin=${isMasterAdmin}, ActiveOrg=${window.activeOrganizationId}`);
+
+        if (manageSetlistBtn) manageSetlistBtn.style.display = canEdit ? 'inline-block' : 'none';
+        if (addSongBtnTrigger) addSongBtnTrigger.style.display = canEdit ? 'inline-block' : 'none';
+        if (userManagementBtn) userManagementBtn.style.display = (isAdmin || isMasterAdmin) && window.activeOrganizationId ? 'inline-block' : 'none';
         if (keyManagerBtn) keyManagerBtn.style.display = isMasterAdmin ? 'inline-block' : 'none';
     });
 }

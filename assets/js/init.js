@@ -84,8 +84,7 @@ document.addEventListener('DOMContentLoaded', () =>
 
         // --- MOVED UP: Clear UI Immediately ---
         // 2. Clear Local State & UI Immediately
-        localStorage.removeItem('activeOrganizationId');
-        localStorage.removeItem('activeOrganizationName');
+        localStorage.clear(); // FULL CLEAR as requested
         window.activeOrganizationId = null;
 
         try
@@ -218,7 +217,11 @@ document.addEventListener('DOMContentLoaded', () =>
                 signupModal.style.display = 'none';
                 signupMsg.textContent = '';
                 signupMsg.classList.remove('success');
-            }, 5000);
+
+                // Show Login modal automatically after successful signup
+                loginErrorMsg.textContent = '';
+                loginModal.style.display = 'block';
+            }, 3000);
         }
     });
 

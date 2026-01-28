@@ -155,7 +155,7 @@ async function initializeOrganizationState(passedUser)
             window.activeOrganizationId = null;
             localStorage.removeItem('activeOrganizationId');
             if (churchNameDisplay) churchNameDisplay.textContent = 'Join a Church';
-            openOrganizationModal();
+            // openOrganizationModal(); // DO NOT POP UP IMMEDIATELY
             // Clear the optimistic data if it was wrong
             window.songsModule.populateSongDatabaseTable(null);
             if (window.setlistModule) window.setlistModule.loadSetlistFromSupabase(null);
@@ -207,7 +207,7 @@ async function initializeOrganizationState(passedUser)
                 // UNLESS we want to be super persistent? No, if we have fresh data saying "you aren't a member", we should respect it.
                 window.activeOrganizationId = null;
                 if (churchNameDisplay) churchNameDisplay.textContent = 'Select a Church';
-                openOrganizationModal();
+                // openOrganizationModal(); // DO NOT POP UP IMMEDIATELY
                 if (savedOrgId)
                 {
                     window.songsModule.populateSongDatabaseTable(null);
