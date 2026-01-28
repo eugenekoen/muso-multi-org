@@ -545,18 +545,12 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     }
 
-    // Close modals when clicking outside
+    // Close modals when clicking outside (Only for specific ones like Login/Signup if desired)
     window.addEventListener('click', (event) =>
     {
         if (event.target == loginModal) loginModal.style.display = 'none';
         if (event.target == signupModal) signupModal.style.display = 'none';
-        if (event.target == setlistModal)
-        {
-            setlistModal.style.display = 'none';
-            window.setlistModule.updateTableOneWithSetlist();
-        }
-        if (event.target == userManagementModal) userManagementModal.style.display = 'none';
-        if (event.target == keyManagerModal) keyManagerModal.style.display = 'none';
+        // Removed outside-click closure for setlist, user management, and key manager
     });
 
     // --- NEW ORGANIZATION LISTENERS ---
@@ -590,10 +584,7 @@ document.addEventListener('DOMContentLoaded', () =>
     }
 
     document.getElementById('close-org-modal-btn')?.addEventListener('click', () => organizationModal.style.display = 'none');
-    window.addEventListener('click', (event) =>
-    {
-        if (event.target == organizationModal) organizationModal.style.display = 'none';
-    });
+    // Removed outside-click closure for organization modal
 
     // --- AUTH STATE CHANGE ---
     let lastSessionUserId = null;
