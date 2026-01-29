@@ -159,6 +159,8 @@ async function openEditModal(songIdentifier, displayName)
     editSongTitle.textContent = `Edit Song: ${displayName}`;
     editSongTextarea.value = 'Loading...';
     editSongLyricsTextarea.value = 'Loading...';
+    const editSongShared = document.getElementById('edit-song-shared');
+    if (editSongShared) editSongShared.value = 'false';
     editSongModal.style.display = 'block';
     saveSongBtn.dataset.songIdentifier = songIdentifier;
 
@@ -180,10 +182,17 @@ async function openEditModal(songIdentifier, displayName)
 
     try
     {
-        const { data, error } = await supabaseClient.from('songs').select('chords_content, lyrics_content').eq('song_identifier', songIdentifier).single();
+        const orgId = window.activeOrganizationId;
+        const { data, error } = await supabaseClient
+            .from('songs')
+            .select('chords_content, lyrics_content, is_shared')
+            .eq('song_identifier', songIdentifier)
+            .eq('organization_id', orgId)
+            .single();
         if (error) throw error;
         editSongTextarea.value = data.chords_content || '';
         editSongLyricsTextarea.value = data.lyrics_content || '';
+        if (editSongShared) editSongShared.value = String(data.is_shared || false);
     } catch (error)
     {
         editSongTextarea.value = 'Error loading song content.';
@@ -204,6 +213,10 @@ async function saveSongChanges()
     const songIdentifier = saveSongBtn.dataset.songIdentifier;
     const newChordsContent = editSongTextarea.value;
     const newLyricsContent = editSongLyricsTextarea.value;
+    const editSongShared = document.getElementById('edit-song-shared');
+    const isShared = editSongShared ? editSongShared.value === 'true' : false;
+    const orgId = window.activeOrganizationId;
+
     if (!songIdentifier) { alert('Error: No song identifier found.'); return; }
     saveSongBtn.disabled = true;
     saveSongBtn.textContent = 'Saving...';
@@ -211,8 +224,11 @@ async function saveSongChanges()
     {
         const { error } = await supabaseClient.from('songs').update({
             chords_content: newChordsContent,
-            lyrics_content: newLyricsContent
-        }).eq('song_identifier', songIdentifier);
+            lyrics_content: newLyricsContent,
+            is_shared: isShared
+        })
+            .eq('song_identifier', songIdentifier)
+            .eq('organization_id', orgId);
         if (error) throw error;
         editSongMsg.textContent = 'Saved successfully!';
         editSongMsg.style.color = 'green';
@@ -260,8 +276,14 @@ async function deleteSong()
 
     try
     {
+        const orgId = window.activeOrganizationId;
         // Use .select() to ensure we get confirmation that a row was actually deleted
-        const { data, error } = await supabaseClient.from('songs').delete().eq('song_identifier', songIdentifier).select();
+        const { data, error } = await supabaseClient
+            .from('songs')
+            .delete()
+            .eq('song_identifier', songIdentifier)
+            .eq('organization_id', orgId)
+            .select();
         if (error) throw error;
 
         if (!data || data.length === 0)
@@ -312,6 +334,8 @@ PASTE SONG HERE (with 2 spacings on left)
     newSongIdentifierInput.value = '';
     newSongChordsTextarea.value = SONG_TEMPLATE;
     newSongLyricsTextarea.value = '';
+    const newSongShared = document.getElementById('new-song-shared');
+    if (newSongShared) newSongShared.value = 'false';
     addSongModal.style.display = 'block';
     newSongDisplayNameInput.focus();
 }
@@ -337,6 +361,8 @@ async function saveNewSong(organizationId)
     const identifier = newSongIdentifierInput.value.trim().toLowerCase();
     const chordsContent = newSongChordsTextarea.value;
     const lyricsContent = newSongLyricsTextarea.value;
+    const newSongShared = document.getElementById('new-song-shared');
+    const isShared = newSongShared ? newSongShared.value === 'true' : false;
 
     if (!displayName || !identifier)
     {
@@ -358,7 +384,8 @@ async function saveNewSong(organizationId)
             song_identifier: identifier,
             display_name: displayName,
             chords_content: chordsContent,
-            lyrics_content: lyricsContent
+            lyrics_content: lyricsContent,
+            is_shared: isShared
         }]);
         if (error)
         {
@@ -377,6 +404,137 @@ async function saveNewSong(organizationId)
     }
 }
 
+
+
+async function searchOnlineSongs(query, currentOrgId)
+{
+    const supabaseClient = window.getSupabaseClient();
+    const resultsTableBody = document.querySelector('#online-search-results-table tbody');
+    if (!supabaseClient || !resultsTableBody) return;
+
+    if (!query || query.length < 2)
+    {
+        resultsTableBody.innerHTML = '<tr><td colspan="3" class="text-center">Type at least 2 characters to search...</td></tr>';
+        return;
+    }
+
+    resultsTableBody.innerHTML = '<tr><td colspan="3" class="text-center">Searching...</td></tr>';
+
+    try
+    {
+        // Search shared songs across all organizations except current
+        const { data, error } = await supabaseClient
+            .from('songs')
+            .select('song_identifier, display_name, chords_content, lyrics_content, is_shared')
+            .eq('is_shared', true)
+            .neq('organization_id', currentOrgId)
+            .ilike('display_name', `%${query}%`)
+            .order('display_name', { ascending: true });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0)
+        {
+            resultsTableBody.innerHTML = '<tr><td colspan="3" class="text-center">No shared songs found.</td></tr>';
+            return;
+        }
+
+        resultsTableBody.innerHTML = '';
+        data.forEach((song, index) =>
+        {
+            const row = resultsTableBody.insertRow();
+            row.innerHTML = `
+                <td>${song.display_name}</td>
+                <td class="text-center">Version ${index + 1}</td>
+                <td class="text-center">
+                    <button class="import-song-btn modal-btn" style="padding: 5px 10px; font-size: 12px;" 
+                        data-song='${JSON.stringify(song).replace(/'/g, "&apos;")}'>Add to my Database</button>
+                </td>
+            `;
+        });
+
+    } catch (error)
+    {
+        console.error('Error searching online songs:', error);
+        resultsTableBody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: red;">Error performing search.</td></tr>';
+    }
+}
+
+async function importSongFromOnline(song, organizationId)
+{
+    const supabaseClient = window.getSupabaseClient();
+    const onlineSearchMsg = document.getElementById('online-search-msg');
+
+    if (!organizationId)
+    {
+        alert("Please select a church before importing.");
+        return;
+    }
+
+    try
+    {
+        // 1. Determine a unique name/identifier for the local database
+        let baseDisplayName = song.display_name;
+        let baseIdentifier = song.song_identifier;
+
+        // Remove existing version suffix if any (though usually we add it)
+        baseDisplayName = baseDisplayName.replace(/\s- v\d+$/, '');
+
+        // Check if song already exists in local DB
+        const { data: existingSongs, error: checkError } = await supabaseClient
+            .from('songs')
+            .select('display_name')
+            .eq('organization_id', organizationId)
+            .ilike('display_name', `${baseDisplayName}%`);
+
+        if (checkError) throw checkError;
+
+        let finalDisplayName = baseDisplayName;
+        let finalIdentifier = baseIdentifier;
+
+        if (existingSongs && existingSongs.length > 0)
+        {
+            const version = existingSongs.length + 1;
+            finalDisplayName = `${baseDisplayName} - v${version - 1}`; // User asked for - v1, - v2...
+            // Note: if it's the 2nd copy, it's v1. If 3rd, v2.
+            // Or if existingSongs.length matches, then it's v1, v2...
+            // Let's use simple count:
+            finalDisplayName = `${baseDisplayName} - v${existingSongs.length}`;
+            finalIdentifier = `${baseIdentifier}-v${existingSongs.length}`;
+        }
+
+        // 2. Insert into local organization
+        const { error: insertError } = await supabaseClient.from('songs').insert([{
+            organization_id: organizationId,
+            song_identifier: finalIdentifier,
+            display_name: finalDisplayName,
+            chords_content: song.chords_content,
+            lyrics_content: song.lyrics_content,
+            is_shared: false // Reset sharing for the local copy by default
+        }]);
+
+        if (insertError) throw insertError;
+
+        if (onlineSearchMsg)
+        {
+            onlineSearchMsg.textContent = `"${finalDisplayName}" added to your database!`;
+            onlineSearchMsg.style.color = 'green';
+        }
+
+        // Refresh song table
+        await populateSongDatabaseTable(organizationId);
+
+    } catch (error)
+    {
+        console.error('Error importing song:', error);
+        if (onlineSearchMsg)
+        {
+            onlineSearchMsg.textContent = `Error: ${error.message}`;
+            onlineSearchMsg.style.color = 'red';
+        }
+    }
+}
+
 // Export functions
 window.songsModule = {
     populateSongDatabaseTable,
@@ -384,6 +542,8 @@ window.songsModule = {
     saveSongChanges,
     deleteSong,
     openAddSongModal,
-    saveNewSong, // Make sure this is parameterized
+    saveNewSong,
+    searchOnlineSongs,
+    importSongFromOnline,
     getAllSongsData: () => allSongsData
 };

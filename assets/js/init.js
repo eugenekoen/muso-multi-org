@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () =>
     // Initialize modules
     window.uiModule.setupKeyboardNavigation();
     window.uiModule.setupSongLinkHandlers();
+    window.uiModule.setupOnlineSearchHandlers();
 
     // Data loading (songs, setlists) is now DEFERRED until valid user & org are confirmed.
     // See initializeOrganizationState in organization.js
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () =>
 
     const manageSetlistBtn = document.getElementById('manage-setlist-btn');
     const addSongBtnTrigger = document.getElementById('add-song-btn');
+    const searchOnlineBtnTrigger = document.getElementById('search-online-btn');
     const userManagementBtn = document.getElementById('user-management-btn');
     const userListTableBody = document.querySelector('#user-list-table tbody');
 
@@ -113,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () =>
             if (switchChurchBtn) switchChurchBtn.style.display = 'none';
             if (manageSetlistBtn) manageSetlistBtn.style.display = 'none';
             if (addSongBtnTrigger) addSongBtnTrigger.style.display = 'none';
+            if (searchOnlineBtnTrigger) searchOnlineBtnTrigger.style.display = 'none';
             if (userManagementBtn) userManagementBtn.style.display = 'none';
             if (logoutBtnEl) logoutBtnEl.style.display = 'none';
         } catch (err)
@@ -257,6 +260,15 @@ document.addEventListener('DOMContentLoaded', () =>
     {
         editSongModal.style.display = 'none';
     });
+
+    // --- SEARCH ONLINE LISTENERS ---
+    if (searchOnlineBtnTrigger)
+    {
+        searchOnlineBtnTrigger.addEventListener('click', () =>
+        {
+            document.getElementById('search-online-modal').style.display = 'block';
+        });
+    }
 
     // --- SETLIST LISTENERS ---
     manageSetlistBtn.addEventListener('click', () =>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turningpoint Musos</title>
+    <title>Music In His Name</title>
 
     <!-- Stylesheets -->
     <link rel="shortcut icon" href="./style/images/LOGO.jpg" />
@@ -98,6 +98,8 @@
         <button id="manage-setlist-btn" style="display: none;" aria-label="Manage weekend setlist">Manage
             Setlist</button>
         <button id="add-song-btn" style="display: none;" aria-label="Add a new song to database">Add New Song</button>
+        <button id="search-online-btn" style="display: none;" aria-label="Search songs from other organizations">Search
+            Online</button>
         <button id="user-management-btn" style="display: none;" aria-label="Manage user roles and permissions">User
             Management</button>
         <button id="key-manager-btn" style="display: none;" aria-label="Manage organizations and signup codes">Key
@@ -250,6 +252,13 @@
                     <textarea id="edit-song-lyrics-textarea" aria-label="Edit song lyrics"></textarea>
                 </div>
             </div>
+            <div style="margin-top: 10px;">
+                <label for="edit-song-shared">Share Song Online:</label>
+                <select id="edit-song-shared" style="width: auto; padding: 5px;">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
             <p id="edit-song-msg" style="height: 16px; color: green;" role="status"></p>
             <div class="modal-footer">
                 <button id="cancel-edit-btn" class="modal-btn" aria-label="Cancel edit">Cancel</button>
@@ -291,6 +300,14 @@
                     <label for="new-song-lyrics">Lyrics:</label>
                     <textarea id="new-song-lyrics" aria-label="Enter song lyrics"></textarea>
                 </div>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <label for="new-song-shared">Share Song Online:</label>
+                <select id="new-song-shared" style="width: auto; padding: 5px;">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
             </div>
 
             <p id="add-song-error-msg" style="height: 16px; color: red;" role="alert"></p>
@@ -400,6 +417,35 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <!-- Search Online Modal -->
+    <div id="search-online-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="search-online-title">
+        <div class="modal-content large">
+            <span class="close-search-online-modal-btn close-modal-btn" aria-label="Close Search Online dialog">×</span>
+            <h2 id="search-online-title">Search Online Songs</h2>
+            <div style="margin-bottom: 20px;">
+                <input id="online-search-input" placeholder="Type song name to search globally..." type="text"
+                    style="width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
+            </div>
+            <div class="table-container">
+                <table id="online-search-results-table">
+                    <thead>
+                        <tr>
+                            <th>SONG NAME</th>
+                            <th class="text-center">VERSION</th>
+                            <th class="text-center">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3" class="text-center">Type above to search...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p id="online-search-msg" class="feedback-msg" role="status"></p>
         </div>
     </div>
 

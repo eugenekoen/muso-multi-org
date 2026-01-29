@@ -40,6 +40,7 @@ function setupKeyboardNavigation()
             const editSongModal = document.getElementById('edit-song-modal');
             const addSongModal = document.getElementById('add-song-modal');
             const userManagementModal = document.getElementById('user-management-modal');
+            const searchOnlineModal = document.getElementById('search-online-modal');
 
             if (loginModal.style.display === 'block') loginModal.style.display = 'none';
             if (signupModal.style.display === 'block') signupModal.style.display = 'none';
@@ -47,6 +48,7 @@ function setupKeyboardNavigation()
             if (editSongModal.style.display === 'block') editSongModal.style.display = 'none';
             if (addSongModal.style.display === 'block') addSongModal.style.display = 'none';
             if (userManagementModal.style.display === 'block') userManagementModal.style.display = 'none';
+            if (searchOnlineModal.style.display === 'block') searchOnlineModal.style.display = 'none';
         }
     });
 }
@@ -222,6 +224,48 @@ async function populateUserManagementModal()
     }
 }
 
+function setupOnlineSearchHandlers()
+{
+    const onlineSearchInput = document.getElementById('online-search-input');
+    const onlineSearchModal = document.getElementById('search-online-modal');
+    const resultsTable = document.getElementById('online-search-results-table');
+
+    if (!onlineSearchInput || !onlineSearchModal || !resultsTable) return;
+
+    let onlineSearchTimeout;
+    onlineSearchInput.addEventListener('input', () =>
+    {
+        clearTimeout(onlineSearchTimeout);
+        onlineSearchTimeout = setTimeout(() =>
+        {
+            const query = onlineSearchInput.value.trim();
+            const currentOrgId = window.activeOrganizationId;
+            window.songsModule.searchOnlineSongs(query, currentOrgId);
+        }, 500);
+    });
+
+    resultsTable.addEventListener('click', async (event) =>
+    {
+        const importBtn = event.target.closest('.import-song-btn');
+        if (importBtn)
+        {
+            const songData = JSON.parse(importBtn.dataset.song);
+            const currentOrgId = window.activeOrganizationId;
+            importBtn.disabled = true;
+            importBtn.textContent = 'Importing...';
+            await window.songsModule.importSongFromOnline(songData, currentOrgId);
+            importBtn.textContent = 'Added!';
+        }
+    });
+
+    // Close buttons
+    const closeBtn = onlineSearchModal.querySelector('.close-search-online-modal-btn');
+    if (closeBtn)
+    {
+        closeBtn.onclick = () => { onlineSearchModal.style.display = 'none'; };
+    }
+}
+
 function showUserManagementMessage(message, isError = false)
 {
     const userManagementMsg = document.getElementById('user-management-msg');
@@ -234,6 +278,7 @@ function showUserManagementMessage(message, isError = false)
 window.uiModule = {
     setupKeyboardNavigation,
     setupSongLinkHandlers,
+    setupOnlineSearchHandlers,
     handleSongClick,
     populateUserManagementModal,
     showUserManagementMessage

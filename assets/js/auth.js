@@ -112,6 +112,7 @@ async function updateAuthState(user)
     const addSongBtnTrigger = document.getElementById('add-song-btn');
     const userManagementBtn = document.getElementById('user-management-btn');
     const keyManagerBtn = document.getElementById('key-manager-btn');
+    const searchOnlineBtn = document.getElementById('search-online-btn');
 
     document.body.classList.toggle('logged-in', !!user);
 
@@ -141,6 +142,7 @@ async function updateAuthState(user)
         manageSetlistBtn.style.display = 'none';
         addSongBtnTrigger.style.display = 'none';
         userManagementBtn.style.display = 'none';
+        if (searchOnlineBtn) searchOnlineBtn.style.display = 'none';
         if (keyManagerBtn) keyManagerBtn.style.display = 'none';
     }
 }
@@ -186,6 +188,7 @@ function updateUIForRole(isLoggedIn)
 {
     const manageSetlistBtn = document.getElementById('manage-setlist-btn');
     const addSongBtnTrigger = document.getElementById('add-song-btn');
+    const searchOnlineBtn = document.getElementById('search-online-btn');
     const userManagementBtn = document.getElementById('user-management-btn');
     const keyManagerBtn = document.getElementById('key-manager-btn');
 
@@ -223,6 +226,7 @@ function updateUIForRole(isLoggedIn)
 
         if (manageSetlistBtn) manageSetlistBtn.style.display = canEdit ? 'inline-block' : 'none';
         if (addSongBtnTrigger) addSongBtnTrigger.style.display = canEdit ? 'inline-block' : 'none';
+        if (searchOnlineBtn) searchOnlineBtn.style.display = window.activeOrganizationId ? 'inline-block' : 'none';
         if (userManagementBtn) userManagementBtn.style.display = (isAdmin || isMasterAdmin) && window.activeOrganizationId ? 'inline-block' : 'none';
         if (keyManagerBtn) keyManagerBtn.style.display = isMasterAdmin ? 'inline-block' : 'none';
     });
