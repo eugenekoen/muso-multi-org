@@ -103,6 +103,22 @@ async function signUpUser(name, email, password)
     return { data, error };
 }
 
+async function sendResetPasswordEmail(email)
+{
+    const supabaseClient = window.getSupabaseClient();
+    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
+    return { data, error };
+}
+
+async function updatePassword(newPassword)
+{
+    const supabaseClient = window.getSupabaseClient();
+    const { data, error } = await supabaseClient.auth.updateUser({
+        password: newPassword
+    });
+    return { data, error };
+}
+
 async function updateAuthState(user)
 {
     const loginModalBtn = document.getElementById('login-modal-btn');
@@ -155,6 +171,8 @@ window.authModule = {
     signUpUser,
     updateAuthState,
     refreshUserRole,
+    sendResetPasswordEmail,
+    updatePassword,
     getCurrentUserRole: () => currentUserRole
 };
 

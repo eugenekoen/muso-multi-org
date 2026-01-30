@@ -27,7 +27,9 @@ document.addEventListener('DOMContentLoaded', () =>
     const editSongModal = document.getElementById('edit-song-modal');
     const addSongModal = document.getElementById('add-song-modal');
     const userManagementModal = document.getElementById('user-management-modal');
-    const organizationModal = document.getElementById('organization-modal'); // New Modal
+    const organizationModal = document.getElementById('organization-modal');
+    const forgotPasswordModal = document.getElementById('forgot-password-modal');
+    const resetPasswordModal = document.getElementById('reset-password-modal');
 
     const loginModalBtn = document.getElementById('login-modal-btn');
     const signupModalBtn = document.getElementById('signup-modal-btn');
@@ -181,6 +183,117 @@ document.addEventListener('DOMContentLoaded', () =>
         {
             loginBtn.disabled = false;
             loginBtn.textContent = 'Login';
+        }
+    });
+
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
+    const forgotPasswordEmailInput = document.getElementById('forgot-password-email');
+    const sendResetEmailBtn = document.getElementById('send-reset-email-btn');
+    const forgotPasswordMsg = document.getElementById('forgot-password-msg');
+
+    forgotPasswordLink.addEventListener('click', (e) =>
+    {
+        e.preventDefault();
+        loginModal.style.display = 'none';
+        forgotPasswordMsg.textContent = '';
+        forgotPasswordModal.style.display = 'block';
+    });
+
+    sendResetEmailBtn.addEventListener('click', async () =>
+    {
+        const email = forgotPasswordEmailInput.value.trim();
+        if (!email)
+        {
+            forgotPasswordMsg.textContent = 'Please enter your email.';
+            forgotPasswordMsg.style.color = 'red';
+            return;
+        }
+
+        sendResetEmailBtn.disabled = true;
+        sendResetEmailBtn.textContent = 'Sending...';
+
+        try
+        {
+            const { error } = await window.authModule.sendResetPasswordEmail(email);
+            if (error)
+            {
+                forgotPasswordMsg.textContent = error.message;
+                forgotPasswordMsg.style.color = 'red';
+            } else
+            {
+                forgotPasswordMsg.textContent = 'Check your email for the reset link!';
+                forgotPasswordMsg.style.color = 'green';
+                setTimeout(() =>
+                {
+                    forgotPasswordModal.style.display = 'none';
+                }, 3000);
+            }
+        } catch (err)
+        {
+            forgotPasswordMsg.textContent = 'An unexpected error occurred.';
+            forgotPasswordMsg.style.color = 'red';
+        } finally
+        {
+            sendResetEmailBtn.disabled = false;
+            sendResetEmailBtn.textContent = 'Send Reset Link';
+        }
+    });
+
+    const updatePasswordBtn = document.getElementById('update-password-btn');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const resetPasswordMsg = document.getElementById('reset-password-msg');
+
+    updatePasswordBtn.addEventListener('click', async () =>
+    {
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (!newPassword || newPassword.length < 6)
+        {
+            resetPasswordMsg.textContent = 'Password must be at least 6 characters.';
+            resetPasswordMsg.style.color = 'red';
+            return;
+        }
+
+        if (newPassword !== confirmPassword)
+        {
+            resetPasswordMsg.textContent = 'Passwords do not match.';
+            resetPasswordMsg.style.color = 'red';
+            return;
+        }
+
+        updatePasswordBtn.disabled = true;
+        updatePasswordBtn.textContent = 'Updating...';
+
+        try
+        {
+            const { error } = await window.authModule.updatePassword(newPassword);
+            if (error)
+            {
+                resetPasswordMsg.textContent = error.message;
+                resetPasswordMsg.style.color = 'red';
+            } else
+            {
+                resetPasswordMsg.textContent = 'Password updated successfully! Redirecting...';
+                resetPasswordMsg.style.color = 'green';
+                setTimeout(() =>
+                {
+                    resetPasswordModal.style.display = 'none';
+                    // Clear fields
+                    newPasswordInput.value = '';
+                    confirmPasswordInput.value = '';
+                    // Optionally force refresh or just let auth state handle it
+                }, 2000);
+            }
+        } catch (err)
+        {
+            resetPasswordMsg.textContent = 'An unexpected error occurred.';
+            resetPasswordMsg.style.color = 'red';
+        } finally
+        {
+            updatePasswordBtn.disabled = false;
+            updatePasswordBtn.textContent = 'Update Password';
         }
     });
 
@@ -546,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () =>
     document.querySelector('.close-add-modal-btn').addEventListener('click', () => addSongModal.style.display = 'none');
     document.querySelector('.close-user-management-modal-btn').addEventListener('click', () => userManagementModal.style.display = 'none');
     document.querySelector('.close-key-manager-modal-btn')?.addEventListener('click', () => keyManagerModal.style.display = 'none');
+    document.querySelector('.close-forgot-password-modal-btn').addEventListener('click', () => forgotPasswordModal.style.display = 'none');
 
     const closeSetlistModalBtn = setlistModal?.querySelector('.close-modal-btn');
     if (closeSetlistModalBtn)
@@ -605,6 +719,12 @@ document.addEventListener('DOMContentLoaded', () =>
     {
         const currentUserId = session?.user?.id;
         console.log('Auth state changed:', event, currentUserId);
+
+        if (event === 'PASSWORD_RECOVERY')
+        {
+            console.log('Password recovery mode detected.');
+            resetPasswordModal.style.display = 'block';
+        }
 
         // Optimization: duplicate events often fire (INITIAL_SESSION then SIGNED_IN)
         // If we are already handling this user, don't spam initialization.

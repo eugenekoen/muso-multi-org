@@ -158,6 +158,46 @@
                     aria-required="true"></div>
             <p id="login-error-msg" role="alert"></p>
             <button id="login-btn" class="modal-btn" aria-label="Submit login form">Login</button>
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="#" id="forgot-password-link"
+                    style="font-size: 14px; color: #666; text-decoration: none;">Forgot
+                    Password?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-password-modal" class="modal" aria-modal="true" role="dialog"
+        aria-labelledby="forgot-password-title">
+        <div class="modal-content">
+            <span class="close-forgot-password-modal-btn close-modal-btn"
+                aria-label="Close forgot password dialog">×</span>
+            <h2 id="forgot-password-title">Reset Password</h2>
+            <p>Enter your email address and we'll send you a link to reset your password.</p>
+            <div>
+                <label for="forgot-password-email">Email:</label>
+                <input type="email" id="forgot-password-email" placeholder="you@example.com" aria-required="true">
+            </div>
+            <p id="forgot-password-msg" role="status"></p>
+            <button id="send-reset-email-btn" class="modal-btn" aria-label="Send reset email">Send Reset Link</button>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal (The actual update modal) -->
+    <div id="reset-password-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="reset-password-title">
+        <div class="modal-content">
+            <h2 id="reset-password-title">Create New Password</h2>
+            <p>Enter your new password below.</p>
+            <div>
+                <label for="new-password">New Password:</label>
+                <input type="password" id="new-password" aria-required="true">
+            </div>
+            <div>
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" aria-required="true">
+            </div>
+            <p id="reset-password-msg" role="status"></p>
+            <button id="update-password-btn" class="modal-btn" aria-label="Update password">Update Password</button>
         </div>
     </div>
 
