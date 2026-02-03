@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Music In His Name</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            background-color: #2c3e50;
+            padding: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 40px 30px;
+            line-height: 1.6;
+        }
+
+        .content h2 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-top: 0;
+        }
+
+        .story-box {
+            background-color: #f9fbfb;
+            border-left: 4px solid #4CAF50;
+            padding: 15px 20px;
+            margin: 25px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white !important;
+            padding: 14px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .footer {
+            background-color: #f4f7f6;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Ensure this path is relative to your domain or use a full URL -->
+            <!-- Added explicit width and height to prevent "massive" loading in email clients -->
+            <img src="https://mihn.co.za/style/images/LOGO.jpg" alt="MIHN Logo" width="50" height="50">
+            <h1>Music In His Name</h1>
+        </div>
+        <div class="content">
+            <h2>Hey there! Welcome to the app.</h2>
+            <p>If you’ve ever walked onto a stage only to realize you’ve lost your chord sheet or that the song is in a
+                key you aren't prepared for, you’re not alone. As a musician, I’ve been there—and that’s exactly why I
+                built <strong>Music In His Name</strong>.</p>
+
+            <p>What began as a personal hobby to help me stay organized has grown into a passion project: a dedicated
+                app designed specifically for church bands to manage their setlists and music digitally.</p>
+
+            <div class="story-box" style="font-style: normal;">
+                <h3 style="margin-top: 0; color: #2c3e50; font-size: 16px;">Why I built this:</h3>
+                <p>I’m the type of person who needs to see the chords clearly when I play. I found that transposing on
+                    the fly often led to mistakes, and paper copies were far too easy to lose. Using reliable
+                    open-source technology, I’ve developed a platform that allows you to:</p>
+                <ul style="padding-left: 20px;">
+                    <li><strong>Transpose Instantly:</strong> Change keys on the fly to match your worship leader’s
+                        preference for the week.</li>
+                    <li><strong>Dynamic Setlists:</strong> Easily add, remove, and reorder songs for any service.</li>
+                    <li><strong>Complete Customization:</strong> Edit and store your songs digitally so they are ready
+                        whenever you are.</li>
+                </ul>
+            </div>
+
+            <p>This journey wouldn't have been possible without the feedback from my muso friends over the years—with a
+                very special thanks to my uncle, Peter, for his invaluable insights.</p>
+
+            <p>My heart behind this is to make the technical side of worship seamless so we can focus on what truly
+                matters.</p>
+
+            <div class="btn-container">
+                <a href="{{ .ConfirmationURL }}" class="btn">Confirm Email & Launch App</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Music In His Name. All rights reserved.</p>
+            <p>We respect your privacy. We never sell your data to third parties.</p>
+        </div>
+    </div>
+</body>
+
+</html>

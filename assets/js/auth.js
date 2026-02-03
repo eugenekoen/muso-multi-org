@@ -67,6 +67,7 @@ async function signUpUser(name, email, password)
         email: email,
         password: password,
         options: {
+            emailRedirectTo: 'https://mihn.co.za/',
             data: {
                 full_name: name
             }
@@ -106,7 +107,9 @@ async function signUpUser(name, email, password)
 async function sendResetPasswordEmail(email)
 {
     const supabaseClient = window.getSupabaseClient();
-    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
+    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://mihn.co.za/',
+    });
     return { data, error };
 }
 
