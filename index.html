@@ -4,7 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music In His Name</title>
+    <title>Music In His Name | Muso Chord & Setlist Management</title>
+    <meta name="description"
+        content="The ultimate chord and setlist management tool for worship teams and churches. Organize your songs, transposes keys instantly, and share with your team.">
+    <meta name="keywords"
+        content="worship leader tools, church music management, chord transposer, setlist builder, Muso app">
+    <meta name="author" content="Music In His Name">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mihn.co.za/">
+    <meta property="og:title" content="Music In His Name - Chords & Setlists">
+    <meta property="og:description"
+        content="Instant chord transposition and professional setlist management for your church.">
+    <meta property="og:image" content="https://mihn.co.za/style/images/LOGO.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://mihn.co.za/">
+    <meta property="twitter:title" content="Music In His Name - Chords & Setlists">
+    <meta property="twitter:description"
+        content="Instant chord transposition and professional setlist management for your church.">
+    <meta property="twitter:image" content="https://mihn.co.za/style/images/LOGO.jpg">
 
     <!-- Stylesheets -->
     <link rel="shortcut icon" href="./style/images/LOGO.jpg" />
@@ -121,6 +143,8 @@
                     aria-required="true"></div>
             <p id="signup-msg" style="height: auto;" role="status"></p>
             <button id="signup-btn" class="modal-btn" aria-label="Submit sign up form">Sign Up</button>
+            <p style="font-size: 12px; text-align: center; color: #666; margin-top: 15px;">By signing up, you agree to
+                our <a href="#" class="open-legal-btn">Terms & Conditions</a>.</p>
         </div>
     </div>
 
@@ -158,10 +182,13 @@
                     aria-required="true"></div>
             <p id="login-error-msg" role="alert"></p>
             <button id="login-btn" class="modal-btn" aria-label="Submit login form">Login</button>
-            <div style="margin-top: 15px; text-align: center;">
+            <div
+                style="margin-top: 15px; text-align: center; display: flex; justify-content: space-between; gap: 10px;">
                 <a href="#" id="forgot-password-link"
-                    style="font-size: 14px; color: #666; text-decoration: none;">Forgot
+                    style="font-size: 13px; color: #666; text-decoration: none;">Forgot
                     Password?</a>
+                <a href="#" class="open-legal-btn" style="font-size: 13px; color: #666; text-decoration: none;">Terms &
+                    Privacy</a>
             </div>
         </div>
     </div>
@@ -488,6 +515,92 @@
             <p id="online-search-msg" class="feedback-msg" role="status"></p>
         </div>
     </div>
+
+    <!-- Legal Information Modal -->
+    <div id="legal-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="legal-title">
+        <div class="modal-content large">
+            <span class="close-legal-modal-btn close-modal-btn" aria-label="Close legal dialog">×</span>
+            <h2 id="legal-title">Terms & Privacy</h2>
+
+            <div class="legal-tabs"
+                style="display: flex; gap: 20px; border-bottom: 2px solid #eee; margin-bottom: 20px;">
+                <button id="tab-terms" class="tab-btn active"
+                    style="background:none; border:none; padding:10px; cursor:pointer; font-weight:600; font-family:inherit; border-bottom: 3px solid #4CAF50;">Terms
+                    of Usage</button>
+                <button id="tab-privacy" class="tab-btn"
+                    style="background:none; border:none; padding:10px; cursor:pointer; font-weight:600; font-family:inherit; color:#666;">Privacy
+                    Policy</button>
+            </div>
+
+            <div id="content-terms" class="legal-scroll-content"
+                style="max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+                <h3 style="color:#333;">Terms and Conditions</h3>
+                <p>Welcome to Music In His Name ("the Service"). By using our website, you agree to comply with and be
+                    bound by the following terms.</p>
+
+                <h4 style="margin-top:20px;">1. Acceptance of Terms</h4>
+                <p>The Service provides a platform for music chord and setlist management. Usage is intended for worship
+                    teams, churches, and musicians. You agree to use the Service only for lawful purposes.</p>
+
+                <h4 style="margin-top:20px;">2. User Content</h4>
+                <p>You are solely responsible for any content (songs, chords, lyrics) you upload. By marking a song as
+                    "Shared Online", you grant other users of the platform a non-exclusive right to import that content
+                    into their own organization profiles.</p>
+
+                <h4 style="margin-top:20px;">3. Intellectual Property</h4>
+                <p>The Service itself is the property of Music In His Name. You must ensure you have the necessary
+                    licenses (e.g., CCLI) to use copyrighted song material within your organization.</p>
+
+                <h4 style="margin-top:20px;">4. Limitation of Liability</h4>
+                <p>The Service is provided "as is". We are not liable for any data loss, service interruptions, or
+                    inaccuracies in song content.</p>
+
+                <h4 style="margin-top:20px;">5. Amendments</h4>
+                <p>We reserve the right to modify these terms at any time. Continued use of the Service constitutes
+                    acceptance of revised terms.</p>
+            </div>
+
+            <div id="content-privacy" class="legal-scroll-content"
+                style="display:none; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+                <h3 style="color:#333;">Privacy Policy</h3>
+                <p>Your privacy is important to us. This policy explains how we handle your information.</p>
+
+                <h4 style="margin-top:20px;">1. Information Collection</h4>
+                <p>We collect your name and email address during registration to provide authentication and personalized
+                    organization management via Supabase.</p>
+
+                <h4 style="margin-top:20px;">2. Usage of Information</h4>
+                <p>Your data is used solely to manage your account, your organization memberships, and to provide
+                    technical support. We do not sell your data to third parties.</p>
+
+                <h4 style="margin-top:20px;">3. Data Security</h4>
+                <p>We use industry-standard security measures provided by Supabase (PostgreSQL/Netlify) to protect your
+                    information.</p>
+
+                <h4 style="margin-top:20px;">4. Cookies</h4>
+                <p>We use essential cookies/local storage to maintain your log-in session and preferences (such as your
+                    active organization).</p>
+
+                <h4 style="margin-top:20px;">5. Your Rights</h4>
+                <p>You may request the deletion of your account and personal data at any time by contacting us.</p>
+            </div>
+
+            <div style="margin-top:25px; text-align:right;">
+                <button class="modal-btn close-legal-modal-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer for Legal Links -->
+    <footer style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7); font-size: 14px;">
+        <p>&copy; 2026 Music In His Name. All Rights Reserved.</p>
+        <p>
+            <a href="#" class="open-legal-btn" style="color: white; text-decoration: none; margin: 0 10px;">Terms of
+                Use</a> |
+            <a href="#" class="open-legal-btn" style="color: white; text-decoration: none; margin: 0 10px;">Privacy
+                Policy</a>
+        </p>
+    </footer>
 
 </body>
 

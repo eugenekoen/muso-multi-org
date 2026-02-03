@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () =>
     window.uiModule.setupKeyboardNavigation();
     window.uiModule.setupSongLinkHandlers();
     window.uiModule.setupOnlineSearchHandlers();
+    window.uiModule.setupLegalHandlers();
 
     // Data loading (songs, setlists) is now DEFERRED until valid user & org are confirmed.
     // See initializeOrganizationState in organization.js
@@ -94,13 +95,9 @@ document.addEventListener('DOMContentLoaded', () =>
         try
         {
             window.authModule.updateAuthState(null);
-            if (window.songsModule && window.songsModule.populateSongDatabaseTable)
+            if (window.organizationModule && window.organizationModule.clearOrganizationState)
             {
-                window.songsModule.populateSongDatabaseTable(null);
-            }
-            if (window.setlistModule && window.setlistModule.loadSetlistFromSupabase)
-            {
-                window.setlistModule.loadSetlistFromSupabase(null);
+                window.organizationModule.clearOrganizationState();
             }
 
             // Ensure primary buttons visibility matches logged-out state
@@ -752,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () =>
         window.authModule.updateAuthState(session?.user);
 
         // 2. Initialize Organization State
-        await window.organizationModule.initializeOrganizationState(session?.user);
+        await window.organizationModule.initializeOrganizationState(session?.user || null);
     });
 
     // Handle Back/Forward Cache (bfcache) navigation

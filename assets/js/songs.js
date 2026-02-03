@@ -296,7 +296,12 @@ async function deleteSong()
         setTimeout(() =>
         {
             editSongModal.style.display = 'none';
-            populateSongDatabaseTable();
+            // Refresh both songs and setlist
+            populateSongDatabaseTable(orgId);
+            if (window.setlistModule)
+            {
+                window.setlistModule.loadSetlistFromSupabase(orgId);
+            }
         }, 1000);
     } catch (error)
     {
@@ -480,12 +485,12 @@ async function importSongFromOnline(song, organizationId)
         // Remove existing version suffix if any (though usually we add it)
         baseDisplayName = baseDisplayName.replace(/\s- v\d+$/, '');
 
-        // Check if song already exists in local DB
+        // Check if a song with this identifier already exists in local DB
         const { data: existingSongs, error: checkError } = await supabaseClient
             .from('songs')
-            .select('display_name')
+            .select('song_identifier')
             .eq('organization_id', organizationId)
-            .ilike('display_name', `${baseDisplayName}%`);
+            .ilike('song_identifier', `${baseIdentifier}%`);
 
         if (checkError) throw checkError;
 
@@ -494,11 +499,8 @@ async function importSongFromOnline(song, organizationId)
 
         if (existingSongs && existingSongs.length > 0)
         {
-            const version = existingSongs.length + 1;
-            finalDisplayName = `${baseDisplayName} - v${version - 1}`; // User asked for - v1, - v2...
-            // Note: if it's the 2nd copy, it's v1. If 3rd, v2.
-            // Or if existingSongs.length matches, then it's v1, v2...
-            // Let's use simple count:
+            // If the exact identifier exists, or similar ones, append a version
+            // We use the count of matches to determine the version number
             finalDisplayName = `${baseDisplayName} - v${existingSongs.length}`;
             finalIdentifier = `${baseIdentifier}-v${existingSongs.length}`;
         }

@@ -136,7 +136,11 @@ async function updateAuthState(user)
     {
         loginModalBtn.style.display = 'none';
         signupModalBtn.style.display = 'none';
+
+        // Reset logout button if it was stuck
         logoutBtn.style.display = 'inline-block';
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.disabled = false;
 
         // Show the switch church button when logged in
         const switchChurchBtn = document.getElementById('switch-church-btn');
@@ -244,7 +248,7 @@ function updateUIForRole(isLoggedIn)
 
         if (manageSetlistBtn) manageSetlistBtn.style.display = canEdit ? 'inline-block' : 'none';
         if (addSongBtnTrigger) addSongBtnTrigger.style.display = canEdit ? 'inline-block' : 'none';
-        if (searchOnlineBtn) searchOnlineBtn.style.display = window.activeOrganizationId ? 'inline-block' : 'none';
+        if (searchOnlineBtn) searchOnlineBtn.style.display = canEdit ? 'inline-block' : 'none';
         if (userManagementBtn) userManagementBtn.style.display = (isAdmin || isMasterAdmin) && window.activeOrganizationId ? 'inline-block' : 'none';
         if (keyManagerBtn) keyManagerBtn.style.display = isMasterAdmin ? 'inline-block' : 'none';
     });

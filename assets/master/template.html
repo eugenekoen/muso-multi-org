@@ -39,6 +39,7 @@
             const params = new URLSearchParams(window.location.search);
             const songIdentifier = params.get('song');
             const contentType = params.get('contentType');
+            const orgId = params.get('org');
             const targetKey = params.get('targetKey');
             const shouldHideTranspose = params.get('hideTranspose');
 
@@ -64,11 +65,13 @@
                 const { data: { session } } = await supabaseClient.auth.getSession();
 
                 // --- MODIFICATION 1: Request 'display_name' along with the content ---
+                // We filter by both song_identifier AND organization_id to ensure we get the correct record
                 const { data, error } = await supabaseClient
                     .from('songs')
-                    .select(`${columnName}, display_name`) // Ask for both columns
+                    .select(`${columnName}, display_name`)
                     .eq('song_identifier', songIdentifier)
-                    .maybeSingle(); // Use maybeSingle to avoid 406 errors
+                    .eq('organization_id', orgId)
+                    .maybeSingle();
 
                 if (error) throw error;
 

@@ -28,7 +28,9 @@ async function initializeOrganizationState(passedUser)
     const supabaseClient = window.getSupabaseClient();
     let user = passedUser;
 
-    if (!user)
+    // Use passedUser directly if provided (even if null). 
+    // Only fetch if passedUser is strictly undefined (auto-init call).
+    if (user === undefined)
     {
         const { data } = await supabaseClient.auth.getUser();
         user = data.user;
@@ -229,6 +231,26 @@ async function initializeOrganizationState(passedUser)
 }
 
 /**
+ * Completely clears the organization state (e.g., on logout).
+ */
+function clearOrganizationState()
+{
+    window.activeOrganizationId = null;
+    userMemberships = [];
+    lastInitializedUser = null;
+    isInitializing = false; // Reset lock just in case
+
+    const churchNameDisplay = document.getElementById('textdiv');
+    if (churchNameDisplay) churchNameDisplay.textContent = 'The Praise and Worship App';
+
+    localStorage.removeItem('activeOrganizationId');
+    localStorage.removeItem('activeOrganizationName');
+
+    if (window.songsModule) window.songsModule.populateSongDatabaseTable(null);
+    if (window.setlistModule) window.setlistModule.loadSetlistFromSupabase(null);
+}
+
+/**
  * Sets the active organization and refreshes the app's data.
  * @param {string} organizationId - The UUID of the organization to activate.
  */
@@ -378,5 +400,6 @@ window.organizationModule = {
     initializeOrganizationState,
     setActiveOrganization,
     openOrganizationModal,
-    joinOrganization
+    joinOrganization,
+    clearOrganizationState
 };

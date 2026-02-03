@@ -41,6 +41,7 @@ function setupKeyboardNavigation()
             const addSongModal = document.getElementById('add-song-modal');
             const userManagementModal = document.getElementById('user-management-modal');
             const searchOnlineModal = document.getElementById('search-online-modal');
+            const legalModal = document.getElementById('legal-modal');
 
             if (loginModal.style.display === 'block') loginModal.style.display = 'none';
             if (signupModal.style.display === 'block') signupModal.style.display = 'none';
@@ -49,6 +50,7 @@ function setupKeyboardNavigation()
             if (addSongModal.style.display === 'block') addSongModal.style.display = 'none';
             if (userManagementModal.style.display === 'block') userManagementModal.style.display = 'none';
             if (searchOnlineModal.style.display === 'block') searchOnlineModal.style.display = 'none';
+            if (legalModal && legalModal.style.display === 'block') legalModal.style.display = 'none';
         }
     });
 }
@@ -84,7 +86,7 @@ async function handleSongClick(event, linkElement)
     if (!songIdentifier || !contentType) return;
 
     const templateURL = "./assets/master/template.html";
-    let targetURL = `${templateURL}?song=${encodeURIComponent(songIdentifier)}&contentType=${encodeURIComponent(contentType)}`;
+    let targetURL = `${templateURL}?song=${encodeURIComponent(songIdentifier)}&contentType=${encodeURIComponent(contentType)}&org=${encodeURIComponent(window.activeOrganizationId)}`;
 
     if (contentType === 'lyrics')
     {
@@ -274,6 +276,68 @@ function showUserManagementMessage(message, isError = false)
     setTimeout(() => { userManagementMsg.textContent = ''; }, 4000);
 }
 
+function openLegalModal(tab = 'terms')
+{
+    const modal = document.getElementById('legal-modal');
+    if (!modal) return;
+    modal.style.display = 'block';
+    switchLegalTab(tab);
+}
+
+function switchLegalTab(tab)
+{
+    const tabTerms = document.getElementById('tab-terms');
+    const tabPrivacy = document.getElementById('tab-privacy');
+    const contentTerms = document.getElementById('content-terms');
+    const contentPrivacy = document.getElementById('content-privacy');
+
+    if (!tabTerms || !tabPrivacy) return;
+
+    if (tab === 'terms')
+    {
+        tabTerms.classList.add('active');
+        tabTerms.style.borderBottom = '3px solid #4CAF50';
+        tabPrivacy.classList.remove('active');
+        tabPrivacy.style.borderBottom = 'none';
+        tabPrivacy.style.color = '#666';
+        contentTerms.style.display = 'block';
+        contentPrivacy.style.display = 'none';
+    } else
+    {
+        tabPrivacy.classList.add('active');
+        tabPrivacy.style.borderBottom = '3px solid #4CAF50';
+        tabTerms.classList.remove('active');
+        tabTerms.style.borderBottom = 'none';
+        tabTerms.style.color = '#666';
+        contentPrivacy.style.display = 'block';
+        contentTerms.style.display = 'none';
+    }
+}
+
+function setupLegalHandlers()
+{
+    // Tagged buttons/links
+    document.querySelectorAll('.open-legal-btn').forEach(btn =>
+    {
+        btn.onclick = (e) =>
+        {
+            e.preventDefault();
+            const tab = btn.textContent.toLowerCase().includes('privacy') ? 'privacy' : 'terms';
+            openLegalModal(tab);
+        };
+    });
+
+    // Close buttons
+    document.querySelectorAll('.close-legal-modal-btn').forEach(btn =>
+    {
+        btn.onclick = () => { document.getElementById('legal-modal').style.display = 'none'; };
+    });
+
+    // Tab switching
+    document.getElementById('tab-terms')?.addEventListener('click', () => switchLegalTab('terms'));
+    document.getElementById('tab-privacy')?.addEventListener('click', () => switchLegalTab('privacy'));
+}
+
 // Export functions
 window.uiModule = {
     setupKeyboardNavigation,
@@ -281,5 +345,7 @@ window.uiModule = {
     setupOnlineSearchHandlers,
     handleSongClick,
     populateUserManagementModal,
-    showUserManagementMessage
+    showUserManagementMessage,
+    openLegalModal,
+    setupLegalHandlers
 };
