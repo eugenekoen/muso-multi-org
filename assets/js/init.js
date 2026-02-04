@@ -319,22 +319,18 @@ document.addEventListener('DOMContentLoaded', () =>
             signupMsg.textContent = error.message;
         } else
         {
-            signupMsg.textContent = "Congratulations, successfully signed up!";
+            signupMsg.textContent = "Successfully signed up! Check your email to confirm your account.";
             signupMsg.classList.add('success');
             signupNameInput.value = '';
             signupEmailInput.value = '';
             signupPasswordInput.value = '';
             setTimeout(() =>
             {
-                // Close signup and automatically open login for convenience
+                // Close signup modal
                 signupModal.style.display = 'none';
                 signupMsg.textContent = '';
                 signupMsg.classList.remove('success');
-
-                // Show Login modal automatically after successful signup
-                loginErrorMsg.textContent = '';
-                loginModal.style.display = 'block';
-            }, 3000); // Increased to 5s to allow user to read the message
+            }, 3000);
         }
     });
 
