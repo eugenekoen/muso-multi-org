@@ -1030,18 +1030,25 @@ body:not(.logged-in) #logout-btn {
 /* Quarter Tabs */
 .quarter-tabs {
     display: flex;
-    justify-content: center;
-    gap: 20px;
+    justify-content: flex-start;
+    gap: 10px;
     margin-bottom: 30px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 2px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+
+.quarter-tabs::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
 }
 
 .quarter-tab {
     background: none;
     border: none;
-    padding: 12px 30px;
-    font-size: 16px;
+    padding: 10px 20px;
+    font-size: 14px;
     font-weight: 500;
     font-family: 'Montserrat', sans-serif;
     color: rgba(255, 255, 255, 0.5);
@@ -1049,6 +1056,8 @@ body:not(.logged-in) #logout-btn {
     border-bottom: 3px solid transparent;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 8px 8px 0 0;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .quarter-tab:hover {
@@ -1077,7 +1086,7 @@ body:not(.logged-in) #logout-btn {
 /* Individual Sunday Card - Glassmorphism & Depth */
 .schedule-card {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     background: rgba(255, 255, 255, 0.05);
     /* Slightly more opaque for better visibility */
     backdrop-filter: blur(10px);
@@ -1120,20 +1129,22 @@ body:not(.logged-in) #logout-btn {
     border-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Date Badge - Sophisticated Gradient */
+/* Date Badge - Full Width Header */
 .schedule-date-badge {
     background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-    width: 140px;
-    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
     align-items: center;
+    gap: 15px;
     color: white;
-    padding: 25px 15px;
-    text-align: center;
+    padding: 15px 25px;
+    text-align: left;
     position: relative;
     overflow: hidden;
+    border-top-left-radius: 12px; /* Slight mismatch fix if rounding varies */
+    border-top-right-radius: 12px;
 }
 
 .schedule-date-badge::after {
@@ -1152,11 +1163,10 @@ body:not(.logged-in) #logout-btn {
 }
 
 .date-day {
-    font-size: 44px;
+    font-size: 32px;
     font-weight: 900;
-    line-height: 0.9;
-    margin-bottom: 4px;
-    letter-spacing: -2px;
+    line-height: 1;
+    letter-spacing: -1px;
 }
 
 .date-month {
@@ -1169,9 +1179,9 @@ body:not(.logged-in) #logout-btn {
 
 .date-year {
     font-size: 14px;
-    margin-top: 6px;
     opacity: 0.7;
     font-weight: 500;
+    margin-left: auto; /* Push year to right */
 }
 
 /* Main Content Section (Right Side) */
@@ -1409,39 +1419,13 @@ body:not(.logged-in) #logout-btn {
 }
 
 @media (max-width: 650px) {
-    .schedule-card {
-        flex-direction: column;
-        min-height: auto;
-    }
-
-    .schedule-date-badge {
-        width: 100%;
-        flex-direction: row;
-        padding: 15px 25px;
-        justify-content: flex-start;
-        gap: 15px;
-        text-align: left;
-    }
-
-    .date-day {
-        font-size: 32px;
-    }
-
-    .date-month {
-        font-size: 20px;
-    }
-
-    .date-year {
-        margin-top: 0;
-        margin-left: auto;
-    }
-
     .schedule-content {
-        padding: 25px;
+        padding: 15px;
     }
 
     .schedule-roles {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
 
     .add-role-wrapper {
