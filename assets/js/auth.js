@@ -167,6 +167,12 @@ async function updateAuthState(user)
         userManagementBtn.style.display = 'none';
         if (searchOnlineBtn) searchOnlineBtn.style.display = 'none';
         if (keyManagerBtn) keyManagerBtn.style.display = 'none';
+
+        // Hide Schedule Manager Buttons
+        const scheduleManagerBtn = document.getElementById('schedule-manager-btn');
+        const viewScheduleBtn = document.getElementById('view-schedule-btn');
+        if (scheduleManagerBtn) scheduleManagerBtn.style.display = 'none';
+        if (viewScheduleBtn) viewScheduleBtn.style.display = 'none';
     }
 }
 
@@ -254,5 +260,13 @@ function updateUIForRole(isLoggedIn)
         if (searchOnlineBtn) searchOnlineBtn.style.display = canEdit ? 'inline-block' : 'none';
         if (userManagementBtn) userManagementBtn.style.display = (isAdmin || isMasterAdmin) && window.activeOrganizationId ? 'inline-block' : 'none';
         if (keyManagerBtn) keyManagerBtn.style.display = isMasterAdmin ? 'inline-block' : 'none';
+
+        // Schedule Manager Logic
+        const scheduleManagerBtn = document.getElementById('schedule-manager-btn');
+        const viewScheduleBtn = document.getElementById('view-schedule-btn');
+
+        // Admin sees "Schedule Manager", Non-Admin (but logged in) sees "View Schedule"
+        if (scheduleManagerBtn) scheduleManagerBtn.style.display = isAdmin && window.activeOrganizationId ? 'inline-block' : 'none';
+        if (viewScheduleBtn) viewScheduleBtn.style.display = !isAdmin && window.activeOrganizationId ? 'inline-block' : 'none';
     });
 }

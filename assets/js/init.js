@@ -645,6 +645,55 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     }
 
+    // --- SCHEDULE MANAGER LISTENERS ---
+    const scheduleManagerBtn = document.getElementById('schedule-manager-btn');
+    const viewScheduleBtn = document.getElementById('view-schedule-btn');
+    const scheduleManagerModal = document.getElementById('schedule-manager-modal');
+
+    // Admin: Open Schedule Manager
+    if (scheduleManagerBtn)
+    {
+        scheduleManagerBtn.addEventListener('click', () =>
+        {
+            if (!window.activeOrganizationId)
+            {
+                alert('Please search for and select a church first.');
+                return;
+            }
+            window.scheduleModule.openScheduleManager();
+        });
+    }
+
+    // Non-Admin: View Schedule
+    if (viewScheduleBtn)
+    {
+        viewScheduleBtn.addEventListener('click', () =>
+        {
+            if (!window.activeOrganizationId)
+            {
+                alert('Please search for and select a church first.');
+                return;
+            }
+            // Use same modal but the module handles read-only state based on role
+            window.scheduleModule.openScheduleManager();
+        });
+    }
+
+    // Handle Quarter Tabs
+    document.querySelectorAll('.quarter-tab').forEach(tab =>
+    {
+        tab.addEventListener('click', (e) =>
+        {
+            const quarter = parseInt(e.target.dataset.quarter);
+            window.scheduleModule.switchQuarter(quarter);
+        });
+    });
+
+    document.querySelector('.close-schedule-manager-modal-btn')?.addEventListener('click', () =>
+    {
+        scheduleManagerModal.style.display = 'none';
+    });
+
     // --- MODAL CLOSE LISTENERS ---
     document.querySelector('.close-login-modal-btn').addEventListener('click', () => loginModal.style.display = 'none');
     document.querySelector('.close-signup-modal-btn').addEventListener('click', () => signupModal.style.display = 'none');
