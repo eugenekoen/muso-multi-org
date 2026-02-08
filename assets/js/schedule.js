@@ -464,16 +464,25 @@ async function saveGlobalRole()
 
         console.log("Attempting to save global roles:", updatedColumns, "for org:", organizationId);
 
-        const { error } = await supabaseClient
+        const { data, error, count } = await supabaseClient
             .from('organizations')
             .update({ custom_schedule_roles: updatedColumns })
-            .eq('id', organizationId);
+            .eq('id', organizationId)
+            .select();
 
 
         if (error)
         {
             console.error("Supabase update error:", error);
             throw error;
+        }
+
+        console.log("Update response data:", data);
+
+        if (!data || data.length === 0)
+        {
+            console.warn("Update succeeded but 0 rows were changed. This usually means your account doesn't have Permission (RLS) to update the Organizations table.");
+            throw new Error("Permission denied: You do not have permission to update organization settings.");
         }
 
         customColumns = updatedColumns;
@@ -801,12 +810,19 @@ async function addNewYear()
     {
         const updatedYears = [...new Set([...availableYears, nextYear])].sort((a, b) => a - b);
 
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from('organizations')
             .update({ available_years: updatedYears })
-            .eq('id', organizationId);
+            .eq('id', organizationId)
+            .select();
 
         if (error) throw error;
+
+        if (!data || data.length === 0)
+        {
+            console.warn("Update succeeded but 0 rows were changed. This usually means your account doesn't have Permission (RLS) to update the Organizations table.");
+            throw new Error("Permission denied: You do not have permission to update organization settings.");
+        }
 
         availableYears = updatedYears;
         currentYear = nextYear;
