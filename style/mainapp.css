@@ -480,7 +480,7 @@ body:not(.logged-in) #logout-btn {
 /* Set a specific width for the Role column */
 #user-list-table th:nth-child(2),
 #user-list-table td:nth-child(2) {
-    width: 180px;
+    width: 150px;
 }
 
 #user-list-table td {
@@ -602,6 +602,14 @@ body:not(.logged-in) #logout-btn {
     cursor: pointer;
     outline: none;
     transition: border-color 0.2s;
+    min-height: 44px;
+    /* Larger touch area for mobile */
+    font-size: 1.1rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L0.803847 0.5L11.1962 0.5L6 8Z' fill='%23ecf0f1'/%3E%3C/svg%3E%0A");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px 12px;
 }
 
 .role-select:disabled {
@@ -617,7 +625,6 @@ body:not(.logged-in) #logout-btn {
 .user-email-hint {
     font-size: 0.85em;
     color: #95a5a6;
-    margin-left: 8px;
     font-weight: 400;
 }
 
@@ -951,6 +958,63 @@ body:not(.logged-in) #logout-btn {
     #current-setlist-items {
         max-height: 40vh;
     }
+
+    /* User Management Table: horizontal scroll and card style */
+    #user-management-modal .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+    }
+
+    #user-list-table {
+        min-width: 480px;
+    }
+
+    #user-list-table th,
+    #user-list-table td {
+        font-size: 1rem;
+        padding: 10px 8px;
+    }
+
+    /* Stack user rows as cards on very small screens */
+    @media (max-width: 430px) {
+
+        #user-list-table,
+        #user-list-table thead,
+        #user-list-table tbody,
+        #user-list-table tr,
+        #user-list-table th,
+        #user-list-table td {
+            display: block;
+            width: 100%;
+        }
+
+        #user-list-table thead {
+            display: none;
+        }
+
+        #user-list-table tr {
+            background: #22304a;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 10px 0;
+        }
+
+        #user-list-table td {
+            border: none;
+            text-align: left;
+            position: relative;
+        }
+
+        #user-list-table td:before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #00bcd4;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+    }
 }
 
 @media (max-width: 480px) {
@@ -1037,11 +1101,13 @@ body:not(.logged-in) #logout-btn {
     padding-bottom: 2px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
+    scrollbar-width: none;
+    /* Hide scrollbar Firefox */
 }
 
 .quarter-tabs::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
+    display: none;
+    /* Hide scrollbar Chrome/Safari */
 }
 
 .quarter-tab {
@@ -1143,7 +1209,8 @@ body:not(.logged-in) #logout-btn {
     text-align: left;
     position: relative;
     overflow: hidden;
-    border-top-left-radius: 12px; /* Slight mismatch fix if rounding varies */
+    border-top-left-radius: 12px;
+    /* Slight mismatch fix if rounding varies */
     border-top-right-radius: 12px;
 }
 
@@ -1181,7 +1248,8 @@ body:not(.logged-in) #logout-btn {
     font-size: 14px;
     opacity: 0.7;
     font-weight: 500;
-    margin-left: auto; /* Push year to right */
+    margin-left: auto;
+    /* Push year to right */
 }
 
 /* Main Content Section (Right Side) */

@@ -167,6 +167,7 @@ async function populateUserManagementModal()
         // Sort alphabetically
         memberRows.sort((a, b) => a.nameForSort.localeCompare(b.nameForSort));
 
+
         memberRows.forEach(item =>
         {
             const { member, profile } = item;
@@ -177,15 +178,10 @@ async function populateUserManagementModal()
             {
                 displayName = `${profile.full_name} <span class="user-email-hint">(${profile.email})</span>`;
             }
-
             if (isCurrentUser)
             {
                 displayName += ` <span style="font-weight: bold; color: #4CAF50; margin-left: 5px;">(You)</span>`;
             }
-
-            // Roles Logic: Current user cannot change their own role here to prevent accidents? 
-            // Usually you can't demote yourself if you are the only admin. 
-            // But let's allow it if the logic permits.
 
             // Delete Button Logic:
             let deleteActionHtml = '';
@@ -194,7 +190,6 @@ async function populateUserManagementModal()
                 deleteActionHtml = `<span style="color: #999; font-style: italic; font-size: 12px; display: inline-block; min-width: 60px; text-align: center;">N/A</span>`;
             } else if (currentUserIsAdmin)
             {
-                // Use a clean label without any HTML to avoid breaking the attribute
                 const cleanLabel = (profile.full_name || profile.email || 'user').replace(/"/g, '&quot;');
                 deleteActionHtml = `<button class="delete-user-btn" data-user-id="${member.user_id}" aria-label="Remove ${cleanLabel}">Remove</button>`;
             } else
@@ -203,15 +198,16 @@ async function populateUserManagementModal()
             }
 
             const row = userListTableBody.insertRow();
+            // Add data-label attributes for mobile card view
             row.innerHTML = `
-                <td>${displayName}</td>
-                <td>
+                <td data-label="Name">${displayName}</td>
+                <td data-label="Role">
                     <select class="role-select" data-user-id="${member.user_id}" aria-label="Role" ${isCurrentUser ? 'disabled' : ''}>
                         <option value="User" ${member.role && member.role.toLowerCase() === 'user' ? 'selected' : ''}>User</option>
                         <option value="Admin" ${member.role && member.role.toLowerCase() === 'admin' ? 'selected' : ''}>Admin</option>
                     </select>
                 </td>
-                <td>
+                <td data-label="Actions">
                     ${deleteActionHtml}
                 </td>
             `;
