@@ -302,7 +302,7 @@ async function renderScheduleCards()
  * Role to Icon Mapping
  */
 const ROLE_ICONS = {
-    'leader': 'fa-solid fa-users-line',
+    'leader': 'fa-brands fa-first-order',
     'bass': 'fa-solid fa-guitar',
     'keys': 'fa-solid fa-keyboard',
     'piano': 'fa-solid fa-music',
@@ -317,9 +317,16 @@ const ROLE_ICONS = {
 /**
  * Get icon class for a role
  */
-function getRoleIcon(role)
+function getRoleIcon(role, isMulti = false)
 {
     const key = String(role).toLowerCase();
+
+    // For custom roles, use user/users icon based on single vs multi
+    if (key.startsWith('custom_'))
+    {
+        return isMulti ? 'fa-solid fa-users' : 'fa-solid fa-user';
+    }
+
     return ROLE_ICONS[key] || ROLE_ICONS['default'];
 }
 
@@ -557,19 +564,19 @@ function createRoleField(label, role, value, isMulti, isReadOnly, isPriority = f
 
     if (isMulti)
     {
-        return createMultiRoleField(label, role, value || [], isReadOnly, priorityClass, deleteBtn);
+        return createMultiRoleField(label, role, value || [], isReadOnly, priorityClass, deleteBtn, isMulti);
     } else
     {
-        return createSingleRoleField(label, role, value, isReadOnly, priorityClass, deleteBtn);
+        return createSingleRoleField(label, role, value, isReadOnly, priorityClass, deleteBtn, isMulti);
     }
 }
 
 /**
  * Create single-person role dropdown
  */
-function createSingleRoleField(label, role, selectedId, isReadOnly, priorityClass = '', deleteBtn = '')
+function createSingleRoleField(label, role, selectedId, isReadOnly, priorityClass = '', deleteBtn = '', isMulti = false)
 {
-    const iconClass = getRoleIcon(role);
+    const iconClass = getRoleIcon(role, isMulti);
 
     if (isReadOnly)
     {
@@ -607,12 +614,12 @@ function createSingleRoleField(label, role, selectedId, isReadOnly, priorityClas
 /**
  * Create multi-person role field with checkboxes
  */
-function createMultiRoleField(label, role, selectedIds, isReadOnly, priorityClass = '', deleteBtn = '')
+function createMultiRoleField(label, role, selectedIds, isReadOnly, priorityClass = '', deleteBtn = '', isMulti = false)
 {
     // Safety check: ensure selectedIds is always an array
     if (!Array.isArray(selectedIds)) selectedIds = [];
 
-    const iconClass = getRoleIcon(role);
+    const iconClass = getRoleIcon(role, isMulti);
 
     if (isReadOnly)
     {

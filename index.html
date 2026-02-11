@@ -72,16 +72,21 @@
         }
 
         #org-management-table .name-col {
-            width: 35%;
+            width: 25%;
         }
 
         #org-management-table .code-col {
-            width: 35%;
+            width: 25%;
+        }
+
+        #org-management-table .status-col {
+            width: 15%;
+            text-align: center;
         }
 
         /* Widening as requested (3x relative to default narrowness) */
         #org-management-table .actions-col {
-            width: 30%;
+            width: 35%;
         }
 
         #org-management-table input.org-code-input {
@@ -173,6 +178,38 @@
                 <button id="join-org-btn" class="modal-btn" style="margin-top: 10px;">Join Church</button>
                 <div id="join-org-msg" class="feedback-msg" style="margin-top: 10px;"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Disabled Organization Modal -->
+    <div id="disabled-org-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="disabled-org-title">
+        <div class="modal-content" style="text-align: center; max-width: 500px;">
+            <span class="close-modal-btn"
+                onclick="document.getElementById('disabled-org-modal').style.display = 'none';"
+                style="cursor: pointer;">&times;</span>
+            <h2 id="disabled-org-title">Organization Unavailable</h2>
+            <div style="margin: 20px 0;">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="2"
+                    style="margin-bottom: 15px;">
+                    <path
+                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3.05h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z">
+                    </path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <p style="font-size: 16px; margin-bottom: 15px;">
+                The organization <strong class="disabled-org-name"></strong> is currently unavailable.
+            </p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                This organization cannot be accessed due to an unpaid bill. Please contact your church administrator or
+                support to resolve this issue.
+            </p>
+            <button class="modal-btn"
+                onclick="document.getElementById('disabled-org-modal').style.display = 'none'; window.organizationModule.openOrganizationModal();"
+                style="background-color: #4CAF50;">
+                Back to Churches
+            </button>
         </div>
     </div>
 
@@ -479,6 +516,7 @@
                         <tr>
                             <th class="name-col">Church Name</th>
                             <th class="code-col">Signup Code</th>
+                            <th class="status-col">Status</th>
                             <th class="actions-col">Actions</th>
                         </tr>
                     </thead>

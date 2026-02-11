@@ -171,6 +171,24 @@ input[type="text"]#myInput {
     /* A nice orange/amber distinct from add song */
 }
 
+#add-song-to-setlist-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#add-song-to-setlist-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* ===== MODAL STYLES (MOVED FROM INDEX.HTML) ===== */
 .modal {
     display: none;

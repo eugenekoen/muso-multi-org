@@ -638,6 +638,10 @@ document.addEventListener('DOMContentLoaded', () =>
                     await window.keyManagerModule.updateOrganizationCode(orgId, input.value.trim());
                 }
             }
+            else if (target.classList.contains('toggle-org-status-btn'))
+            {
+                await window.keyManagerModule.toggleOrganizationDisableStatus(orgId);
+            }
             else if (target.classList.contains('delete-org-btn'))
             {
                 await window.keyManagerModule.deleteOrganization(orgId);
@@ -753,6 +757,19 @@ document.addEventListener('DOMContentLoaded', () =>
 
     document.getElementById('close-org-modal-btn')?.addEventListener('click', () => organizationModal.style.display = 'none');
     // Removed outside-click closure for organization modal
+
+    // Close disabled org modal when clicking outside
+    const disabledOrgModal = document.getElementById('disabled-org-modal');
+    if (disabledOrgModal)
+    {
+        window.addEventListener('click', (event) =>
+        {
+            if (event.target === disabledOrgModal)
+            {
+                disabledOrgModal.style.display = 'none';
+            }
+        });
+    }
 
     // --- AUTH STATE CHANGE ---
     let lastSessionUserId = null;

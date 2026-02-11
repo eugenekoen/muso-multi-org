@@ -168,7 +168,7 @@ async function initializeOrganizationState(passedUser)
         const orgIds = memberships.map(m => m.organization_id);
         const { data: orgs, error: orgError } = await supabaseClient
             .from('organizations')
-            .select('id, name')
+            .select('id, name, is_disabled')
             .in('id', orgIds);
 
         if (orgError) throw orgError;
@@ -176,7 +176,7 @@ async function initializeOrganizationState(passedUser)
         // Combine
         userMemberships = memberships.map(m => ({
             ...m,
-            organization: orgs.find(o => o.id === m.organization_id) || { name: 'Unknown' }
+            organization: orgs.find(o => o.id === m.organization_id) || { name: 'Unknown', is_disabled: false }
         }));
 
         // UPDATE CACHE
@@ -263,6 +263,13 @@ function setActiveOrganization(organizationId)
         return;
     }
 
+    // Check if organization is disabled
+    if (membership.organization && membership.organization.is_disabled)
+    {
+        showDisabledOrganizationModal(membership.organization.name);
+        return;
+    }
+
     if (window.activeOrganizationId === organizationId) return; // No change
 
     window.activeOrganizationId = organizationId;
@@ -292,6 +299,20 @@ function setActiveOrganization(organizationId)
     // Close the modal
     const orgModal = document.getElementById('organization-modal');
     if (orgModal) orgModal.style.display = 'none';
+}
+
+/**
+ * Show error modal when organization is disabled/unpaid
+ */
+function showDisabledOrganizationModal(organizationName)
+{
+    const modal = document.getElementById('disabled-org-modal');
+    const nameSpan = modal ? modal.querySelector('.disabled-org-name') : null;
+    if (modal && nameSpan)
+    {
+        nameSpan.textContent = organizationName;
+        modal.style.display = 'block';
+    }
 }
 
 /**
@@ -399,6 +420,7 @@ async function joinOrganization()
 window.organizationModule = {
     initializeOrganizationState,
     setActiveOrganization,
+    showDisabledOrganizationModal,
     openOrganizationModal,
     joinOrganization,
     clearOrganizationState

@@ -11,13 +11,13 @@ async function populateKeyManagerModal()
 
     if (!orgTableBody) return;
 
-    orgTableBody.innerHTML = '<tr><td colspan="3">Loading organizations...</td></tr>';
+    orgTableBody.innerHTML = '<tr><td colspan="5">Loading organizations...</td></tr>';
 
     try
     {
         const { data: organizations, error } = await supabaseClient
             .from('organizations')
-            .select('id, name, signup_code')
+            .select('id, name, signup_code, is_disabled')
             .order('name', { ascending: true });
 
         if (error) throw error;
@@ -26,21 +26,30 @@ async function populateKeyManagerModal()
 
         if (!organizations || organizations.length === 0)
         {
-            orgTableBody.innerHTML = '<tr><td colspan="3">No organizations found.</td></tr>';
+            orgTableBody.innerHTML = '<tr><td colspan="5">No organizations found.</td></tr>';
             return;
         }
 
         organizations.forEach(org =>
         {
             const row = orgTableBody.insertRow();
+            const statusText = org.is_disabled ? 'Disabled' : 'Active';
+            const statusColor = org.is_disabled ? '#f44336' : '#4CAF50';
+            const toggleBtnText = org.is_disabled ? 'Enable' : 'Disable';
+            const toggleBtnColor = org.is_disabled ? '#4CAF50' : '#f44336';
+
             row.innerHTML = `
                 <td>${org.name}</td>
                 <td>
                     <input type="text" class="org-code-input" data-org-id="${org.id}" value="${org.signup_code || ''}" style="width: 100%;">
                 </td>
+                <td style="text-align: center;">
+                    <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span>
+                </td>
                 <td style="white-space: nowrap;">
                     <button class="modal-btn update-org-code-btn" data-org-id="${org.id}">Update Code</button>
-                    <button class="modal-btn delete-org-btn" data-org-id="${org.id}" style="background-color: #f44336; margin-left: 5px;">Delete</button>
+                    <button class="modal-btn toggle-org-status-btn" data-org-id="${org.id}" style="background-color: ${toggleBtnColor}; margin-left: 5px;">${toggleBtnText}</button>
+                    <button class="modal-btn delete-org-btn" data-org-id="${org.id}" style="background-color: #999; margin-left: 5px;">Delete</button>
                 </td>
             `;
         });
@@ -116,6 +125,41 @@ async function updateOrganizationCode(orgId, newCode)
     }
 }
 
+async function toggleOrganizationDisableStatus(orgId)
+{
+    const supabaseClient = window.getSupabaseClient();
+
+    try
+    {
+        // First, get the current status
+        const { data: org, error: fetchError } = await supabaseClient
+            .from('organizations')
+            .select('is_disabled')
+            .eq('id', orgId)
+            .maybeSingle();
+
+        if (fetchError) throw fetchError;
+
+        const currentStatus = org?.is_disabled || false;
+        const newStatus = !currentStatus;
+        const action = newStatus ? 'disabled' : 'enabled';
+
+        // Update the status
+        const { error } = await supabaseClient
+            .from('organizations')
+            .update({ is_disabled: newStatus })
+            .eq('id', orgId);
+
+        if (error) throw error;
+        showKeyManagerMessage(`Organization successfully ${action}.`);
+        await populateKeyManagerModal();
+    } catch (error)
+    {
+        console.error("Error toggling organization status:", error);
+        showKeyManagerMessage(`Error: ${error.message}`, true);
+    }
+}
+
 async function deleteOrganization(orgId)
 {
     const supabaseClient = window.getSupabaseClient();
@@ -156,6 +200,7 @@ window.keyManagerModule = {
     populateKeyManagerModal,
     saveNewOrganization,
     updateOrganizationCode,
+    toggleOrganizationDisableStatus,
     deleteOrganization,
     showKeyManagerMessage
 };
