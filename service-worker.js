@@ -3,7 +3,7 @@
  * Caches essential app files for offline access
  */
 
-const CACHE_NAME = 'muso-app-v1';
+const CACHE_NAME = 'muso-app-v2';
 const PRECACHE_ASSETS = [
     '/',
     '/index.html',
@@ -92,7 +92,7 @@ self.addEventListener('fetch', (event) =>
     }
 
     event.respondWith(
-        caches.match(request)
+        caches.match(request, { ignoreSearch: true })
             .then((cachedResponse) =>
             {
                 // Return cached response if available
