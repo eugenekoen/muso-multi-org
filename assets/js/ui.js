@@ -264,6 +264,86 @@ function setupOnlineSearchHandlers()
     }
 }
 
+let lastConnectionStatus = null;
+let isConnectionCheckRunning = false;
+let connectionCheckIntervalId = null;
+
+function showConnectionToast(status)
+{
+    const existing = document.querySelector('.connection-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `connection-toast ${status}`;
+    toast.textContent = status === 'connected' ? 'Connected' : 'Disconnected';
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    setTimeout(() =>
+    {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+
+async function checkDatabaseConnectivity()
+{
+    const supabaseClient = window.getSupabaseClient && window.getSupabaseClient();
+    if (!supabaseClient) return false;
+
+    try
+    {
+        const abortController = new AbortController();
+        const timeoutId = setTimeout(() => abortController.abort(), 3000);
+
+        const { error } = await supabaseClient
+            .from('organizations')
+            .select('id', { count: 'exact', head: true })
+            .limit(1)
+            .abortSignal(abortController.signal);
+
+        clearTimeout(timeoutId);
+        return !error;
+    } catch (e)
+    {
+        return false;
+    }
+}
+
+async function updateConnectionStatus(forceToast = false)
+{
+    if (isConnectionCheckRunning) return;
+    isConnectionCheckRunning = true;
+
+    let nextStatus = 'disconnected';
+    if (navigator.onLine)
+    {
+        const dbOk = await checkDatabaseConnectivity();
+        nextStatus = dbOk ? 'connected' : 'disconnected';
+    }
+
+    if (forceToast || nextStatus !== lastConnectionStatus)
+    {
+        showConnectionToast(nextStatus);
+        lastConnectionStatus = nextStatus;
+    }
+
+    isConnectionCheckRunning = false;
+}
+
+function setupConnectionStatusToast()
+{
+    if (connectionCheckIntervalId) return;
+
+    updateConnectionStatus(true);
+
+    window.addEventListener('online', () => updateConnectionStatus(true));
+    window.addEventListener('offline', () => updateConnectionStatus(true));
+
+    connectionCheckIntervalId = setInterval(() => updateConnectionStatus(false), 60000);
+}
+
 function showUserManagementMessage(message, isError = false)
 {
     const userManagementMsg = document.getElementById('user-management-msg');
@@ -339,6 +419,7 @@ window.uiModule = {
     setupKeyboardNavigation,
     setupSongLinkHandlers,
     setupOnlineSearchHandlers,
+    setupConnectionStatusToast,
     handleSongClick,
     populateUserManagementModal,
     showUserManagementMessage,

@@ -30,6 +30,105 @@
         const SUPABASE_URL = 'https://xikllcuwvyuqcvcjjimw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpa2xsY3V3dnl1cWN2Y2pqaW13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4NjkyMTYsImV4cCI6MjA4NDQ0NTIxNn0.DqAsJ2BXAzwnggId0nMihzfxN9UpslAUQzm-V5sgfWY';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const OFFLINE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+
+        function getSongCacheKey(orgId, songIdentifier)
+        {
+            return `cachedSong_${orgId}_${songIdentifier}`;
+        }
+
+        function readSongCache(orgId, songIdentifier)
+        {
+            if (!orgId || !songIdentifier) return null;
+            const cacheKey = getSongCacheKey(orgId, songIdentifier);
+            const cachedData = localStorage.getItem(cacheKey);
+            if (!cachedData) return null;
+            try
+            {
+                return JSON.parse(cachedData);
+            } catch (e)
+            {
+                console.warn('Invalid cached song data', e);
+                return null;
+            }
+        }
+
+        function writeSongCache(orgId, songIdentifier, displayName, contentType, content, cachedEntry)
+        {
+            if (!orgId || !songIdentifier) return;
+            const now = Date.now();
+            const cachePayload = {
+                songIdentifier: songIdentifier,
+                displayName: displayName || (cachedEntry ? cachedEntry.displayName : ''),
+                chordsContent: cachedEntry?.chordsContent || '',
+                lyricsContent: cachedEntry?.lyricsContent || '',
+                cachedAt: now,
+                expiresAt: now + OFFLINE_CACHE_TTL_MS
+            };
+
+            if (contentType === 'chords')
+            {
+                cachePayload.chordsContent = content || '';
+            } else
+            {
+                cachePayload.lyricsContent = content || '';
+            }
+
+            localStorage.setItem(getSongCacheKey(orgId, songIdentifier), JSON.stringify(cachePayload));
+        }
+
+        function getCachedContent(cachedEntry, contentType)
+        {
+            if (!cachedEntry) return null;
+            return contentType === 'chords' ? cachedEntry.chordsContent : cachedEntry.lyricsContent;
+        }
+
+        function renderSongContent(preElement, songContent, contentType, displayName, targetKey)
+        {
+            document.title = displayName || 'Song';
+
+            let lines = songContent.split('\n');
+
+            let key = 'C';
+            let contentStartIndex = 0;
+
+            for (let i = 0; i < lines.length; i++)
+            {
+                const trimmedLine = lines[i].trim();
+                if (trimmedLine !== '')
+                {
+                    if (/^[A-G][b#]?$/.test(trimmedLine))
+                    {
+                        key = trimmedLine;
+                        contentStartIndex = i + 1;
+                    } else
+                    {
+                        contentStartIndex = i;
+                    }
+                    break;
+                }
+            }
+
+            preElement.textContent = lines.slice(contentStartIndex).join('\n');
+
+            const finalKey = key;
+            preElement.setAttribute('data-key', finalKey);
+
+            $('#songContent').transpose();
+
+            if (contentType === 'chords' && targetKey && targetKey !== key)
+            {
+                const transposeLinks = document.querySelectorAll('.transpose-keys a');
+                for (let link of transposeLinks)
+                {
+                    if (link.textContent.trim() === targetKey)
+                    {
+                        link.click();
+                        break;
+                    }
+                }
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', async function ()
         {
@@ -57,15 +156,22 @@
                 document.head.appendChild(style);
             }
 
+            const cachedEntry = readSongCache(orgId, songIdentifier);
+            const cachedContent = getCachedContent(cachedEntry, contentType);
+            const cacheIsFresh = !!(cachedEntry && cachedEntry.expiresAt && cachedEntry.expiresAt > Date.now());
+
+            if (cacheIsFresh && cachedContent)
+            {
+                renderSongContent(preElement, cachedContent, contentType, cachedEntry.displayName, targetKey);
+                return;
+            }
+
             try
             {
                 const columnName = contentType === 'chords' ? 'chords_content' : 'lyrics_content';
 
-                // --- MODIFICATION: Ensure auth session is ready before querying ---
-                const { data: { session } } = await supabaseClient.auth.getSession();
+                await supabaseClient.auth.getSession();
 
-                // --- MODIFICATION 1: Request 'display_name' along with the content ---
-                // We filter by both song_identifier AND organization_id to ensure we get the correct record
                 const { data, error } = await supabaseClient
                     .from('songs')
                     .select(`${columnName}, display_name`)
@@ -81,63 +187,22 @@
                     return;
                 }
 
-                // --- MODIFICATION 2: Set the document title using the fetched display_name ---
-                // We do this right away, replacing the old title-parsing logic.
-                document.title = data.display_name || "Song";
+                const displayName = data.display_name || 'Song';
+                const songContent = data[columnName];
 
-                let songContent = data[columnName];
-                let lines = songContent.split('\n');
-
-                // This logic now ONLY needs to find the key for the transposer, not the title.
-                let key = "C"; // Default key
-                let contentStartIndex = 0;
-
-                for (let i = 0; i < lines.length; i++)
-                {
-                    const trimmedLine = lines[i].trim();
-                    if (trimmedLine !== '')
-                    {
-                        // Check if the first non-empty line is a key
-                        if (/^[A-G][b#]?$/.test(trimmedLine))
-                        {
-                            key = trimmedLine;
-                            contentStartIndex = i + 1; // Content starts after key
-                        } else
-                        {
-                            // If not a key, this line is the start of the content
-                            contentStartIndex = i;
-                        }
-                        break; // Stop after processing the first non-empty line
-                    }
-                }
-
-                preElement.textContent = lines.slice(contentStartIndex).join('\n');
-
-                const finalKey = key; // Always use original key for initialization
-                preElement.setAttribute('data-key', finalKey);
-
-                // The document title is already set above, so the old line here is removed.
-
-                $('#songContent').transpose();
-
-                // Auto-transpose to target key if specified and different from original
-                if (targetKey && targetKey !== key)
-                {
-                    const transposeLinks = document.querySelectorAll('.transpose-keys a');
-                    for (let link of transposeLinks)
-                    {
-                        if (link.textContent.trim() === targetKey)
-                        {
-                            link.click();
-                            break;
-                        }
-                    }
-                }
+                writeSongCache(orgId, songIdentifier, displayName, contentType, songContent, cachedEntry);
+                renderSongContent(preElement, songContent, contentType, displayName, targetKey);
 
             } catch (err)
             {
-                console.error("Error fetching song content:", err);
-                preElement.textContent = `Error: Failed to load song data. Please check the console for details.`;
+                console.error('Error fetching song content:', err);
+                if (cachedContent)
+                {
+                    renderSongContent(preElement, cachedContent, contentType, cachedEntry.displayName, targetKey);
+                } else
+                {
+                    preElement.textContent = 'Error: Failed to load song data. Please check your connection.';
+                }
             }
         });
     </script>

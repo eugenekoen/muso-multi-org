@@ -5,6 +5,84 @@
 
 let currentSetlist = [];
 const setlistLabel = 'current_weekend';
+const OFFLINE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+let isPrefetchingSetlist = false;
+
+function getSongCacheKey(organizationId, songIdentifier)
+{
+    return `cachedSong_${organizationId}_${songIdentifier}`;
+}
+
+function readSongCache(organizationId, songIdentifier)
+{
+    const cacheKey = getSongCacheKey(organizationId, songIdentifier);
+    const cachedData = localStorage.getItem(cacheKey);
+    if (!cachedData) return null;
+    try
+    {
+        return JSON.parse(cachedData);
+    } catch (e)
+    {
+        console.warn('Invalid cached song data', e);
+        return null;
+    }
+}
+
+async function prefetchSetlistSongs(organizationId)
+{
+    if (!organizationId || !Array.isArray(currentSetlist) || currentSetlist.length === 0) return;
+    if (isPrefetchingSetlist) return;
+
+    const supabaseClient = window.getSupabaseClient();
+    if (!supabaseClient) return;
+
+    const songIdentifiers = [...new Set(currentSetlist
+        .map(item => item?.songName)
+        .filter(Boolean))];
+
+    if (songIdentifiers.length === 0) return;
+
+    const now = Date.now();
+    const identifiersToFetch = songIdentifiers.filter(identifier =>
+    {
+        const cached = readSongCache(organizationId, identifier);
+        return !cached || !cached.expiresAt || cached.expiresAt < now;
+    });
+
+    if (identifiersToFetch.length === 0) return;
+
+    isPrefetchingSetlist = true;
+    try
+    {
+        const { data, error } = await supabaseClient
+            .from('songs')
+            .select('song_identifier, display_name, chords_content, lyrics_content')
+            .eq('organization_id', organizationId)
+            .in('song_identifier', identifiersToFetch);
+
+        if (error) throw error;
+
+        const expiresAt = now + OFFLINE_CACHE_TTL_MS;
+        (data || []).forEach(song =>
+        {
+            const cachePayload = {
+                songIdentifier: song.song_identifier,
+                displayName: song.display_name || '',
+                chordsContent: song.chords_content || '',
+                lyricsContent: song.lyrics_content || '',
+                cachedAt: now,
+                expiresAt: expiresAt
+            };
+            localStorage.setItem(getSongCacheKey(organizationId, song.song_identifier), JSON.stringify(cachePayload));
+        });
+    } catch (e)
+    {
+        console.warn('Setlist prefetch failed. Songs may be unavailable offline.', e);
+    } finally
+    {
+        isPrefetchingSetlist = false;
+    }
+}
 
 async function loadSetlistFromSupabase(organizationId)
 {
@@ -63,6 +141,7 @@ async function loadSetlistFromSupabase(organizationId)
         // If it timed out, don't clear the list if we already have something
     }
     updateTableOneWithSetlist();
+    prefetchSetlistSongs(organizationId);
 }
 
 async function saveSetlistToSupabase()
@@ -92,6 +171,7 @@ async function saveSetlistToSupabase()
 
         if (error) throw error;
         console.log('Setlist saved successfully.');
+        prefetchSetlistSongs(organizationId);
     } catch (error)
     {
         console.error('Error saving setlist:', error);

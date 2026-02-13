@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () =>
     window.uiModule.setupSongLinkHandlers();
     window.uiModule.setupOnlineSearchHandlers();
     window.uiModule.setupLegalHandlers();
+    window.uiModule.setupConnectionStatusToast();
 
     // Data loading (songs, setlists) is now DEFERRED until valid user & org are confirmed.
     // See initializeOrganizationState in organization.js
