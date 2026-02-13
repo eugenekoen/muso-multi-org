@@ -338,7 +338,14 @@ async function updateConnectionStatus(forceToast = false)
             const organizationId = window.activeOrganizationId;
             if (organizationId && window.setlistModule && window.setlistModule.ensureSetlistSongsAreCachedOnline)
             {
-                window.setlistModule.ensureSetlistSongsAreCachedOnline(organizationId);
+                window.setlistModule.ensureSetlistSongsAreCachedOnline(organizationId).then(() =>
+                {
+                    // Verify cache after syncing
+                    if (window.setlistModule.verifySetlistCache)
+                    {
+                        window.setlistModule.verifySetlistCache(organizationId);
+                    }
+                });
             }
         }
     }

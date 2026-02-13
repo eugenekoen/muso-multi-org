@@ -46,10 +46,21 @@ async function prefetchSetlistSongs(organizationId)
     const identifiersToFetch = songIdentifiers.filter(identifier =>
     {
         const cached = readSongCache(organizationId, identifier);
-        return !cached || !cached.expiresAt || cached.expiresAt < now;
+        // Check if cache exists, is not expired, AND has actual content
+        if (!cached || !cached.expiresAt || cached.expiresAt < now) return true;
+        // Verify that at least one content type has actual data
+        const hasContent = (cached.chordsContent && cached.chordsContent.trim().length > 0) ||
+            (cached.lyricsContent && cached.lyricsContent.trim().length > 0);
+        return !hasContent; // Re-fetch if no content found
     });
 
-    if (identifiersToFetch.length === 0) return;
+    if (identifiersToFetch.length === 0)
+    {
+        console.log(`[Prefetch] All ${songIdentifiers.length} songs already cached with content.`);
+        return;
+    }
+
+    console.log(`[Prefetch] Fetching ${identifiersToFetch.length}/${songIdentifiers.length} songs...`);
 
     isPrefetchingSetlist = true;
     try
@@ -74,6 +85,7 @@ async function prefetchSetlistSongs(organizationId)
                 expiresAt: expiresAt
             };
             localStorage.setItem(getSongCacheKey(organizationId, song.song_identifier), JSON.stringify(cachePayload));
+            console.log(`[Prefetch] Cached song: ${song.display_name || song.song_identifier} - Chords: ${(song.chords_content || '').length}b, Lyrics: ${(song.lyrics_content || '').length}b`);
         });
     } catch (e)
     {
@@ -132,6 +144,11 @@ async function ensureSetlistSongsAreCachedOnline(organizationId)
             };
             const cacheKey = getSongCacheKey(organizationId, song.song_identifier);
             localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
+
+            // Detailed logging for verification
+            const chordsSize = (song.chords_content || '').length;
+            const lyricsSize = (song.lyrics_content || '').length;
+            console.log(`[Online Sync] ✓ ${song.display_name || song.song_identifier} - Chords: ${chordsSize}b, Lyrics: ${lyricsSize}b`);
         });
 
         // Log any songs that weren't found in the database
@@ -147,6 +164,69 @@ async function ensureSetlistSongsAreCachedOnline(organizationId)
     {
         console.error('[Online Sync] Failed to ensure setlist songs are cached:', error);
     }
+}
+
+/**
+ * Verifies that all songs in the current setlist are properly cached with content
+ * @param {string} organizationId - The organization ID
+ * @returns {Object} - Status object with summary
+ */
+function verifySetlistCache(organizationId)
+{
+    if (!organizationId || !Array.isArray(currentSetlist) || currentSetlist.length === 0)
+    {
+        return { total: 0, cached: 0, missing: [], incomplete: [] };
+    }
+
+    const songIdentifiers = [...new Set(currentSetlist
+        .map(item => item?.songName)
+        .filter(Boolean))];
+
+    const missing = [];
+    const incomplete = [];
+    let cached = 0;
+
+    songIdentifiers.forEach(identifier =>
+    {
+        const cachedSong = readSongCache(organizationId, identifier);
+
+        if (!cachedSong)
+        {
+            missing.push(identifier);
+            return;
+        }
+
+        const hasChords = cachedSong.chordsContent && cachedSong.chordsContent.trim().length > 0;
+        const hasLyrics = cachedSong.lyricsContent && cachedSong.lyricsContent.trim().length > 0;
+
+        if (!hasChords && !hasLyrics)
+        {
+            incomplete.push({ identifier, reason: 'No content' });
+        } else
+        {
+            cached++;
+        }
+    });
+
+    const status = {
+        total: songIdentifiers.length,
+        cached: cached,
+        missing: missing,
+        incomplete: incomplete
+    };
+
+    console.log(`[Cache Verification] ${cached}/${songIdentifiers.length} songs ready - Missing: ${missing.length}, Incomplete: ${incomplete.length}`);
+
+    if (missing.length > 0)
+    {
+        console.warn('[Cache Verification] Missing songs:', missing);
+    }
+    if (incomplete.length > 0)
+    {
+        console.warn('[Cache Verification] Incomplete songs:', incomplete);
+    }
+
+    return status;
 }
 
 async function loadSetlistFromSupabase(organizationId)
@@ -207,9 +287,21 @@ async function loadSetlistFromSupabase(organizationId)
     }
     updateTableOneWithSetlist();
 
-    // CRITICAL: Await the prefetch so songs are definitely cached by the time this returns
-    // This ensures that if the user goes offline right after loading the app, songs are already cached
-    await prefetchSetlistSongs(organizationId);
+    // CRITICAL: Ensure ALL songs are cached when loading online
+    // Use ensureSetlistSongsAreCachedOnline when online to force-fetch all songs
+    // This guarantees complete caching before the user might go offline
+    if (navigator.onLine)
+    {
+        console.log('[Setlist Load] Online detected - ensuring all songs are cached...');
+        await ensureSetlistSongsAreCachedOnline(organizationId);
+        // Verify cache after ensuring songs are cached
+        verifySetlistCache(organizationId);
+    } else
+    {
+        console.log('[Setlist Load] Offline - using prefetch for any missing songs...');
+        await prefetchSetlistSongs(organizationId);
+        verifySetlistCache(organizationId);
+    }
 }
 
 async function saveSetlistToSupabase()
@@ -321,5 +413,6 @@ window.setlistModule = {
     getCurrentSetlist: () => currentSetlist,
     setCurrentSetlist: (newSetlist) => { currentSetlist = newSetlist; },
     ensureSetlistSongsAreCachedOnline,
-    prefetchSetlistSongs
+    prefetchSetlistSongs,
+    verifySetlistCache
 };
