@@ -58,7 +58,7 @@ span.c {
 .transpose-keys {
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 5px 5px;
+    padding: 5px 8px;
     /* Vertical and horizontal padding */
     margin: 8px 0 8px;
     display: flex;
@@ -175,15 +175,11 @@ span.c {
 }
 
 @media (max-width: 720px) {
-    .song-shell {
-        padding: 5px;
-    }
-
     .song-title {
         font-size: 22px;
     }
 
     #songContent {
-        font-size: 15px;
+        font-size: 13px;
     }
 }
