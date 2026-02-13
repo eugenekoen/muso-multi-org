@@ -1,0 +1,22 @@
+{
+    "name": "Music In His Name",
+    "short_name": "MIHN",
+    "description": "Chord & Setlist Management for Worship Teams",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#f7f4ee",
+    "theme_color": "#1f7a5c",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "/style/images/LOGO.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "/style/images/LOGO.jpg",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
+}

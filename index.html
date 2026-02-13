@@ -33,6 +33,13 @@
     <link rel="stylesheet" href="./style/mainapp.css">
     <link rel="stylesheet" href="./style/jquery.transposer.css">
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1f7a5c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="MIHN">
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -60,6 +67,39 @@
     <script type="text/javascript" src="./assets/js/keyManager.js"></script>
     <script type="text/javascript" src="./assets/js/schedule.js?v=1.2"></script>
     <script type="text/javascript" src="./assets/js/init.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator)
+        {
+            window.addEventListener('load', () =>
+            {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) =>
+                    {
+                        console.log('[App] Service Worker registered successfully:', registration.scope);
+
+                        // Check for updates
+                        registration.addEventListener('updatefound', () =>
+                        {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () =>
+                            {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller)
+                                {
+                                    console.log('[App] New Service Worker available. Page will refresh on next load.');
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) =>
+                    {
+                        console.log('[App] Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
     <style>
         /* Key Manager Specific Styles */
         #org-management-table {

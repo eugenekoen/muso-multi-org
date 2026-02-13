@@ -77,12 +77,7 @@ async function prefetchSetlistSongs(organizationId)
         });
     } catch (e)
     {
-        // Fail silently for prefetch - it's a background operation
-        // Only log errors if in debug mode
-        if (localStorage.getItem('debug_offline') === 'true')
-        {
-            console.warn('Setlist prefetch failed. Songs may be unavailable offline.', e);
-        }
+        console.warn('Setlist prefetch failed. Songs may be unavailable offline.', e);
     } finally
     {
         isPrefetchingSetlist = false;
@@ -93,7 +88,6 @@ async function prefetchSetlistSongs(organizationId)
  * Ensures all songs on the current setlist are properly cached in localStorage.
  * This function force-fetches songs regardless of cache status and is suitable for
  * calling when the user comes back online to guarantee all setlist songs are available offline.
- * Runs silently with minimal logging to avoid user distractions.
  * @param {string} organizationId - The organization ID
  */
 async function ensureSetlistSongsAreCachedOnline(organizationId)
@@ -111,6 +105,8 @@ async function ensureSetlistSongsAreCachedOnline(organizationId)
 
     try
     {
+        console.log(`[Online Sync] Ensuring ${songIdentifiers.length} setlist songs are cached...`);
+
         const { data, error } = await supabaseClient
             .from('songs')
             .select('song_identifier, display_name, chords_content, lyrics_content')
@@ -121,9 +117,11 @@ async function ensureSetlistSongsAreCachedOnline(organizationId)
 
         const now = Date.now();
         const expiresAt = now + OFFLINE_CACHE_TTL_MS;
+        const fetchedSongs = {};
 
         (data || []).forEach(song =>
         {
+            fetchedSongs[song.song_identifier] = true;
             const cachePayload = {
                 songIdentifier: song.song_identifier,
                 displayName: song.display_name || '',
@@ -136,10 +134,18 @@ async function ensureSetlistSongsAreCachedOnline(organizationId)
             localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
         });
 
+        // Log any songs that weren't found in the database
+        const missingSongs = songIdentifiers.filter(id => !fetchedSongs[id]);
+        if (missingSongs.length > 0)
+        {
+            console.warn(`[Online Sync] ${missingSongs.length} songs on setlist not found in database:`, missingSongs);
+        }
+
+        console.log(`[Online Sync] Cache sync complete. ${Object.keys(fetchedSongs).length}/${songIdentifiers.length} songs cached.`);
+
     } catch (error)
     {
-        // Fail silently - cache sync is best-effort and won't interrupt user experience
-        console.error('[Offline Cache] Failed to sync setlist songs (this is OK, cache may be sufficient):', error.message);
+        console.error('[Online Sync] Failed to ensure setlist songs are cached:', error);
     }
 }
 
@@ -163,6 +169,7 @@ async function loadSetlistFromSupabase(organizationId)
     {
         try
         {
+            console.log("Loading setlist from cache...");
             currentSetlist = JSON.parse(cachedData);
             updateTableOneWithSetlist(); // Render immediately
         } catch (e) { console.warn("Invalid cached setlist", e); }
@@ -231,6 +238,7 @@ async function saveSetlistToSupabase()
         }, { onConflict: 'organization_id, label' });
 
         if (error) throw error;
+        console.log('Setlist saved successfully.');
         prefetchSetlistSongs(organizationId);
     } catch (error)
     {
