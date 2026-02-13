@@ -201,7 +201,7 @@ async function initializeOrganizationState(passedUser)
             // Or this is a fresh login with no saved ID.
             if (userMemberships.length === 1)
             {
-                setActiveOrganization(userMemberships[0].organization_id);
+                await setActiveOrganization(userMemberships[0].organization_id);
             } else
             {
                 // But wait, if we are here, it means we fetched memberships successfully.
@@ -213,7 +213,7 @@ async function initializeOrganizationState(passedUser)
                 if (savedOrgId)
                 {
                     window.songsModule.populateSongDatabaseTable(null);
-                    window.setlistModule.loadSetlistFromSupabase(null);
+                    await window.setlistModule.loadSetlistFromSupabase(null);
                 }
             }
         }
@@ -254,7 +254,7 @@ function clearOrganizationState()
  * Sets the active organization and refreshes the app's data.
  * @param {string} organizationId - The UUID of the organization to activate.
  */
-function setActiveOrganization(organizationId)
+async function setActiveOrganization(organizationId)
 {
     const membership = userMemberships.find(m => m.organization_id === organizationId);
     if (!membership)
@@ -293,7 +293,8 @@ function setActiveOrganization(organizationId)
     window.songsModule.populateSongDatabaseTable(organizationId);
     if (window.setlistModule && window.setlistModule.loadSetlistFromSupabase)
     {
-        window.setlistModule.loadSetlistFromSupabase(organizationId);
+        // Await the setlist load to ensure all songs are cached before proceeding
+        await window.setlistModule.loadSetlistFromSupabase(organizationId);
     }
 
     // Close the modal

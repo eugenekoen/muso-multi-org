@@ -782,13 +782,13 @@ document.addEventListener('DOMContentLoaded', () =>
 
     if (organizationList)
     {
-        organizationList.addEventListener('click', (event) =>
+        organizationList.addEventListener('click', async (event) =>
         {
             const target = event.target.closest('.switch-org-btn');
             if (target)
             {
                 const orgId = target.dataset.orgId;
-                window.organizationModule.setActiveOrganization(orgId);
+                await window.organizationModule.setActiveOrganization(orgId);
             }
         });
     }

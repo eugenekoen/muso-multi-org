@@ -323,10 +323,24 @@ async function updateConnectionStatus(forceToast = false)
         nextStatus = dbOk ? 'connected' : 'disconnected';
     }
 
+    const wasOffline = lastConnectionStatus === 'disconnected' || lastConnectionStatus === null;
+    const isNowOnline = nextStatus === 'connected';
+
     if (forceToast || nextStatus !== lastConnectionStatus)
     {
         showConnectionToast(nextStatus);
         lastConnectionStatus = nextStatus;
+
+        // When coming back online, ensure all setlist songs are cached
+        if (wasOffline && isNowOnline)
+        {
+            console.log("[Online Sync] User is back online. Syncing setlist song cache...");
+            const organizationId = window.activeOrganizationId;
+            if (organizationId && window.setlistModule && window.setlistModule.ensureSetlistSongsAreCachedOnline)
+            {
+                window.setlistModule.ensureSetlistSongsAreCachedOnline(organizationId);
+            }
+        }
     }
 
     isConnectionCheckRunning = false;
