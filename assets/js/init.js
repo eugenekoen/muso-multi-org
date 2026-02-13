@@ -718,12 +718,49 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     }
 
-    // Close modals when clicking outside (Only for specific ones like Login/Signup if desired)
+    // --- THEME SETTINGS LISTENERS ---
+    const themeSettingsModal = document.getElementById('theme-settings-modal');
+    const themeSelectMain = document.getElementById('theme-select-main');
+    const settingsBtn = document.getElementById('settings-btn');
+    const closeThemeSettingsBtn = document.getElementById('close-theme-settings-btn');
+
+    document.addEventListener('click', (event) =>
+    {
+        const trigger = event.target.closest('#settings-btn');
+        if (!trigger) return;
+
+        const modal = themeSettingsModal || document.getElementById('theme-settings-modal');
+        if (!modal) return;
+
+        modal.style.display = 'block';
+        const currentTheme = localStorage.getItem('songViewTheme') || 'default';
+        const select = themeSelectMain || document.getElementById('theme-select-main');
+        if (select) select.value = currentTheme;
+    });
+
+    if (closeThemeSettingsBtn && themeSettingsModal)
+    {
+        closeThemeSettingsBtn.addEventListener('click', () =>
+        {
+            themeSettingsModal.style.display = 'none';
+        });
+    }
+
+    if (themeSelectMain)
+    {
+        themeSelectMain.addEventListener('change', (e) =>
+        {
+            const selectedTheme = e.target.value;
+            localStorage.setItem('songViewTheme', selectedTheme);
+        });
+    }
+
+    // Close modals when clicking outside
     window.addEventListener('click', (event) =>
     {
+        if (themeSettingsModal && event.target == themeSettingsModal) themeSettingsModal.style.display = 'none';
         if (event.target == loginModal) loginModal.style.display = 'none';
         if (event.target == signupModal) signupModal.style.display = 'none';
-        // Removed outside-click closure for setlist, user management, and key manager
     });
 
     // --- NEW ORGANIZATION LISTENERS ---

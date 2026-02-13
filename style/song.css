@@ -1,29 +1,68 @@
+:root {
+    --ink-900: #0d1b2a;
+    --ink-700: #22324a;
+    --ink-500: #4b5a73;
+    --paper: #f7f4ee;
+    --surface: #ffffff;
+    --accent: #1f7a5c;
+    --accent-dark: #165f47;
+    --shadow: rgba(13, 27, 42, 0.15);
+    --chord-color: #005A9C;
+}
+
 body {
-    background-color: rgb(180, 235, 180);
-    /* Green background as requested */
-    font-family: 'JetBrains Mono', monospace;
+    background: radial-gradient(1200px 600px at 15% 0%, #e2efe7 0%, #f7f4ee 50%, #f3efe6 100%);
+    font-family: 'Montserrat', sans-serif;
     font-size: 16px;
-    margin: 0 15px;
-    font-weight: 500;
-    color: #333;
+    margin: 0;
+    color: var(--ink-900);
+}
+
+.song-shell {
+    max-width: 100%;
+    background: var(--surface);
+    box-shadow: 0 20px 60px var(--shadow);
+    border: 1px solid rgba(13, 27, 42, 0.08);
+}
+
+.song-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(13, 27, 42, 0.08);
+}
+
+.song-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--ink-900);
+}
+
+.song-meta {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--ink-500);
+    font-weight: 600;
 }
 
 /* Highlighted chord color */
 span.c {
     font-weight: bold;
-    color: #005A9C;
-    /* A deep, professional blue */
+    color: var(--chord-color);
 }
 
 
 .transpose-keys {
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 10px 8px;
+    padding: 5px 5px;
     /* Vertical and horizontal padding */
-    margin: 20px 0;
+    margin: 8px 0 8px;
     display: flex;
-    gap: 6px;
+    gap: 3px;
     /* Space between buttons */
 
     /* --- Core logic for single-row scrolling --- */
@@ -61,15 +100,15 @@ span.c {
     flex-shrink: 0;
 
     /* Smaller button dimensions */
-    width: 2.4em;
-    padding: 7px 0;
+    width: 2em;
+    padding: 5px 0;
     font-size: 11px;
 
     /* Styling from previous version */
-    font-family: sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: bold;
     color: #333;
-    background-color: #fff;
+    background-color: #d7d7d7;
     border: 1px solid #ccc;
     border-radius: 5px;
     text-align: center;
@@ -86,12 +125,24 @@ span.c {
 }
 
 .transpose-keys a.selected {
-    background-color: #007bff;
+    background-color: var(--accent);
     color: #fff;
-    border-color: #0056b3;
+    border-color: var(--accent-dark);
     transform: translateY(1px);
-    /* Pressed effect */
     box-shadow: none;
+}
+
+#songContent {
+    font-family: "Google Sans Code", monospace;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--ink-700);
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 8px 0px;
+    margin: 0;
+    border: 1px solid rgba(13, 27, 42, 0.08);
+    white-space: pre-wrap;
 }
 
 
@@ -101,7 +152,38 @@ span.c {
         display: none;
     }
 
+    .song-toolbar {
+        display: none;
+    }
+
     body {
-        background-color: white;
+        background: white;
+    }
+
+    .song-shell {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #songContent {
+        background: white;
+        border: none;
+        padding: 0;
+    }
+}
+
+@media (max-width: 720px) {
+    .song-shell {
+        padding: 5px;
+    }
+
+    .song-title {
+        font-size: 22px;
+    }
+
+    #songContent {
+        font-size: 15px;
     }
 }
