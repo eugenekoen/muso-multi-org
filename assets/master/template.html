@@ -112,6 +112,8 @@
             setTheme(savedTheme);
         }
 
+        const OFFLINE_CACHE_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+
         function getSongCacheKey(orgId, songIdentifier)
         {
             return `cachedSong_${orgId}_${songIdentifier}`;
