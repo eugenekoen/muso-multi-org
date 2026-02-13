@@ -5,6 +5,78 @@
 
 let allSongsData = [];
 
+// --- Song Cache Helpers ---
+function getSongCacheKey(orgId, songIdentifier)
+{
+    return `cachedSong_${orgId}_${songIdentifier}`;
+}
+
+function readSongCacheLocal(orgId, songIdentifier)
+{
+    if (!orgId || !songIdentifier) return null;
+    const raw = localStorage.getItem(getSongCacheKey(orgId, songIdentifier));
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (e) { return null; }
+}
+
+function isSongContentCached(orgId, songIdentifier, contentType)
+{
+    const cached = readSongCacheLocal(orgId, songIdentifier);
+    if (!cached) return false;
+    if (contentType === 'chords') return !!(cached.chordsContent && cached.chordsContent.trim().length > 0);
+    if (contentType === 'lyrics') return !!(cached.lyricsContent && cached.lyricsContent.trim().length > 0);
+    return false;
+}
+
+/**
+ * Refresh the green/grey cache dots in both the song database table and the setlist table.
+ */
+function updateCacheDots(organizationId)
+{
+    if (!organizationId) return;
+    document.querySelectorAll('.cache-dot').forEach(dot =>
+    {
+        const songId = dot.dataset.songId;
+        const cacheType = dot.dataset.cacheType;
+        if (!songId || !cacheType) return;
+
+        const isCached = isSongContentCached(organizationId, songId, cacheType);
+        if (isCached && !dot.classList.contains('cached'))
+        {
+            dot.classList.add('cached');
+            dot.title = 'Available offline';
+            // Brief pop animation
+            dot.classList.add('cache-dot-pop');
+            setTimeout(() => dot.classList.remove('cache-dot-pop'), 400);
+        } else if (!isCached)
+        {
+            dot.classList.remove('cached');
+            dot.title = 'Not cached for offline';
+        }
+    });
+}
+
+/**
+ * Show a small toast for song caching events.
+ */
+function showSongCacheToast(message)
+{
+    const existing = document.querySelector('.song-cache-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'song-cache-toast';
+    toast.innerHTML = `<i class="fa-solid fa-download" style="margin-right:8px;"></i>${message}`;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() =>
+    {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
 async function populateSongDatabaseTable(organizationId)
 {
     const supabaseClient = window.getSupabaseClient();
@@ -547,5 +619,8 @@ window.songsModule = {
     saveNewSong,
     searchOnlineSongs,
     importSongFromOnline,
-    getAllSongsData: () => allSongsData
+    getAllSongsData: () => allSongsData,
+    updateCacheDots,
+    showSongCacheToast,
+    isSongContentCached
 };

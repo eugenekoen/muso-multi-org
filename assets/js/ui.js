@@ -334,16 +334,20 @@ async function updateConnectionStatus(forceToast = false)
         // When coming back online, ensure all setlist songs are cached
         if (wasOffline && isNowOnline)
         {
-            console.log("[Online Sync] User is back online. Syncing setlist song cache...");
+            console.log("[Online Sync] User is back online. Syncing song cache...");
             const organizationId = window.activeOrganizationId;
             if (organizationId && window.setlistModule && window.setlistModule.ensureSetlistSongsAreCachedOnline)
             {
                 window.setlistModule.ensureSetlistSongsAreCachedOnline(organizationId).then(() =>
                 {
-                    // Verify cache after syncing
                     if (window.setlistModule.verifySetlistCache)
                     {
                         window.setlistModule.verifySetlistCache(organizationId);
+                    }
+                    // Update cache indicator dots
+                    if (window.songsModule && window.songsModule.updateCacheDots)
+                    {
+                        window.songsModule.updateCacheDots(organizationId);
                     }
                 });
             }

@@ -294,13 +294,26 @@ async function loadSetlistFromSupabase(organizationId)
     {
         console.log('[Setlist Load] Online detected - ensuring all songs are cached...');
         await ensureSetlistSongsAreCachedOnline(organizationId);
-        // Verify cache after ensuring songs are cached
         verifySetlistCache(organizationId);
+        // Update cache dots & show toast
+        if (window.songsModule && window.songsModule.updateCacheDots)
+        {
+            window.songsModule.updateCacheDots(organizationId);
+        }
+        const setlistCount = currentSetlist.length;
+        if (setlistCount > 0 && window.songsModule && window.songsModule.showSongCacheToast)
+        {
+            window.songsModule.showSongCacheToast(`${setlistCount} setlist song${setlistCount !== 1 ? 's' : ''} cached for offline`);
+        }
     } else
     {
         console.log('[Setlist Load] Offline - using prefetch for any missing songs...');
         await prefetchSetlistSongs(organizationId);
         verifySetlistCache(organizationId);
+        if (window.songsModule && window.songsModule.updateCacheDots)
+        {
+            window.songsModule.updateCacheDots(organizationId);
+        }
     }
 }
 
@@ -352,16 +365,29 @@ function updateTableOneWithSetlist()
         tableOneBody.innerHTML = `<tr><td colspan="4" class="text-center">${msg}</td></tr>`;
         return;
     }
+    const orgId = window.activeOrganizationId;
+    const canCheckCache = !!(orgId && window.songsModule && window.songsModule.isSongContentCached);
+
     currentSetlist.forEach(item =>
     {
         const { songName, displayName = 'Unknown Song', key = '?' } = item || {};
         if (!songName) return;
+
+        const hasChordsCache = canCheckCache && window.songsModule.isSongContentCached(orgId, songName, 'chords');
+        const hasLyricsCache = canCheckCache && window.songsModule.isSongContentCached(orgId, songName, 'lyrics');
+
         const row = tableOneBody.insertRow();
         row.innerHTML = `
             <td>${displayName}</td>
             <td class="text-center selected-key">${key}</td>
-            <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a></td>
-            <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="lyrics" title="Lyrics"><i class="fa-solid fa-align-left"></i></a></td>
+            <td class="text-center">
+                <a href="#" data-song-identifier="${songName}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a>
+                <span class="cache-dot ${hasChordsCache ? 'cached' : ''}" data-cache-type="chords" data-song-id="${songName}" title="${hasChordsCache ? 'Available offline' : 'Not cached for offline'}"></span>
+            </td>
+            <td class="text-center">
+                <a href="#" data-song-identifier="${songName}" data-content-type="lyrics" title="Lyrics"><i class="fa-solid fa-align-left"></i></a>
+                <span class="cache-dot ${hasLyricsCache ? 'cached' : ''}" data-cache-type="lyrics" data-song-id="${songName}" title="${hasLyricsCache ? 'Available offline' : 'Not cached for offline'}"></span>
+            </td>
         `;
     });
 }

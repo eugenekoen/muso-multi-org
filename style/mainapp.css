@@ -1590,3 +1590,65 @@ body:not(.logged-in) #logout-btn {
 .connection-toast.disconnected {
     background: rgba(231, 76, 60, 0.9);
 }
+
+/* ===== SONG CACHE INDICATOR DOTS ===== */
+.cache-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #555;
+    margin-left: 5px;
+    vertical-align: middle;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0.5;
+}
+
+.cache-dot.cached {
+    background: #4CAF50;
+    box-shadow: 0 0 6px rgba(76, 175, 80, 0.6);
+    opacity: 1;
+}
+
+.cache-dot-pop {
+    animation: cacheDotPop 0.4s ease;
+}
+
+@keyframes cacheDotPop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(2.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Song Cache Toast */
+.song-cache-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    padding: 14px 24px;
+    background: rgba(46, 204, 113, 0.92);
+    backdrop-filter: blur(10px);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.song-cache-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
