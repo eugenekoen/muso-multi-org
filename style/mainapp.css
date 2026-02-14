@@ -377,11 +377,21 @@ input[type="text"]#myInput {
 /* Edit/Add Song Modals */
 #edit-song-modal textarea,
 #add-song-modal textarea {
-    width: 100%;
+    width: calc(50ch + 22px);
+    /* Exactly 50 monospace chars + padding + border */
+    max-width: 100%;
+    /* Prevent overflow on small screens */
     height: 25vh;
     font-family: monospace;
     font-size: 14px;
     line-height: 1.5;
+    resize: vertical;
+    /* Allow height resize only, lock width */
+    white-space: pre-wrap;
+    /* Preserve line breaks and wrap */
+    overflow-wrap: normal;
+    /* Don't break words mid-character */
+    word-break: normal;
 }
 
 #edit-song-modal .modal-footer,
@@ -403,15 +413,18 @@ input[type="text"]#myInput {
     /* Grid container for the textarea sections */
     #edit-song-modal .textarea-row,
     #add-song-modal .textarea-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-wrap: wrap;
         gap: 20px;
+        justify-content: center;
     }
 
     /* Make textareas taller on desktop since they're now side-by-side */
     #edit-song-modal textarea,
     #add-song-modal textarea {
         height: 45vh;
+        width: calc(50ch + 22px);
+        /* Exactly 50 monospace chars */
     }
 }
 

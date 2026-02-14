@@ -5,6 +5,109 @@
 
 let allSongsData = [];
 
+// --- Line Length Enforcement (50 characters max) ---
+function enforce50CharLineLimit(textarea)
+{
+    const maxLineLength = 50;
+    const cursorPos = textarea.selectionStart;
+    const text = textarea.value;
+    const lines = text.split('\n');
+    let wrappedLines = [];
+    let cursorOffset = 0;
+    let newCursorPos = cursorPos;
+
+    for (let i = 0; i < lines.length; i++)
+    {
+        const line = lines[i];
+        const lineStartPos = text.indexOf(line, cursorOffset);
+
+        if (line.length <= maxLineLength)
+        {
+            wrappedLines.push(line);
+            cursorOffset = lineStartPos + line.length + 1; // +1 for newline
+        }
+        else
+        {
+            // Line is too long, need to wrap it
+            let remaining = line;
+            let isFirstChunk = true;
+
+            while (remaining.length > maxLineLength)
+            {
+                let breakPoint = maxLineLength;
+                const chunk = remaining.substring(0, maxLineLength);
+                const lastSpace = chunk.lastIndexOf(' ');
+
+                // Break at last space if it exists and is not at position 0
+                if (lastSpace > 0 && lastSpace < maxLineLength)
+                {
+                    breakPoint = lastSpace;
+                }
+
+                wrappedLines.push(remaining.substring(0, breakPoint));
+                remaining = remaining.substring(breakPoint).trimStart();
+
+                // Adjust cursor position if it was in this line
+                if (cursorPos > lineStartPos && cursorPos <= lineStartPos + line.length)
+                {
+                    const relativeCursorPos = cursorPos - lineStartPos;
+                    if (relativeCursorPos <= breakPoint)
+                    {
+                        // Cursor is in the current chunk, keep position
+                        if (isFirstChunk)
+                        {
+                            newCursorPos = wrappedLines.join('\n').length - wrappedLines[wrappedLines.length - 1].length + relativeCursorPos;
+                        }
+                    }
+                    else
+                    {
+                        // Cursor is after the break, adjust for the added newline
+                        newCursorPos += isFirstChunk ? 1 : 0;
+                    }
+                }
+
+                isFirstChunk = false;
+                cursorOffset = lineStartPos + line.length - remaining.length;
+            }
+
+            // Add the remaining part
+            if (remaining.length > 0)
+            {
+                wrappedLines.push(remaining);
+            }
+
+            cursorOffset = lineStartPos + line.length + 1;
+        }
+    }
+
+    const newText = wrappedLines.join('\n');
+    if (text !== newText)
+    {
+        textarea.value = newText;
+        // Restore cursor position (approximation)
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }
+}
+
+function attach50CharLimitTo(textarea)
+{
+    if (!textarea) return;
+
+    // Remove existing listener if any
+    textarea.removeEventListener('input', textarea._enforce50CharHandler);
+
+    // Create and store the handler
+    textarea._enforce50CharHandler = function ()
+    {
+        enforce50CharLineLimit(textarea);
+    };
+
+    textarea.addEventListener('input', textarea._enforce50CharHandler);
+
+    // Also enforce on initial load/paste
+    enforce50CharLineLimit(textarea);
+}
+
 // --- Song Cache Helpers ---
 function getSongCacheKey(orgId, songIdentifier)
 {
@@ -236,6 +339,10 @@ async function openEditModal(songIdentifier, displayName)
     editSongModal.style.display = 'block';
     saveSongBtn.dataset.songIdentifier = songIdentifier;
 
+    // Attach 50-character line limit enforcement
+    attach50CharLimitTo(editSongTextarea);
+    attach50CharLimitTo(editSongLyricsTextarea);
+
     // Reset delete button state and visibility based on role
     if (deleteSongBtn)
     {
@@ -415,6 +522,10 @@ PASTE SONG HERE (with 2 spacings on left)
     if (newSongShared) newSongShared.value = 'false';
     addSongModal.style.display = 'block';
     newSongDisplayNameInput.focus();
+
+    // Attach 50-character line limit enforcement
+    attach50CharLimitTo(newSongChordsTextarea);
+    attach50CharLimitTo(newSongLyricsTextarea);
 }
 
 async function saveNewSong(organizationId)
