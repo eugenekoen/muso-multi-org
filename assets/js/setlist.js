@@ -5,7 +5,6 @@
 
 let currentSetlist = [];
 const setlistLabel = 'current_weekend';
-const OFFLINE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 let isPrefetchingSetlist = false;
 
 function getSongCacheKey(organizationId, songIdentifier)
