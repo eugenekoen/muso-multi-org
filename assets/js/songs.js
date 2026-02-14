@@ -4,6 +4,7 @@
  */
 
 let allSongsData = [];
+const OFFLINE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 
 // --- Line Length Enforcement (50 characters max) ---
 function enforce50CharLineLimit(textarea)
@@ -129,6 +130,21 @@ function isSongContentCached(orgId, songIdentifier, contentType)
     if (contentType === 'chords') return !!(cached.chordsContent && cached.chordsContent.trim().length > 0);
     if (contentType === 'lyrics') return !!(cached.lyricsContent && cached.lyricsContent.trim().length > 0);
     return false;
+}
+
+function writeSongCacheLocal(orgId, songIdentifier, displayName, chordsContent, lyricsContent)
+{
+    if (!orgId || !songIdentifier) return;
+    const now = Date.now();
+    const cachePayload = {
+        songIdentifier: songIdentifier,
+        displayName: displayName || '',
+        chordsContent: chordsContent || '',
+        lyricsContent: lyricsContent || '',
+        cachedAt: now,
+        expiresAt: now + OFFLINE_CACHE_TTL_MS
+    };
+    localStorage.setItem(getSongCacheKey(orgId, songIdentifier), JSON.stringify(cachePayload));
 }
 
 /**
@@ -409,6 +425,13 @@ async function saveSongChanges()
             .eq('song_identifier', songIdentifier)
             .eq('organization_id', orgId);
         if (error) throw error;
+        const editSongTitle = document.getElementById('edit-song-title');
+        const displayName = editSongTitle ? editSongTitle.textContent.replace('Edit Song: ', '') : '';
+        writeSongCacheLocal(orgId, songIdentifier, displayName, newChordsContent, newLyricsContent);
+        if (window.songsModule && window.songsModule.updateCacheDots)
+        {
+            window.songsModule.updateCacheDots(orgId);
+        }
         editSongMsg.textContent = 'Saved successfully!';
         editSongMsg.style.color = 'green';
         setTimeout(() => { editSongModal.style.display = 'none'; }, 1500);
