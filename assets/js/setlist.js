@@ -46,6 +46,7 @@ async function prefetchSetlistSongs(organizationId)
     const identifiersToFetch = songIdentifiers;
 
     isPrefetchingSetlist = true;
+    const now = Date.now();
     try
     {
         const { data, error } = await supabaseClient
@@ -69,6 +70,9 @@ async function prefetchSetlistSongs(organizationId)
             };
             localStorage.setItem(getSongCacheKey(organizationId, song.song_identifier), JSON.stringify(cachePayload));
         });
+
+        // Re-render setlist table to show cached badges
+        updateTableOneWithSetlist();
     } catch (e)
     {
         console.warn('Setlist prefetch failed. Songs may be unavailable offline.', e);
