@@ -3,7 +3,7 @@
  * Caches app shell files for offline use.
  */
 
-const CACHE_NAME = 'mihn-app-v1';
+const CACHE_NAME = 'mihn-app-v2';
 
 const APP_SHELL_FILES = [
     '/',
@@ -92,7 +92,7 @@ self.addEventListener('fetch', (event) =>
 
     // For all other requests: try cache first, then network
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) =>
+        caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) =>
         {
             if (cachedResponse)
             {
@@ -101,9 +101,9 @@ self.addEventListener('fetch', (event) =>
 
             return fetch(event.request).then((networkResponse) =>
             {
-                // Optionally cache new resources we haven't seen before
-                // (e.g. font files loaded by CSS)
-                if (networkResponse && networkResponse.status === 200)
+                // Cache new same-origin resources we haven't seen before
+                if (networkResponse && networkResponse.status === 200
+                    && url.origin === self.location.origin)
                 {
                     const responseClone = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) =>

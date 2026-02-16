@@ -42,14 +42,8 @@ async function prefetchSetlistSongs(organizationId)
 
     if (songIdentifiers.length === 0) return;
 
-    const now = Date.now();
-    const identifiersToFetch = songIdentifiers.filter(identifier =>
-    {
-        const cached = readSongCache(organizationId, identifier);
-        return !cached || !cached.expiresAt || cached.expiresAt < now;
-    });
-
-    if (identifiersToFetch.length === 0) return;
+    // Always re-fetch all setlist songs when online to ensure fresh cache
+    const identifiersToFetch = songIdentifiers;
 
     isPrefetchingSetlist = true;
     try
