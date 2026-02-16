@@ -156,6 +156,12 @@ async function updateAuthState(user)
 
     document.body.classList.toggle('logged-in', !!user);
 
+    // Toggle between landing page and dashboard
+    if (window.toggleAppView)
+    {
+        window.toggleAppView(!!user);
+    }
+
     if (user)
     {
         loginModalBtn.style.display = 'none';

@@ -282,6 +282,12 @@ function setActiveOrganization(organizationId)
         churchNameDisplay.textContent = `Church: ${membership.organization.name}`;
     }
 
+    // Update navigation bar with organization and role info
+    if (window.updateNavInfo)
+    {
+        window.updateNavInfo(membership.organization.name, membership.role);
+    }
+
     // Refresh User Role for this new Org (Pass Known Role!)
     if (window.authModule && window.authModule.refreshUserRole)
     {

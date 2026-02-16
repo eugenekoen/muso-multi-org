@@ -123,18 +123,203 @@
 </head>
 
 <body>
+    <!-- Modern Navigation Bar -->
     <div id="navigation">
-        <div id="textdiv">
-            TURNING POINT MUSOS
+        <div class="nav-container">
+            <a href="#" class="nav-brand">
+                <img src="./style/images/LOGO.svg" alt="Music In His Name Logo">
+                <div class="nav-brand-text">
+                    <span class="nav-brand-title">Music In His Name</span>
+                    <span class="nav-brand-subtitle">Worship Management</span>
+                </div>
+            </a>
+            <div class="nav-user-section">
+                <div class="user-info">
+                    <span class="user-org-name" id="nav-org-name">Loading...</span>
+                    <span class="user-role" id="nav-user-role">Member</span>
+                </div>
+            </div>
+        </div>
+        <div id="textdiv">TURNING POINT MUSOS</div>
+    </div>
+
+    <!-- Landing Page Hero (Visible when logged out) -->
+    <div id="landing-page" style="display: none;">
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-music"></i>
+                    Trusted by Worship Teams Worldwide
+                </div>
+                <h1 class="hero-title">Worship Made <span class="gradient-text">Simple</span></h1>
+                <p class="hero-subtitle">The complete platform for managing chords, setlists, and schedules. Built for
+                    worship leaders who want to focus on what matters most.</p>
+                <div class="hero-cta">
+                    <button id="hero-signup-btn" class="btn-primary-large">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Register
+                    </button>
+                    <button id="hero-login-btn" class="btn-secondary-large">
+                        <i class="fa-solid fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="features-container">
+                <h2 class="section-title">Everything Your Team Needs</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa-solid fa-guitar"></i>
+                        </div>
+                        <h3>Instant Transposition</h3>
+                        <p>Change keys on the fly with one click. Never waste time rewriting chord charts again.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"
+                            style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <h3>Setlist Management</h3>
+                        <p>Organize your weekend services with drag-and-drop simplicity. Share with your entire team
+                            instantly.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"
+                            style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <h3>Team Collaboration</h3>
+                        <p>Multiple churches, unlimited members. Role-based permissions keep everything organized.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"
+                            style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <h3>Schedule Planning</h3>
+                        <p>Plan services months in advance. Automated reminders keep your team informed.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Dashboard (Visible when logged in) -->
+    <div id="dashboard" style="display: none;">
+        <div class="dashboard-container">
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Quick Actions</h3>
+                    <button id="manage-setlist-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Manage Setlist</span>
+                    </button>
+                    <button id="add-song-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add New Song</span>
+                    </button>
+                    <button id="search-online-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Search Online</span>
+                    </button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Team Management</h3>
+                    <button id="schedule-manager-btn" class="sidebar-btn team-management-btn" style="display: none;">
+                        <i class="fa-solid fa-calendar"></i>
+                        <span>Schedule Manager</span>
+                    </button>
+                    <button id="view-schedule-btn" class="sidebar-btn team-management-btn" style="display: none;">
+                        <i class="fa-solid fa-calendar-day"></i>
+                        <span>View Schedule</span>
+                    </button>
+                    <button id="user-management-btn" class="sidebar-btn team-management-btn" style="display: none;">
+                        <i class="fa-solid fa-user-gear"></i>
+                        <span>User Management</span>
+                    </button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Settings</h3>
+                    <button id="switch-church-btn" class="sidebar-btn settings-btn" style="display: none;">
+                        <i class="fa-solid fa-church"></i>
+                        <span>Switch Church</span>
+                    </button>
+                    <button id="key-manager-btn" class="sidebar-btn settings-btn" style="display: none;">
+                        <i class="fa-solid fa-key"></i>
+                        <span>Key Manager</span>
+                    </button>
+                    <button id="logout-btn" class="sidebar-btn btn-danger" style="display: none;">
+                        <i class="fa-solid fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            <main class="dashboard-main">
+                <div id="dashboard-welcome" class="welcome-section">
+                    <h1 class="dashboard-title">Welcome Back! 👋</h1>
+                    <p class="dashboard-subtitle">Here's your song library and setlists</p>
+                </div>
+
+                <div class="dashboard-content">
+                    <!-- Table One (Setlist) -->
+                    <div style="margin-bottom: var(--spacing-xl);">
+                        <table id="tableone">
+                            <caption>SONG LIST (This Weekend's Setlist)</caption>
+                            <thead>
+                                <tr>
+                                    <td>NAME OF SONG</td>
+                                    <td>KEY</td>
+                                    <td class="text-center"><i class="fa-solid fa-music" title="Chords"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-bars" title="Lyrics"></i></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="text-center">Loading setlist...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Table Two (Song Database) -->
+                    <div>
+                        <input id="myInput" onkeyup="myFunction()" placeholder="Search for a song name" type="text">
+                        <table id="tabletwo">
+                            <caption>SONG DATABASE</caption>
+                            <thead>
+                                <tr>
+                                    <td>NAME OF SONG</td>
+                                    <td class="edit-col">EDIT</td>
+                                    <td class="text-center"><i class="fa-solid fa-music" title="Chords"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-bars" title="Lyrics"></i></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="text-center">Loading song database...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <div id="setlist-management-container">
-        <!-- New Sign Up Button -->
+    <!-- OLD buttons container - hidden but kept for any legacy code -->
+    <div id="setlist-management-container" style="display: none;">
         <button id="signup-modal-btn" aria-label="Open sign up dialog">Sign Up</button>
+        <button id="login-modal-btn" aria-label="Open login dialog">Login</button>
         <button id="switch-church-btn" style="display: none;" aria-label="Switch or Join Church">Switch/Join
             Church</button>
-        <button id="login-modal-btn" aria-label="Open login dialog">Login</button>
         <button id="manage-setlist-btn" style="display: none;" aria-label="Manage weekend setlist">Manage
             Setlist</button>
         <button id="add-song-btn" style="display: none;" aria-label="Add a new song to database">Add New Song</button>
@@ -146,8 +331,7 @@
             Manager</button>
         <button id="schedule-manager-btn" style="display: none;" aria-label="Manage team schedules">Schedule
             Manager</button>
-        <button id="view-schedule-btn" style="display: none;" aria-label="View service schedules">View
-            Schedule</button>
+        <button id="view-schedule-btn" style="display: none;" aria-label="View service schedules">View Schedule</button>
         <button id="logout-btn" style="display: none;" aria-label="Log out of account">Logout</button>
     </div>
 
@@ -441,46 +625,7 @@
         </div>
     </div>
 
-    <!-- Table One (Setlist) -->
-    <div>
-        <table id="tableone">
-            <caption>SONG LIST (This Weekend's Setlist)</caption>
-            <thead>
-                <tr>
-                    <td>NAME OF SONG</td>
-                    <td>KEY</td>
-                    <td class="text-center"><i class="fa-solid fa-music" title="Chords"></i></td>
-                    <td class="text-center"><i class="fa-solid fa-bars" title="Lyrics"></i></td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="4" class="text-center">Loading setlist...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 
-    <!-- Table Two (Song Database) -->
-    <div>
-        <input id="myInput" onkeyup="myFunction()" placeholder="Search for a song name" type="text">
-        <table id="tabletwo">
-            <caption>SONG DATABASE</caption>
-            <thead>
-                <tr>
-                    <td>NAME OF SONG</td>
-                    <td class="edit-col">EDIT</td>
-                    <td class="text-center"><i class="fa-solid fa-music" title="Chords"></i></td>
-                    <td class="text-center"><i class="fa-solid fa-bars" title="Lyrics"></i></td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="4" class="text-center">Loading song database...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 
     <!-- Key Manager Modal -->
     <div id="key-manager-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="key-manager-title">

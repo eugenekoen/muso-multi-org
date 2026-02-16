@@ -12,6 +12,58 @@ document.addEventListener('DOMContentLoaded', () =>
         return;
     }
 
+    // Landing Page and Dashboard Elements
+    const landingPage = document.getElementById('landing-page');
+    const dashboard = document.getElementById('dashboard');
+    const heroSignupBtn = document.getElementById('hero-signup-btn');
+    const heroLoginBtn = document.getElementById('hero-login-btn');
+    const navOrgName = document.getElementById('nav-org-name');
+    const navUserRole = document.getElementById('nav-user-role');
+
+    // Initialize - show landing page by default
+    landingPage.style.display = 'block';
+    dashboard.style.display = 'none';
+
+    // Hero button click handlers
+    if (heroSignupBtn)
+    {
+        heroSignupBtn.addEventListener('click', () =>
+        {
+            document.getElementById('signup-modal-btn').click();
+        });
+    }
+
+    if (heroLoginBtn)
+    {
+        heroLoginBtn.addEventListener('click', () =>
+        {
+            document.getElementById('login-modal-btn').click();
+        });
+    }
+
+    // Function to toggle between landing page and dashboard
+    window.toggleAppView = function (isLoggedIn)
+    {
+        if (isLoggedIn)
+        {
+            landingPage.style.display = 'none';
+            dashboard.style.display = 'block';
+            document.body.classList.add('logged-in');
+        } else
+        {
+            landingPage.style.display = 'block';
+            dashboard.style.display = 'none';
+            document.body.classList.remove('logged-in');
+        }
+    };
+
+    // Function to update nav bar info
+    window.updateNavInfo = function (orgName, roleName)
+    {
+        if (navOrgName) navOrgName.textContent = orgName || 'No Church Selected';
+        if (navUserRole) navUserRole.textContent = roleName || 'Member';
+    };
+
     // Initialize modules
     window.uiModule.setupKeyboardNavigation();
     window.uiModule.setupSongLinkHandlers();
