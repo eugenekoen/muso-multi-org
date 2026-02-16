@@ -315,9 +315,12 @@ document.addEventListener('DOMContentLoaded', () =>
         // This function is now simpler and doesn't need an org code
         const { data, error } = await window.authModule.signUpUser(name, email, password);
 
+        console.log('Signup result:', { hasData: !!data, hasError: !!error, errorMsg: error?.message });
+
         if (error)
         {
             signupMsg.textContent = error.message;
+            signupMsg.style.color = 'red';
         } else
         {
             // Check if user needs to confirm email or was auto-confirmed
@@ -332,6 +335,7 @@ document.addEventListener('DOMContentLoaded', () =>
             }
 
             signupMsg.classList.add('success');
+            signupMsg.style.color = 'green';
             signupNameInput.value = '';
             signupEmailInput.value = '';
             signupPasswordInput.value = '';
@@ -794,6 +798,27 @@ document.addEventListener('DOMContentLoaded', () =>
         {
             console.log('Password recovery mode detected.');
             resetPasswordModal.style.display = 'block';
+        }
+
+        // Handle email confirmation - prevent auto-login
+        if (event === 'SIGNED_IN')
+        {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('confirmed') === 'true')
+            {
+                console.log('Email confirmed - signing out and redirecting to login');
+                // Sign out immediately to prevent auto-login
+                await supabaseClient.auth.signOut();
+                // Clear the URL parameter
+                window.history.replaceState({}, document.title, window.location.pathname);
+                // Show login modal
+                loginModal.style.display = 'block';
+                // Show a success message
+                loginMsg.textContent = 'Email confirmed! Please log in with your credentials.';
+                loginMsg.style.color = 'green';
+                loginMsg.classList.add('success');
+                return; // Don't proceed with normal sign-in flow
+            }
         }
 
         // Optimization: duplicate events often fire (INITIAL_SESSION then SIGNED_IN)

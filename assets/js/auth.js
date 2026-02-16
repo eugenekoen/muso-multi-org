@@ -62,21 +62,42 @@ async function signUpUser(name, email, password)
 {
     const supabaseClient = window.getSupabaseClient();
 
-    // 1. Sign up the user in Auth
+    // Sign up the user in Auth
+    // Note: Supabase will return the user with an empty identities array if email already exists
     const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
         options: {
-            emailRedirectTo: 'https://mihn.co.za/',
+            emailRedirectTo: 'https://mihn.co.za/?confirmed=true',
             data: {
                 full_name: name
             }
         }
     });
 
-    console.log('signUpUser: auth signup response', { userId: data?.user?.id, hasSession: !!data?.session, authError: error });
+    console.log('signUpUser: auth signup response', {
+        userId: data?.user?.id,
+        hasSession: !!data?.session,
+        identitiesLength: data?.user?.identities?.length,
+        authError: error
+    });
 
-    // 2. If signup was successful, attempt to create the profile row via server RPC.
+    // Check if user already exists (Supabase returns user with identities array empty if email taken)
+    // This happens when email confirmation is enabled and email already exists
+    if (data?.user && !error)
+    {
+        if (!data.user.identities || data.user.identities.length === 0)
+        {
+            console.log('Email already registered - identities array is empty');
+            // Email already registered
+            return {
+                data: null,
+                error: { message: 'Email is already registered. Please log in instead.' }
+            };
+        }
+    }
+
+    // If signup was successful, attempt to create the profile row via server RPC.
     // The RPC runs as security-definer (postgres owner) so it can bypass RLS
     // and create the profile even if we don't have an active session yet.
     if (data.user && !error)
