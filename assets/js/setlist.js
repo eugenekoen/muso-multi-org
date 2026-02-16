@@ -5,7 +5,7 @@
 
 let currentSetlist = [];
 const setlistLabel = 'current_weekend';
-const OFFLINE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+const OFFLINE_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
 let isPrefetchingSetlist = false;
 
 function getSongCacheKey(organizationId, songIdentifier)
@@ -192,16 +192,35 @@ function updateTableOneWithSetlist()
         tableOneBody.innerHTML = `<tr><td colspan="4" class="text-center">${msg}</td></tr>`;
         return;
     }
+    const orgId = window.activeOrganizationId;
     currentSetlist.forEach(item =>
     {
         const { songName, displayName = 'Unknown Song', key = '?' } = item || {};
         if (!songName) return;
+
+        // Check if this song has fresh cache
+        let chordsBadge = '';
+        let lyricsBadge = '';
+        if (orgId)
+        {
+            const cached = readSongCache(orgId, songName);
+            const isFresh = cached && cached.expiresAt && cached.expiresAt > Date.now();
+            if (isFresh && cached.chordsContent)
+            {
+                chordsBadge = ' <i class="fa-solid fa-circle cached-badge" title="Available offline"></i>';
+            }
+            if (isFresh && cached.lyricsContent)
+            {
+                lyricsBadge = ' <i class="fa-solid fa-circle cached-badge" title="Available offline"></i>';
+            }
+        }
+
         const row = tableOneBody.insertRow();
         row.innerHTML = `
             <td>${displayName}</td>
             <td class="text-center selected-key">${key}</td>
-            <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a></td>
-            <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="lyrics" title="Lyrics"><i class="fa-solid fa-align-left"></i></a></td>
+            <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a>${chordsBadge}</td>
+            <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="lyrics" title="Lyrics"><i class="fa-solid fa-align-left"></i></a>${lyricsBadge}</td>
         `;
     });
 }
@@ -251,5 +270,8 @@ window.setlistModule = {
     renderSetlistUI,
     addSongToSetlist,
     getCurrentSetlist: () => currentSetlist,
-    setCurrentSetlist: (newSetlist) => { currentSetlist = newSetlist; }
+    setCurrentSetlist: (newSetlist) => { currentSetlist = newSetlist; },
+    getSongCacheKey,
+    readSongCache,
+    OFFLINE_CACHE_TTL_MS
 };

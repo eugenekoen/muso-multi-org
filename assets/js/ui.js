@@ -85,6 +85,21 @@ async function handleSongClick(event, linkElement)
     const contentType = linkElement.dataset.contentType;
     if (!songIdentifier || !contentType) return;
 
+    // Offline guard — prevent navigating to songs that aren't cached
+    if (!navigator.onLine && window.setlistModule && window.activeOrganizationId)
+    {
+        const cached = window.setlistModule.readSongCache(window.activeOrganizationId, songIdentifier);
+        const hasCachedContent = cached && cached.expiresAt && cached.expiresAt > Date.now()
+            && (contentType === 'chords' ? cached.chordsContent : cached.lyricsContent);
+
+        if (!hasCachedContent)
+        {
+            showConnectionToast('disconnected');
+            alert('This song is not available offline. Only setlist songs are cached for offline use.');
+            return;
+        }
+    }
+
     const templateURL = "./assets/master/template.html";
     let targetURL = `${templateURL}?song=${encodeURIComponent(songIdentifier)}&contentType=${encodeURIComponent(contentType)}&org=${encodeURIComponent(window.activeOrganizationId)}`;
 

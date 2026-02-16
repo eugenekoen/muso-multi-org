@@ -232,6 +232,34 @@ async function saveSongChanges()
         if (error) throw error;
         editSongMsg.textContent = 'Saved successfully!';
         editSongMsg.style.color = 'green';
+
+        // Update offline cache if this song is on the setlist
+        if (window.setlistModule && orgId)
+        {
+            const currentSetlist = window.setlistModule.getCurrentSetlist();
+            const isOnSetlist = currentSetlist.some(item => item.songName === songIdentifier);
+            if (isOnSetlist)
+            {
+                const TTL = window.setlistModule.OFFLINE_CACHE_TTL_MS || (4 * 60 * 60 * 1000);
+                const cacheKey = window.setlistModule.getSongCacheKey(orgId, songIdentifier);
+                const existing = window.setlistModule.readSongCache(orgId, songIdentifier);
+                const now = Date.now();
+                const cachePayload = {
+                    songIdentifier: songIdentifier,
+                    displayName: existing ? existing.displayName : '',
+                    chordsContent: newChordsContent,
+                    lyricsContent: newLyricsContent,
+                    cachedAt: now,
+                    expiresAt: now + TTL
+                };
+                localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
+                console.log('Offline cache updated for setlist song:', songIdentifier);
+
+                // Refresh setlist table to update cached badges
+                window.setlistModule.updateTableOneWithSetlist();
+            }
+        }
+
         setTimeout(() => { editSongModal.style.display = 'none'; }, 1500);
     } catch (error)
     {

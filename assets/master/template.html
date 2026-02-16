@@ -18,6 +18,18 @@
     <script type="text/javascript" src="../jquery/jquery.min.js"></script>
     <script type="text/javascript" src="../jquery/jquery.transposer.js"></script>
     <title>Song</title>
+    <script>
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator)
+        {
+            window.addEventListener('load', () =>
+            {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -30,7 +42,7 @@
         const SUPABASE_URL = 'https://xikllcuwvyuqcvcjjimw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpa2xsY3V3dnl1cWN2Y2pqaW13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4NjkyMTYsImV4cCI6MjA4NDQ0NTIxNn0.DqAsJ2BXAzwnggId0nMihzfxN9UpslAUQzm-V5sgfWY';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const OFFLINE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+        const OFFLINE_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
 
         function getSongCacheKey(orgId, songIdentifier)
         {

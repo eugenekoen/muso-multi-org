@@ -1562,3 +1562,30 @@ body:not(.logged-in) #logout-btn {
 .connection-toast.disconnected {
     background: rgba(231, 76, 60, 0.9);
 }
+
+/* ===== CACHED SONG BADGE ===== */
+.cached-badge {
+    color: #2ecc71;
+    font-size: 0.4em;
+    margin-left: 4px;
+    vertical-align: middle;
+    opacity: 0.85;
+    animation: cachedPulse 2s ease-in-out 1;
+}
+
+@keyframes cachedPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 0.85;
+        transform: scale(1);
+    }
+}
