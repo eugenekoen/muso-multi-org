@@ -320,7 +320,17 @@ document.addEventListener('DOMContentLoaded', () =>
             signupMsg.textContent = error.message;
         } else
         {
-            signupMsg.textContent = "Successfully signed up! Check your email to confirm your account.";
+            // Check if user needs to confirm email or was auto-confirmed
+            const needsEmailConfirmation = data.user && !data.user.confirmed_at;
+
+            if (needsEmailConfirmation)
+            {
+                signupMsg.textContent = "Successfully signed up! Check your email to confirm your account.";
+            } else
+            {
+                signupMsg.textContent = "Successfully signed up! You can now log in.";
+            }
+
             signupMsg.classList.add('success');
             signupNameInput.value = '';
             signupEmailInput.value = '';
