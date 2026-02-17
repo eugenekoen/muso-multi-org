@@ -4,6 +4,35 @@
  */
 
 let currentUserRole = null;
+let currentUserName = null;
+
+/**
+ * Fetches the user's full name from the profiles table
+ */
+async function fetchUserName(userId)
+{
+    const supabaseClient = window.getSupabaseClient();
+    if (!userId) return 'User';
+    try
+    {
+        const { data, error } = await supabaseClient
+            .from('profiles')
+            .select('full_name')
+            .eq('id', userId)
+            .maybeSingle();
+
+        if (error)
+        {
+            throw error;
+        }
+
+        return data?.full_name || 'User';
+    } catch (error)
+    {
+        console.error("Error fetching user name:", error);
+        return 'User';
+    }
+}
 
 async function fetchUserRole(userId, passedOrgId)
 {
@@ -176,6 +205,10 @@ async function updateAuthState(user)
         const switchChurchBtn = document.getElementById('switch-church-btn');
         if (switchChurchBtn) switchChurchBtn.style.display = 'inline-block';
 
+        // Fetch and set the user's name
+        currentUserName = await fetchUserName(user.id);
+        updateNavUserInfo();
+
         // Role fetching is now deferred to organization selection
         // We just ensure the basic state is "logged in" here
     } else
@@ -189,6 +222,8 @@ async function updateAuthState(user)
         if (switchChurchBtn) switchChurchBtn.style.display = 'none';
 
         currentUserRole = null;
+        currentUserName = null;
+        updateNavUserInfo();
         manageSetlistBtn.style.display = 'none';
         addSongBtnTrigger.style.display = 'none';
         userManagementBtn.style.display = 'none';
@@ -203,9 +238,29 @@ async function updateAuthState(user)
     }
 }
 
+/**
+ * Updates the navigation bar with user info (name and role)
+ */
+function updateNavUserInfo()
+{
+    const navOrgName = document.getElementById('nav-org-name');
+    const navUserRole = document.getElementById('nav-user-role');
+
+    if (navOrgName)
+    {
+        navOrgName.textContent = currentUserName || 'Loading...';
+    }
+
+    if (navUserRole)
+    {
+        navUserRole.textContent = currentUserRole || 'Member';
+    }
+}
+
 // Export functions
 window.authModule = {
     fetchUserRole,
+    fetchUserName,
     signInWithEmail,
     signOut,
     signUpUser,
@@ -213,7 +268,9 @@ window.authModule = {
     refreshUserRole,
     sendResetPasswordEmail,
     updatePassword,
-    getCurrentUserRole: () => currentUserRole
+    updateNavUserInfo,
+    getCurrentUserRole: () => currentUserRole,
+    getCurrentUserName: () => currentUserName
 };
 
 /**
@@ -234,6 +291,9 @@ async function refreshUserRole(userId, orgId, knownRole = null)
     {
         currentUserRole = await fetchUserRole(userId, orgId); // Pass orgId explicitly
     }
+
+    // Update the nav bar to show the new role
+    updateNavUserInfo();
 
     // Trigger UI updates that depend on the role
     updateUIForRole(!!userId);

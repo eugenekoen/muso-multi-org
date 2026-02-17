@@ -158,6 +158,18 @@ body.logged-in {
     flex-direction: column;
     align-items: flex-end;
     margin-right: var(--spacing-sm);
+    gap: var(--spacing-xs);
+}
+
+.user-org-name {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.user-role {
+    font-size: var(--font-size-xs);
+    color: var(--gray-600);
 }
 
 body.logged-in .user-info {
@@ -2236,20 +2248,55 @@ body:not(.logged-in) #logout-btn {
     }
 
     .nav-container {
-        padding: 0 var(--spacing-md);
-        height: 60px;
+        padding: var(--spacing-sm) var(--spacing-md);
+        height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        justify-content: flex-start;
+    }
+
+    .nav-brand {
+        gap: var(--spacing-sm);
+        width: 100%;
+        margin-bottom: var(--spacing-xs);
     }
 
     .nav-brand img {
-        height: 35px;
+        height: 30px;
     }
 
     .nav-brand-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .nav-brand-title {
+        font-size: var(--font-size-base);
+        font-weight: 600;
+    }
+
+    .nav-brand-subtitle {
         display: none;
     }
 
     .user-info {
-        display: none !important;
+        display: flex !important;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        font-size: var(--font-size-xs);
+    }
+
+    .user-org-name {
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .user-role {
+        color: var(--gray-500);
+        font-size: var(--font-size-xs);
+        align-self: baseline;
     }
 
     .dashboard-sidebar {
@@ -2382,11 +2429,24 @@ body:not(.logged-in) #logout-btn {
     }
 
     .nav-container {
-        height: 55px;
+        height: auto;
+        padding: var(--spacing-xs) var(--spacing-md);
+    }
+
+    .nav-brand {
+        gap: var(--spacing-xs);
     }
 
     .nav-brand img {
-        height: 30px;
+        height: 28px;
+    }
+
+    .nav-brand-title {
+        font-size: var(--font-size-base);
+    }
+
+    .user-info {
+        font-size: 0.7rem;
     }
 
     .modal-content {

@@ -45,6 +45,11 @@ async function initializeOrganizationState(passedUser)
         localStorage.removeItem('activeOrganizationId'); // Clear persisted state
         userMemberships = [];
         if (churchNameDisplay) churchNameDisplay.textContent = 'The Praise and Worship App';
+        // Reset nav brand to default
+        if (window.updateNavBrand)
+        {
+            window.updateNavBrand(null);
+        }
         window.songsModule.populateSongDatabaseTable(null);
         if (window.setlistModule && window.setlistModule.loadSetlistFromSupabase)
         {
@@ -109,6 +114,11 @@ async function initializeOrganizationState(passedUser)
             {
                 churchNameDisplay.textContent = savedName ? `Church: ${savedName}` : 'Loading Church...';
             }
+            // Update nav brand with the saved church name
+            if (savedName && window.updateNavBrand)
+            {
+                window.updateNavBrand(savedName);
+            }
         }
 
         // 3. Official Membership Fetch (Soft Timeout)
@@ -157,6 +167,11 @@ async function initializeOrganizationState(passedUser)
             window.activeOrganizationId = null;
             localStorage.removeItem('activeOrganizationId');
             if (churchNameDisplay) churchNameDisplay.textContent = 'Join a Church';
+            // Reset nav brand to default
+            if (window.updateNavBrand)
+            {
+                window.updateNavBrand(null);
+            }
             // openOrganizationModal(); // DO NOT POP UP IMMEDIATELY
             // Clear the optimistic data if it was wrong
             window.songsModule.populateSongDatabaseTable(null);
@@ -190,6 +205,11 @@ async function initializeOrganizationState(passedUser)
         {
             // Success! The optimistic load was correct.
             if (churchNameDisplay) churchNameDisplay.textContent = `Church: ${verifiedMembership.organization.name}`;
+            // Update nav brand with the church name
+            if (window.updateNavBrand)
+            {
+                window.updateNavBrand(verifiedMembership.organization.name);
+            }
             if (window.authModule && window.authModule.refreshUserRole)
             {
                 // Pass the verified role
@@ -209,6 +229,11 @@ async function initializeOrganizationState(passedUser)
                 // UNLESS we want to be super persistent? No, if we have fresh data saying "you aren't a member", we should respect it.
                 window.activeOrganizationId = null;
                 if (churchNameDisplay) churchNameDisplay.textContent = 'Select a Church';
+                // Reset nav brand to default
+                if (window.updateNavBrand)
+                {
+                    window.updateNavBrand(null);
+                }
                 // openOrganizationModal(); // DO NOT POP UP IMMEDIATELY
                 if (savedOrgId)
                 {
@@ -280,6 +305,12 @@ function setActiveOrganization(organizationId)
     if (churchNameDisplay)
     {
         churchNameDisplay.textContent = `Church: ${membership.organization.name}`;
+    }
+
+    // Update nav brand with the church name and hide subtitle
+    if (window.updateNavBrand)
+    {
+        window.updateNavBrand(membership.organization.name);
     }
 
     // Update navigation bar with organization and role info

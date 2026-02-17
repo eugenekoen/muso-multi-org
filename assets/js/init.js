@@ -64,6 +64,34 @@ document.addEventListener('DOMContentLoaded', () =>
         if (navUserRole) navUserRole.textContent = roleName || 'Member';
     };
 
+    // Function to update nav brand title with church name and hide subtitle
+    window.updateNavBrand = function (churchName)
+    {
+        const navBrandTitle = document.querySelector('.nav-brand-title');
+        const navBrandSubtitle = document.querySelector('.nav-brand-subtitle');
+
+        if (navBrandTitle)
+        {
+            if (churchName)
+            {
+                navBrandTitle.textContent = churchName;
+                // Hide the subtitle when a church is selected
+                if (navBrandSubtitle)
+                {
+                    navBrandSubtitle.style.display = 'none';
+                }
+            } else
+            {
+                navBrandTitle.textContent = 'Music In His Name';
+                // Show the subtitle when no church is selected
+                if (navBrandSubtitle)
+                {
+                    navBrandSubtitle.style.display = 'block';
+                }
+            }
+        }
+    };
+
     // Initialize modules
     window.uiModule.setupKeyboardNavigation();
     window.uiModule.setupSongLinkHandlers();
