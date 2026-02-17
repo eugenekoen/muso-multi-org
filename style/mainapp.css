@@ -547,7 +547,7 @@ caption {
 
 thead {
     background: var(--gray-800);
-    color: white;
+    color: black;
 }
 
 table thead td {
@@ -1035,13 +1035,13 @@ body:not(.logged-in) #logout-btn {
 /* Make the User Management modal wider and styled to match the app theme */
 .modal-content.large {
     max-width: 800px;
-    background-color: #1a2634;
+    /* background-color: #1a2634; */
     /* Solid dark blue-grey for a cleaner look */
     border-radius: 8px;
     border: 1px solid #34495e;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     border-top: 4px solid #4CAF50;
-    color: #ecf0f1;
+    color: #141818;
 }
 
 /* Theming the modal's titles */
@@ -1066,7 +1066,7 @@ body:not(.logged-in) #logout-btn {
     overflow-x: auto;
     border-radius: 5px;
     margin-top: 15px;
-    border: 1px solid #34495e;
+    /* border: 1px solid #34495e; */
     -webkit-overflow-scrolling: touch;
 }
 
@@ -1287,6 +1287,148 @@ body:not(.logged-in) #logout-btn {
 #schedule-year-select option {
     background: #1a1a1a;
     color: white;
+}
+
+/* ===== USER MANAGEMENT & SCHEDULE MANAGER MODAL COLOR IMPROVEMENTS ===== */
+
+/* User Management Modal - Improved Colors */
+#user-management-modal .modal-content.large {
+    background-color: #f5f5f5;
+    color: var(--gray-900);
+    border: 1px solid #ddd;
+    border-top-color: #2563EB;
+}
+
+#user-management-modal h2,
+#user-management-modal h3 {
+    color: var(--gray-900) !important;
+    border-bottom-color: #ddd !important;
+}
+
+#user-management-modal .table-container {
+    border: 1px solid #ddd;
+}
+
+#user-list-table th {
+    background-color: #f0f0f0;
+    color: var(--gray-900);
+    border-bottom-color: #ddd;
+}
+
+#user-list-table td {
+    color: var(--gray-900);
+    border-bottom-color: #f0f0f0;
+}
+
+#user-list-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+#user-list-table tbody tr:hover {
+    background-color: #efefef;
+}
+
+#user-management-modal .role-select {
+    background-color: white;
+    color: var(--gray-900);
+    border-color: #ddd;
+}
+
+#user-management-modal .role-select:focus {
+    border-color: #2563EB;
+}
+
+#user-management-modal input[type="email"],
+#user-management-modal select {
+    background-color: white;
+    color: var(--gray-900);
+    border-color: #ddd;
+}
+
+#user-management-modal input[type="email"]:focus,
+#user-management-modal select:focus {
+    border-color: #2563EB;
+}
+
+#user-management-modal .user-email-hint {
+    color: var(--gray-600);
+}
+
+#user-management-msg {
+    color: var(--gray-900);
+}
+
+/* Schedule Manager Modal - Improved Colors */
+#schedule-manager-modal .modal-content.large {
+    background-color: #f5f5f5;
+    color: var(--gray-900);
+    border: 1px solid #ddd;
+    border-top-color: #2563EB;
+}
+
+#schedule-manager-modal h2 {
+    color: var(--gray-900) !important;
+}
+
+#schedule-manager-modal .quarter-tabs {
+    gap: 10px;
+    border-bottom-color: #ddd;
+}
+
+#schedule-manager-modal .quarter-tab {
+    background-color: white;
+    color: var(--gray-900);
+    border: 1px solid #ddd;
+    border-bottom: 3px solid transparent;
+}
+
+#schedule-manager-modal .quarter-tab.active {
+    background-color: #2563EB;
+    color: white;
+    border-color: #2563EB;
+    border-bottom-color: #2563EB;
+}
+
+#schedule-manager-modal .quarter-tab:hover {
+    background-color: #f0f0f0;
+    color: var(--gray-900);
+}
+
+#schedule-manager-modal .year-selector-wrapper {
+    background-color: white;
+    border-color: #ddd;
+}
+
+#schedule-manager-modal .year-selector-wrapper label {
+    color: var(--gray-600);
+}
+
+#schedule-manager-modal #schedule-year-select {
+    color: #2563EB;
+}
+
+#schedule-manager-modal #schedule-year-select option {
+    background: white;
+    color: var(--gray-900);
+}
+
+#schedule-manager-modal .schedule-card {
+    background: #414d6f;
+    color: var(--gray-900);
+    border-color: #ddd;
+}
+
+#schedule-manager-modal .schedule-card:hover {
+    background: #1e1f23;
+    border-color: #2563EB;
+}
+
+#schedule-manager-modal .schedule-date-badge {
+    background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+}
+
+#schedule-manager-modal .schedule-card.readonly .schedule-date-badge {
+    background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%);
 }
 
 /* Global Role Modal Premium Overhaul */
