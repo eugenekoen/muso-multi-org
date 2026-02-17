@@ -698,19 +698,22 @@ input[type="text"]#myInput:focus {
 }
 
 #add-song-btn {
-    background: var(--warning);
+    background: var(--success);
 }
 
 #switch-church-btn {
-    background: var(--info);
+    background: var(--warning);
 }
 
 #user-management-btn,
-#key-manager-btn,
 #schedule-manager-btn,
 #view-schedule-btn,
 #search-online-btn {
-    background: var(--gray-700);
+    background: var(--success);
+}
+
+#key-manager-btn {
+    background: var(--warning);
 }
 
 #add-song-to-setlist-btn {
@@ -1025,7 +1028,7 @@ body:not(.logged-in) #logout-btn {
 
 /* New Button Color */
 #user-management-btn {
-    background-color: #6f42c1;
+    background-color: var(--info);
     /* A nice purple */
 }
 
@@ -1699,7 +1702,7 @@ body:not(.logged-in) #logout-btn {
 
 /* Button colors */
 #schedule-manager-btn {
-    background-color: #00bcd4;
+    background-color: var(--info);
     /* Cyan */
 }
 
