@@ -2298,7 +2298,7 @@ body:not(.logged-in) #logout-btn {
         display: none;
     }
 
-    .user-info {
+    body.logged-in .user-info {
         display: flex !important;
         flex-direction: column;
         gap: var(--spacing-xs);
