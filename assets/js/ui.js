@@ -369,8 +369,14 @@ function showUserManagementMessage(message, isError = false)
 
 function openLegalModal(tab = 'terms')
 {
+    console.log('[UI] openLegalModal called with tab:', tab);
     const modal = document.getElementById('legal-modal');
-    if (!modal) return;
+    if (!modal)
+    {
+        console.error('[UI] legal-modal element not found!');
+        return;
+    }
+    console.log('[UI] Setting legal-modal display to block');
     modal.style.display = 'block';
     switchLegalTab(tab);
 }
@@ -407,26 +413,43 @@ function switchLegalTab(tab)
 
 function setupLegalHandlers()
 {
-    // Tagged buttons/links
-    document.querySelectorAll('.open-legal-btn').forEach(btn =>
+    // Use event delegation for better reliability - listen at document level
+    document.addEventListener('click', (e) =>
     {
-        btn.onclick = (e) =>
+        const btn = e.target.closest('.open-legal-btn');
+        if (!btn) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        const tab = btn.textContent.toLowerCase().includes('privacy') ? 'privacy' : 'terms';
+        openLegalModal(tab);
+    }, true); // Use capture phase for better reliability
+
+    // Close buttons - also using delegation
+    document.addEventListener('click', (e) =>
+    {
+        const closeBtn = e.target.closest('.close-legal-modal-btn');
+        if (!closeBtn) return;
+
+        e.stopPropagation();
+        const modal = document.getElementById('legal-modal');
+        if (modal) modal.style.display = 'none';
+    }, true);
+
+    // Tab switching - use delegation
+    document.addEventListener('click', (e) =>
+    {
+        if (e.target.id === 'tab-terms')
         {
-            e.preventDefault();
-            const tab = btn.textContent.toLowerCase().includes('privacy') ? 'privacy' : 'terms';
-            openLegalModal(tab);
-        };
+            switchLegalTab('terms');
+        }
+        else if (e.target.id === 'tab-privacy')
+        {
+            switchLegalTab('privacy');
+        }
     });
 
-    // Close buttons
-    document.querySelectorAll('.close-legal-modal-btn').forEach(btn =>
-    {
-        btn.onclick = () => { document.getElementById('legal-modal').style.display = 'none'; };
-    });
-
-    // Tab switching
-    document.getElementById('tab-terms')?.addEventListener('click', () => switchLegalTab('terms'));
-    document.getElementById('tab-privacy')?.addEventListener('click', () => switchLegalTab('privacy'));
+    console.log('[UI] Legal handlers setup complete');
 }
 
 // Export functions

@@ -303,6 +303,18 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Dashboard Footer with Legal Links -->
+                <footer class="dashboard-footer">
+                    <div class="footer-content">
+                        <p>&copy; 2026 Music In His Name. All Rights Reserved.</p>
+                        <div class="footer-links">
+                            <a href="#" class="open-legal-btn" aria-label="View terms of use">Terms of Use</a>
+                            <span class="separator">|</span>
+                            <a href="#" class="open-legal-btn" aria-label="View privacy policy">Privacy Policy</a>
+                        </div>
+                    </div>
+                </footer>
             </main>
         </div>
     </div>
@@ -744,126 +756,126 @@
             <div id="schedule-cards-container" class="schedule-cards-container">
                 <!-- Sunday cards will be dynamically generated here -->
             </div>
-        </div>
-        <!-- Global Role Modal -->
-        <div id="add-global-role-modal" class="modal" aria-modal="true" role="dialog"
-            aria-labelledby="global-role-title">
-            <div class="modal-content small">
-                <span class="close-global-role-modal-btn close-modal-btn" aria-label="Close dialog">×</span>
-                <h2 id="global-role-title">Add Global Role</h2>
-                <div class="modal-body">
-                    <label>Role Name</label>
-                    <input id="new-global-role-name" placeholder="e.g. Lighting, Media, Greeter" type="text">
+            <!-- Global Role Modal -->
+            <div id="add-global-role-modal" class="modal" aria-modal="true" role="dialog"
+                aria-labelledby="global-role-title">
+                <div class="modal-content small">
+                    <span class="close-global-role-modal-btn close-modal-btn" aria-label="Close dialog">×</span>
+                    <h2 id="global-role-title">Add Global Role</h2>
+                    <div class="modal-body">
+                        <label>Role Name</label>
+                        <input id="new-global-role-name" placeholder="e.g. Lighting, Media, Greeter" type="text">
 
-                    <label>Selection Type</label>
-                    <select id="new-global-role-type">
-                        <option value="single">Single Person (Dropdown)</option>
-                        <option value="multi">Multiple Persons (Checkboxes)</option>
-                    </select>
+                        <label>Selection Type</label>
+                        <select id="new-global-role-type">
+                            <option value="single">Single Person (Dropdown)</option>
+                            <option value="multi">Multiple Persons (Checkboxes)</option>
+                        </select>
 
-                    <div class="modal-footer">
-                        <button id="save-global-role-btn" class="modal-btn"
-                            onclick="window.scheduleModule.saveGlobalRole()">Save Role</button>
-                        <button id="cancel-global-role-btn" class="modal-btn"
-                            onclick="document.getElementById('add-global-role-modal').style.display='none'">Cancel</button>
+                        <div class="modal-footer">
+                            <button id="save-global-role-btn" class="modal-btn"
+                                onclick="window.scheduleModule.saveGlobalRole()">Save Role</button>
+                            <button id="cancel-global-role-btn" class="modal-btn"
+                                onclick="document.getElementById('add-global-role-modal').style.display='none'">Cancel</button>
+                        </div>
                     </div>
-                </div>
 
-            </div>
-        </div>
-
-
-        <!-- Legal Information Modal -->
-        <div id="legal-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="legal-title">
-            <div class="modal-content large">
-                <span class="close-legal-modal-btn close-modal-btn" aria-label="Close legal dialog">×</span>
-                <h2 id="legal-title">Terms & Privacy</h2>
-
-                <div class="legal-tabs"
-                    style="display: flex; gap: 20px; border-bottom: 2px solid #eee; margin-bottom: 20px;">
-                    <button id="tab-terms" class="tab-btn active"
-                        style="background:none; border:none; padding:10px; cursor:pointer; font-weight:600; font-family:inherit; border-bottom: 3px solid #4CAF50;">Terms
-                        of Usage</button>
-                    <button id="tab-privacy" class="tab-btn"
-                        style="background:none; border:none; padding:10px; cursor:pointer; font-weight:600; font-family:inherit; color:#666;">Privacy
-                        Policy</button>
-                </div>
-
-                <div id="content-terms" class="legal-scroll-content"
-                    style="max-height: 50vh; overflow-y: auto; padding-right: 10px;">
-                    <h3 style="color:#333;">Terms and Conditions</h3>
-                    <p>Welcome to Music In His Name ("the Service"). By using our website, you agree to comply with and
-                        be
-                        bound by the following terms.</p>
-
-                    <h4 style="margin-top:20px;">1. Acceptance of Terms</h4>
-                    <p>The Service provides a platform for music chord and setlist management. Usage is intended for
-                        worship
-                        teams, churches, and musicians. You agree to use the Service only for lawful purposes.</p>
-
-                    <h4 style="margin-top:20px;">2. User Content</h4>
-                    <p>You are solely responsible for any content (songs, chords, lyrics) you upload. By marking a song
-                        as
-                        "Shared Online", you grant other users of the platform a non-exclusive right to import that
-                        content
-                        into their own organization profiles.</p>
-
-                    <h4 style="margin-top:20px;">3. Intellectual Property</h4>
-                    <p>The Service itself is the property of Music In His Name. You must ensure you have the necessary
-                        licenses (e.g., CCLI) to use copyrighted song material within your organization.</p>
-
-                    <h4 style="margin-top:20px;">4. Limitation of Liability</h4>
-                    <p>The Service is provided "as is". We are not liable for any data loss, service interruptions, or
-                        inaccuracies in song content.</p>
-
-                    <h4 style="margin-top:20px;">5. Amendments</h4>
-                    <p>We reserve the right to modify these terms at any time. Continued use of the Service constitutes
-                        acceptance of revised terms.</p>
-                </div>
-
-                <div id="content-privacy" class="legal-scroll-content"
-                    style="display:none; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
-                    <h3 style="color:#333;">Privacy Policy</h3>
-                    <p>Your privacy is important to us. This policy explains how we handle your information.</p>
-
-                    <h4 style="margin-top:20px;">1. Information Collection</h4>
-                    <p>We collect your name and email address during registration to provide authentication and
-                        personalized
-                        organization management via Supabase.</p>
-
-                    <h4 style="margin-top:20px;">2. Usage of Information</h4>
-                    <p>Your data is used solely to manage your account, your organization memberships, and to provide
-                        technical support. We do not sell your data to third parties.</p>
-
-                    <h4 style="margin-top:20px;">3. Data Security</h4>
-                    <p>We use industry-standard security measures provided by Supabase (PostgreSQL) to protect your
-                        information.</p>
-
-                    <h4 style="margin-top:20px;">4. Cookies</h4>
-                    <p>We use essential cookies/local storage to maintain your log-in session and preferences (such as
-                        your
-                        active organization).</p>
-
-                    <h4 style="margin-top:20px;">5. Your Rights</h4>
-                    <p>You may request the deletion of your account and personal data at any time by contacting us.</p>
-                </div>
-
-                <div style="margin-top:25px; text-align:right;">
-                    <button class="modal-btn close-legal-modal-btn">Close</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Footer for Legal Links -->
-        <footer style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7); font-size: 14px;">
-            <p>&copy; 2026 Music In His Name. All Rights Reserved.</p>
-            <p>
-                <a href="#" class="open-legal-btn" style="color: white; text-decoration: none; margin: 0 10px;">Terms of
-                    Use</a> |
-                <a href="#" class="open-legal-btn" style="color: white; text-decoration: none; margin: 0 10px;">Privacy
-                    Policy</a>
-            </p>
-        </footer>
+    <!-- Legal Information Modal -->
+    <div id="legal-modal" class="modal" aria-modal="true" role="dialog" aria-labelledby="legal-title">
+        <div class="modal-content large">
+            <span class="close-legal-modal-btn close-modal-btn" aria-label="Close legal dialog">×</span>
+            <h2 id="legal-title">Terms & Privacy</h2>
+
+            <div class="legal-tabs"
+                style="display: flex; gap: 20px; border-bottom: 2px solid #eee; margin-bottom: 20px;">
+                <button id="tab-terms" class="tab-btn active"
+                    style="background:none; border:none; padding:10px; cursor:pointer; font-weight:600; font-family:inherit; border-bottom: 3px solid #4CAF50;">Terms
+                    of Usage</button>
+                <button id="tab-privacy" class="tab-btn"
+                    style="background:none; border:none; padding:10px; cursor:pointer; font-weight:600; font-family:inherit; color:#666;">Privacy
+                    Policy</button>
+            </div>
+
+            <div id="content-terms" class="legal-scroll-content"
+                style="max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+                <h3 style="color:#333;">Terms and Conditions</h3>
+                <p>Welcome to Music In His Name ("the Service"). By using our website, you agree to comply with and
+                    be
+                    bound by the following terms.</p>
+
+                <h4 style="margin-top:20px;">1. Acceptance of Terms</h4>
+                <p>The Service provides a platform for music chord and setlist management. Usage is intended for
+                    worship
+                    teams, churches, and musicians. You agree to use the Service only for lawful purposes.</p>
+
+                <h4 style="margin-top:20px;">2. User Content</h4>
+                <p>You are solely responsible for any content (songs, chords, lyrics) you upload. By marking a song
+                    as
+                    "Shared Online", you grant other users of the platform a non-exclusive right to import that
+                    content
+                    into their own organization profiles.</p>
+
+                <h4 style="margin-top:20px;">3. Intellectual Property</h4>
+                <p>The Service itself is the property of Music In His Name. You must ensure you have the necessary
+                    licenses (e.g., CCLI) to use copyrighted song material within your organization.</p>
+
+                <h4 style="margin-top:20px;">4. Limitation of Liability</h4>
+                <p>The Service is provided "as is". We are not liable for any data loss, service interruptions, or
+                    inaccuracies in song content.</p>
+
+                <h4 style="margin-top:20px;">5. Amendments</h4>
+                <p>We reserve the right to modify these terms at any time. Continued use of the Service constitutes
+                    acceptance of revised terms.</p>
+            </div>
+
+            <div id="content-privacy" class="legal-scroll-content"
+                style="display:none; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+                <h3 style="color:#333;">Privacy Policy</h3>
+                <p>Your privacy is important to us. This policy explains how we handle your information.</p>
+
+                <h4 style="margin-top:20px;">1. Information Collection</h4>
+                <p>We collect your name and email address during registration to provide authentication and
+                    personalized
+                    organization management via Supabase.</p>
+
+                <h4 style="margin-top:20px;">2. Usage of Information</h4>
+                <p>Your data is used solely to manage your account, your organization memberships, and to provide
+                    technical support. We do not sell your data to third parties.</p>
+
+                <h4 style="margin-top:20px;">3. Data Security</h4>
+                <p>We use industry-standard security measures provided by Supabase (PostgreSQL) to protect your
+                    information.</p>
+
+                <h4 style="margin-top:20px;">4. Cookies</h4>
+                <p>We use essential cookies/local storage to maintain your log-in session and preferences (such as
+                    your
+                    active organization).</p>
+
+                <h4 style="margin-top:20px;">5. Your Rights</h4>
+                <p>You may request the deletion of your account and personal data at any time by contacting us.</p>
+            </div>
+
+            <div style="margin-top:25px; text-align:right;">
+                <button class="modal-btn close-legal-modal-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer for Legal Links -->
+    <footer style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7); font-size: 14px;">
+        <p>&copy; 2026 Music In His Name. All Rights Reserved.</p>
+        <p>
+            <a href="#" class="open-legal-btn" style="color: white; text-decoration: none; margin: 0 10px;">Terms of
+                Use</a> |
+            <a href="#" class="open-legal-btn" style="color: white; text-decoration: none; margin: 0 10px;">Privacy
+                Policy</a>
+        </p>
+    </footer>
 
 </body>
 

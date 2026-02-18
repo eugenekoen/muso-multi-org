@@ -751,6 +751,10 @@ input[type="text"]#myInput:focus {
     animation: fadeIn 0.2s ease;
 }
 
+#legal-modal {
+    z-index: 1100;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -2713,6 +2717,50 @@ footer a {
     color: var(--gray-300) !important;
     text-decoration: none !important;
     transition: color var(--transition-fast);
+}
+
+footer a:hover {
+    color: var(--primary) !important;
+}
+
+/* Dashboard Footer Specific Styles */
+.dashboard-footer {
+    margin-top: var(--spacing-2xl);
+    border-top: 1px solid var(--gray-300);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.04));
+}
+
+.dashboard-footer .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--gray-600);
+    font-size: var(--font-size-sm);
+}
+
+.dashboard-footer .footer-links {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    justify-content: center;
+}
+
+.dashboard-footer .footer-links a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+}
+
+.dashboard-footer .footer-links a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.dashboard-footer .separator {
+    color: var(--gray-400);
 }
 
 footer a:hover {
