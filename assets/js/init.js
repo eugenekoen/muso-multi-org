@@ -392,8 +392,17 @@ document.addEventListener('DOMContentLoaded', () =>
             return;
         }
 
+        // Disable button to prevent multiple clicks
+        signupBtn.disabled = true;
+        const originalText = signupBtn.textContent;
+        signupBtn.textContent = 'Signing up...';
+
         // This function is now simpler and doesn't need an org code
         const { data, error } = await window.authModule.signUpUser(name, email, password);
+
+        // Re-enable button after attempt
+        signupBtn.disabled = false;
+        signupBtn.textContent = originalText;
 
         console.log('Signup result:', { hasData: !!data, hasError: !!error, errorMsg: error?.message });
 

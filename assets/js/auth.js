@@ -91,6 +91,31 @@ async function signUpUser(name, email, password)
 {
     const supabaseClient = window.getSupabaseClient();
 
+    // FIRST: Check if email already exists BEFORE calling signUp
+    // This prevents Supabase from sending multiple confirmation emails
+    try
+    {
+        const { data: emailExists, error: checkError } = await supabaseClient
+            .rpc('check_email_exists', { check_email: email });
+
+        if (checkError)
+        {
+            console.error('Error checking email existence:', checkError);
+            // Continue with signup if check fails (graceful degradation)
+        } else if (emailExists)
+        {
+            console.log('Email already registered - prevented duplicate signup attempt');
+            return {
+                data: null,
+                error: { message: 'This email is already registered. Please log in instead, or use password reset if you forgot your password.' }
+            };
+        }
+    } catch (checkErr)
+    {
+        console.error('Exception checking email:', checkErr);
+        // Continue with signup if check fails (graceful degradation)
+    }
+
     // Sign up the user in Auth
     // Note: Supabase will return the user with an empty identities array if email already exists
     const { data, error } = await supabaseClient.auth.signUp({
@@ -111,7 +136,7 @@ async function signUpUser(name, email, password)
         authError: error
     });
 
-    // Check if user already exists (Supabase returns user with identities array empty if email taken)
+    // Backup check: if email already exists (Supabase returns user with identities array empty if email taken)
     // This happens when email confirmation is enabled and email already exists
     if (data?.user && !error)
     {
