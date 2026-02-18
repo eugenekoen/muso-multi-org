@@ -1042,10 +1042,10 @@ body:not(.logged-in) #logout-btn {
     /* background-color: #1a2634; */
     /* Solid dark blue-grey for a cleaner look */
     border-radius: 8px;
-    border: 1px solid #34495e;
+    /* border: 1px solid #34495e; */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     border-top: 4px solid #4CAF50;
-    color: #141818;
+    /* color: #141818; */
 }
 
 /* Theming the modal's titles */
