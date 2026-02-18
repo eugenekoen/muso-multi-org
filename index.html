@@ -375,7 +375,10 @@
             <h3>Join a New Church</h3>
             <div style="margin-top: 10px;">
                 <label for="join-code-input">Enter Church Code:</label>
-                <input type="text" id="join-code-input" placeholder="e.g., GCC2024" style="margin-top: 5px;">
+                <input type="text" id="join-code-input" placeholder="e.g., GCC2024" style="margin-top: 5px;"
+                    autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" inputmode="text">
+                <small id="join-code-preview"
+                    style="display: block; margin-top: 5px; color: #666; font-style: italic;"></small>
                 <button id="join-org-btn" class="modal-btn" style="margin-top: 10px;">Join Church</button>
                 <div id="join-org-msg" class="feedback-msg" style="margin-top: 10px;"></div>
             </div>

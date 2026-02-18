@@ -387,6 +387,18 @@ function openOrganizationModal()
 }
 
 /**
+ * Normalizes an organization code by removing spaces, special characters,
+ * and converting to uppercase for consistent matching.
+ */
+function normalizeOrgCode(code)
+{
+    // Remove all spaces, hyphens, underscores, and special characters
+    // Keep only alphanumeric characters
+    // Convert to uppercase for case-insensitive matching
+    return code.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+/**
  * Handles the logic for joining a new church using a signup code.
  */
 async function joinOrganization()
@@ -394,17 +406,27 @@ async function joinOrganization()
     const supabaseClient = window.getSupabaseClient();
     const codeInput = document.getElementById('join-code-input');
     const joinMsg = document.getElementById('join-org-msg');
-    const code = codeInput.value.trim();
+    const codePreview = document.getElementById('join-code-preview');
+    const rawCode = codeInput.value;
+    const normalizedCode = normalizeOrgCode(rawCode);
 
-    if (!code)
+    if (!normalizedCode)
     {
         joinMsg.textContent = "Please enter a code.";
+        codePreview.textContent = '';
         return;
     }
+
+    // Show what we're sending (for user transparency)
+    if (rawCode !== normalizedCode)
+    {
+        codePreview.textContent = `Code being checked: ${normalizedCode}`;
+    }
+
     joinMsg.textContent = "Verifying code...";
     joinMsg.style.color = '#333';
 
-    const { data: orgData, error: rpcError } = await supabaseClient.rpc('get_org_by_code', { code_input: code });
+    const { data: orgData, error: rpcError } = await supabaseClient.rpc('get_org_by_code', { code_input: normalizedCode });
 
     // RPC returns an array of rows, so get the first one
     const org = orgData && orgData.length > 0 ? orgData[0] : null;
@@ -460,5 +482,6 @@ window.organizationModule = {
     showDisabledOrganizationModal,
     openOrganizationModal,
     joinOrganization,
-    clearOrganizationState
+    clearOrganizationState,
+    normalizeOrgCode
 };

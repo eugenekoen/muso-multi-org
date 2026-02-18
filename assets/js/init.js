@@ -846,6 +846,31 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     }
 
+    // Add real-time code preview for join organization input
+    const joinCodeInput = document.getElementById('join-code-input');
+    if (joinCodeInput)
+    {
+        joinCodeInput.addEventListener('input', () =>
+        {
+            const rawCode = joinCodeInput.value;
+            const normalizedCode = window.organizationModule.normalizeOrgCode(rawCode);
+            const codePreview = document.getElementById('join-code-preview');
+
+            if (normalizedCode && rawCode !== normalizedCode)
+            {
+                codePreview.textContent = `✓ Code: ${normalizedCode}`;
+                codePreview.style.color = '#4CAF50';
+            } else if (normalizedCode)
+            {
+                codePreview.textContent = `✓ Code: ${normalizedCode}`;
+                codePreview.style.color = '#4CAF50';
+            } else
+            {
+                codePreview.textContent = '';
+            }
+        });
+    }
+
     if (organizationList)
     {
         organizationList.addEventListener('click', (event) =>
