@@ -376,9 +376,13 @@ function openOrganizationModal()
             li.style.alignItems = 'center';
             li.style.padding = '8px 0';
             li.innerHTML = `
-                <span>${membership.organization.name} (Role: ${membership.role})</span>
-                <button class="modal-btn switch-org-btn" data-org-id="${membership.organization_id}">Select</button>
+                <span style="flex: 1; margin-right: 15px;">${membership.organization.name} (Role: ${membership.role})</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="modal-btn leave-org-btn" data-org-id="${membership.organization_id}" data-org-name="${membership.organization.name.replace(/"/g, '&quot;')}" style="background-color: #666; padding: 6px 12px; font-size: 12px;">Leave</button>
+                    <button class="modal-btn switch-org-btn" data-org-id="${membership.organization_id}" style="padding: 6px 12px; font-size: 12px;">Select</button>
+                </div>
             `;
+
             orgList.appendChild(li);
         });
     }
@@ -475,6 +479,81 @@ async function joinOrganization()
     openOrganizationModal();
 }
 
+/**
+ * Shows the confirmation modal for leaving a church
+ */
+function showLeaveConfirmation(orgId, orgName)
+{
+    const confirmModal = document.getElementById('confirmation-modal');
+    const confirmMsg = document.getElementById('confirmation-message');
+    const confirmYes = document.getElementById('confirm-yes-btn');
+    const confirmNo = document.getElementById('confirm-no-btn');
+
+    if (!confirmModal || !confirmMsg || !confirmYes || !confirmNo) return;
+
+    confirmMsg.textContent = `Hey, are you sure that you want to leave the church "${orgName}"?`;
+
+    // Cleanup previous listeners
+    const newConfirmYes = confirmYes.cloneNode(true);
+    const newConfirmNo = confirmNo.cloneNode(true);
+    confirmYes.parentNode.replaceChild(newConfirmYes, confirmYes);
+    confirmNo.parentNode.replaceChild(newConfirmNo, confirmNo);
+
+    newConfirmNo.onclick = () =>
+    {
+        confirmModal.style.display = 'none';
+    };
+
+    newConfirmYes.onclick = async () =>
+    {
+        confirmModal.style.display = 'none';
+        await leaveOrganization(orgId);
+    };
+
+    confirmModal.style.display = 'block';
+}
+
+/**
+ * Logical removal of membership
+ */
+async function leaveOrganization(orgId)
+{
+    const supabaseClient = window.getSupabaseClient();
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) return;
+
+    try
+    {
+        const { error } = await supabaseClient
+            .from('organization_members')
+            .delete()
+            .eq('organization_id', orgId)
+            .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        // If the org we left was the active one, clear it
+        if (window.activeOrganizationId === orgId)
+        {
+            window.activeOrganizationId = null;
+            localStorage.removeItem('activeOrganizationId');
+            localStorage.removeItem('activeOrganizationName');
+        }
+
+        // Refresh state
+        await initializeOrganizationState();
+
+        // Re-open/refresh modal
+        openOrganizationModal();
+
+    } catch (err)
+    {
+        console.error("Error leaving organization:", err);
+        alert("Failed to leave the church: " + err.message);
+    }
+}
+
 // Export functions to be used in init.js
 window.organizationModule = {
     initializeOrganizationState,
@@ -483,5 +562,7 @@ window.organizationModule = {
     openOrganizationModal,
     joinOrganization,
     clearOrganizationState,
-    normalizeOrgCode
+    normalizeOrgCode,
+    showLeaveConfirmation,
+    leaveOrganization
 };

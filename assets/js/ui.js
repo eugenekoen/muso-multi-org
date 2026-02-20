@@ -42,6 +42,7 @@ function setupKeyboardNavigation()
             const userManagementModal = document.getElementById('user-management-modal');
             const searchOnlineModal = document.getElementById('search-online-modal');
             const legalModal = document.getElementById('legal-modal');
+            const confirmationModal = document.getElementById('confirmation-modal');
 
             if (loginModal.style.display === 'block') loginModal.style.display = 'none';
             if (signupModal.style.display === 'block') signupModal.style.display = 'none';
@@ -51,6 +52,7 @@ function setupKeyboardNavigation()
             if (userManagementModal.style.display === 'block') userManagementModal.style.display = 'none';
             if (searchOnlineModal.style.display === 'block') searchOnlineModal.style.display = 'none';
             if (legalModal && legalModal.style.display === 'block') legalModal.style.display = 'none';
+            if (confirmationModal && confirmationModal.style.display === 'block') confirmationModal.style.display = 'none';
         }
     });
 }

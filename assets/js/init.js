@@ -875,11 +875,19 @@ document.addEventListener('DOMContentLoaded', () =>
     {
         organizationList.addEventListener('click', (event) =>
         {
-            const target = event.target.closest('.switch-org-btn');
-            if (target)
+            const switchTarget = event.target.closest('.switch-org-btn');
+            const leaveTarget = event.target.closest('.leave-org-btn');
+
+            if (switchTarget)
             {
-                const orgId = target.dataset.orgId;
+                const orgId = switchTarget.dataset.orgId;
                 window.organizationModule.setActiveOrganization(orgId);
+            }
+            else if (leaveTarget)
+            {
+                const orgId = leaveTarget.dataset.orgId;
+                const orgName = leaveTarget.dataset.orgName;
+                window.organizationModule.showLeaveConfirmation(orgId, orgName);
             }
         });
     }

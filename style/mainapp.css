@@ -840,6 +840,32 @@ input[type="text"]#myInput:focus {
     box-shadow: var(--shadow-md);
 }
 
+.modal-btn.btn-secondary {
+    background: var(--gray-500);
+}
+
+.modal-btn.btn-secondary:hover {
+    background: var(--gray-600);
+}
+
+.modal-btn.btn-danger {
+    background: var(--danger);
+}
+
+.modal-btn.btn-danger:hover {
+    background: #dc2626;
+}
+
+/* Specific button overrides */
+#confirm-yes-btn {
+    background: var(--danger);
+}
+
+#confirm-yes-btn:hover {
+    background: #dc2626;
+}
+
+
 .modal-content input[type="text"],
 .modal-content input[type="password"],
 .modal-content input[type="email"],
