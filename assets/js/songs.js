@@ -160,9 +160,15 @@ async function openEditModal(songIdentifier, displayName)
     editSongTextarea.value = 'Loading...';
     editSongLyricsTextarea.value = 'Loading...';
     const editSongShared = document.getElementById('edit-song-shared');
-    if (editSongShared) editSongShared.value = 'false';
+    editSongShared.value = 'false';
     editSongModal.style.display = 'block';
     saveSongBtn.dataset.songIdentifier = songIdentifier;
+
+    const editSongDisplayName = document.getElementById('edit-song-display-name');
+    if (editSongDisplayName)
+    {
+        editSongDisplayName.value = displayName;
+    }
 
     // Reset delete button state and visibility based on role
     if (deleteSongBtn)
@@ -209,8 +215,10 @@ async function saveSongChanges()
     const editSongMsg = document.getElementById('edit-song-msg');
     const editSongTextarea = document.getElementById('edit-song-textarea');
     const editSongLyricsTextarea = document.getElementById('edit-song-lyrics-textarea');
+    const editSongDisplayName = document.getElementById('edit-song-display-name');
 
     const songIdentifier = saveSongBtn.dataset.songIdentifier;
+    const newDisplayName = editSongDisplayName ? editSongDisplayName.value.trim() : '';
     const newChordsContent = editSongTextarea.value;
     const newLyricsContent = editSongLyricsTextarea.value;
     const editSongShared = document.getElementById('edit-song-shared');
@@ -218,11 +226,14 @@ async function saveSongChanges()
     const orgId = window.activeOrganizationId;
 
     if (!songIdentifier) { alert('Error: No song identifier found.'); return; }
+    if (!newDisplayName) { alert('Error: Song Title cannot be empty.'); return; }
+
     saveSongBtn.disabled = true;
     saveSongBtn.textContent = 'Saving...';
     try
     {
         const { error } = await supabaseClient.from('songs').update({
+            display_name: newDisplayName,
             chords_content: newChordsContent,
             lyrics_content: newLyricsContent,
             is_shared: isShared
@@ -240,13 +251,21 @@ async function saveSongChanges()
             const isOnSetlist = currentSetlist.some(item => item.songName === songIdentifier);
             if (isOnSetlist)
             {
+                // Update display name in the setlist itself
+                currentSetlist.forEach(item =>
+                {
+                    if (item.songName === songIdentifier)
+                    {
+                        item.displayName = newDisplayName;
+                    }
+                });
+
                 const TTL = window.setlistModule.OFFLINE_CACHE_TTL_MS || (4 * 60 * 60 * 1000);
                 const cacheKey = window.setlistModule.getSongCacheKey(orgId, songIdentifier);
-                const existing = window.setlistModule.readSongCache(orgId, songIdentifier);
                 const now = Date.now();
                 const cachePayload = {
                     songIdentifier: songIdentifier,
-                    displayName: existing ? existing.displayName : '',
+                    displayName: newDisplayName,
                     chordsContent: newChordsContent,
                     lyricsContent: newLyricsContent,
                     cachedAt: now,
@@ -255,10 +274,16 @@ async function saveSongChanges()
                 localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
                 console.log('Offline cache updated for setlist song:', songIdentifier);
 
-                // Refresh setlist table to update cached badges
+                // Save updated setlist (updates database and setlist cache)
+                await window.setlistModule.saveSetlistToSupabase();
+
+                // Refresh setlist table to update cached badges and display name
                 window.setlistModule.updateTableOneWithSetlist();
             }
         }
+
+        // Refresh song table to show new display name
+        populateSongDatabaseTable(orgId);
 
         setTimeout(() => { editSongModal.style.display = 'none'; }, 1500);
     } catch (error)

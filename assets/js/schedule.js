@@ -337,12 +337,13 @@ function createScheduleCard(date, schedule, isReadOnly)
 {
     const card = document.createElement('div');
     card.className = 'schedule-card';
-    if (isReadOnly) card.classList.add('readonly');
-
     const dateStr = formatDateDB(date);
     const day = date.getDate();
     const month = date.toLocaleString('default', { month: 'short' });
     const year = date.getFullYear();
+
+    card.dataset.date = dateStr;
+    if (isReadOnly) card.classList.add('readonly');
 
     // Base/Standard Roles
     card.innerHTML = `
@@ -712,15 +713,19 @@ async function saveScheduleFromCard(dateStr, card)
 /**
  * Open Schedule Manager modal
  */
-function openScheduleManager()
+async function openScheduleManager()
 {
     const modal = document.getElementById('schedule-manager-modal');
     if (!modal) return;
 
-    // Set current quarter as default
     const now = new Date();
-    currentYear = now.getFullYear();
-    currentQuarter = Math.floor(now.getMonth() / 3) + 1;
+    // Calculate the next (or current) Sunday
+    const nextSunday = new Date(now);
+    nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+
+    // Set view to the target Sunday's year and quarter (handles quarter boundaries)
+    currentYear = nextSunday.getFullYear();
+    currentQuarter = Math.floor(nextSunday.getMonth() / 3) + 1;
 
     modal.style.display = 'block';
 
@@ -728,7 +733,31 @@ function openScheduleManager()
     renderYearSelector();
 
     updateQuarterTabs();
-    renderScheduleCards();
+    await renderScheduleCards();
+
+    // --- AUTO-NAVIGATION TO CURRENT WEEK ---
+    const targetDateStr = formatDateDB(nextSunday);
+
+    // Wait for DOM to render the cards
+    setTimeout(() =>
+    {
+        const targetCard = document.querySelector(`.schedule-card[data-date="${targetDateStr}"]`);
+        if (targetCard)
+        {
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Subtle highlight to show user where they are
+            targetCard.style.transition = "box-shadow 0.3s ease, border 0.3s ease";
+            targetCard.style.boxShadow = "0 0 15px rgba(76, 175, 80, 0.4)";
+            targetCard.style.border = "2px solid #4CAF50";
+
+            setTimeout(() =>
+            {
+                targetCard.style.boxShadow = "";
+                targetCard.style.border = "";
+            }, 3000);
+        }
+    }, 150);
 }
 
 /**
