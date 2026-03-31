@@ -39,17 +39,30 @@ async function populateKeyManagerModal()
             const toggleBtnColor = org.is_disabled ? '#4CAF50' : '#f44336';
 
             row.innerHTML = `
-                <td>${org.name}</td>
-                <td>
-                    <input type="text" class="org-code-input" data-org-id="${org.id}" value="${org.signup_code || ''}" style="width: 100%;">
+                <td class="name-col">${org.name}</td>
+                <td class="code-col">
+                    <input type="text" class="org-code-input" data-org-id="${org.id}" value="${org.signup_code || ''}">
                 </td>
-                <td style="text-align: center;">
+                <td class="status-col">
                     <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span>
                 </td>
-                <td style="white-space: nowrap;">
-                    <button class="modal-btn update-org-code-btn" data-org-id="${org.id}">Update Code</button>
-                    <button class="modal-btn toggle-org-status-btn" data-org-id="${org.id}" style="background-color: ${toggleBtnColor}; margin-left: 5px;">${toggleBtnText}</button>
-                    <button class="modal-btn delete-org-btn" data-org-id="${org.id}" style="background-color: #999; margin-left: 5px;">Delete</button>
+                <td class="actions-col">
+                    <div class="action-dropdown">
+                        <button class="action-dropdown-btn" onclick="this.parentElement.classList.toggle('show')">
+                            Actions <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
+                        </button>
+                        <div class="action-dropdown-content">
+                            <button class="update-org-code-btn" data-org-id="${org.id}">
+                                <i class="fa-solid fa-save"></i> Update Code
+                            </button>
+                            <button class="toggle-org-status-btn" data-org-id="${org.id}" style="color: ${toggleBtnColor};">
+                                <i class="fa-solid fa-power-off"></i> ${toggleBtnText}
+                            </button>
+                            <button class="delete-org-btn text-danger" data-org-id="${org.id}">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
                 </td>
             `;
         });

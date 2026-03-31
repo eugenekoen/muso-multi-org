@@ -65,6 +65,10 @@
             border-collapse: collapse;
         }
 
+        .key-manager-table-wrapper {
+            width: 450px;
+        }
+
         #org-management-table th,
         #org-management-table td {
             padding: 10px;
@@ -72,11 +76,11 @@
         }
 
         #org-management-table .name-col {
-            width: 25%;
+            width: 30%;
         }
 
         #org-management-table .code-col {
-            width: 25%;
+            width: 45%;
         }
 
         #org-management-table .status-col {
@@ -84,20 +88,94 @@
             text-align: center;
         }
 
-        /* Widening as requested (3x relative to default narrowness) */
         #org-management-table .actions-col {
-            width: 35%;
+            width: 10%;
+            text-align: right;
+            position: relative;
+        }
+
+        /* Action Dropdown Styles */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-dropdown-btn {
+            background: none;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: 6px 12px;
+            cursor: pointer;
+            color: var(--gray-600);
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-family);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .action-dropdown-btn:hover {
+            background-color: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        .action-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-md);
+            z-index: 1002;
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .action-dropdown-content button {
+            width: 100%;
+            text-align: left;
+            padding: 10px 15px;
+            border: none;
+            background: none;
+            font-family: var(--font-family);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+            color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-dropdown-content button:hover {
+            background-color: var(--gray-50);
+        }
+
+        .action-dropdown-content button.text-danger {
+            color: var(--danger);
+        }
+
+        .action-dropdown-content button.text-danger:hover {
+            background-color: #FEF2F2;
+        }
+
+        .action-dropdown.show .action-dropdown-content {
+            display: block;
         }
 
         #org-management-table input.org-code-input {
-            width: 95%;
-            padding: 8px;
+            width: 100%;
+            padding: 8px 12px;
             box-sizing: border-box;
             font-family: 'Montserrat', sans-serif;
             font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin: 0px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            margin: 0;
         }
 
         .key-manager-input-group {
@@ -209,52 +287,62 @@
     <div id="dashboard" style="display: none;">
         <div class="dashboard-container">
             <aside class="dashboard-sidebar">
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title">Quick Actions</h3>
-                    <button id="manage-setlist-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
-                        <i class="fa-solid fa-list-check"></i>
-                        <span>Manage Setlist</span>
-                    </button>
-                    <button id="add-song-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Add New Song</span>
-                    </button>
-                    <button id="search-online-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <span>Search Online</span>
+                <div class="mobile-admin-tools-header">
+                    <button id="mobile-admin-tools-toggle" class="sidebar-btn team-management-btn"
+                        style="justify-content: space-between;">
+                        <span><i class="fa-solid fa-toolbox" style="margin-right: 10px;"></i>Admin Tools</span>
+                        <i class="fa-solid fa-chevron-down toggle-icon" style="width: auto; margin-left: 10px;"></i>
                     </button>
                 </div>
+                <div class="sidebar-sections-container">
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Quick Actions</h3>
+                        <button id="manage-setlist-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>Manage Setlist</span>
+                        </button>
+                        <button id="add-song-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add New Song</span>
+                        </button>
+                        <button id="search-online-btn" class="sidebar-btn quick-actions-btn" style="display: none;">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Search Online</span>
+                        </button>
+                    </div>
 
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title">Team Management</h3>
-                    <button id="schedule-manager-btn" class="sidebar-btn team-management-btn" style="display: none;">
-                        <i class="fa-solid fa-calendar"></i>
-                        <span>Schedule Manager</span>
-                    </button>
-                    <button id="view-schedule-btn" class="sidebar-btn team-management-btn" style="display: none;">
-                        <i class="fa-solid fa-calendar-day"></i>
-                        <span>View Schedule</span>
-                    </button>
-                    <button id="user-management-btn" class="sidebar-btn team-management-btn" style="display: none;">
-                        <i class="fa-solid fa-user-gear"></i>
-                        <span>User Management</span>
-                    </button>
-                </div>
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Team Management</h3>
+                        <button id="schedule-manager-btn" class="sidebar-btn team-management-btn"
+                            style="display: none;">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span>Schedule Manager</span>
+                        </button>
+                        <button id="view-schedule-btn" class="sidebar-btn team-management-btn" style="display: none;">
+                            <i class="fa-solid fa-calendar-day"></i>
+                            <span>View Schedule</span>
+                        </button>
+                        <button id="user-management-btn" class="sidebar-btn team-management-btn" style="display: none;">
+                            <i class="fa-solid fa-user-gear"></i>
+                            <span>User Management</span>
+                        </button>
+                    </div>
 
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title">Settings</h3>
-                    <button id="switch-church-btn" class="sidebar-btn settings-btn" style="display: none;">
-                        <i class="fa-solid fa-church"></i>
-                        <span>Switch Church</span>
-                    </button>
-                    <button id="key-manager-btn" class="sidebar-btn settings-btn" style="display: none;">
-                        <i class="fa-solid fa-key"></i>
-                        <span>Key Manager</span>
-                    </button>
-                    <button id="logout-btn" class="sidebar-btn btn-danger" style="display: none;">
-                        <i class="fa-solid fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </button>
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Settings</h3>
+                        <button id="switch-church-btn" class="sidebar-btn settings-btn" style="display: none;">
+                            <i class="fa-solid fa-church"></i>
+                            <span>Switch Church</span>
+                        </button>
+                        <button id="key-manager-btn" class="sidebar-btn settings-btn" style="display: none;">
+                            <i class="fa-solid fa-key"></i>
+                            <span>Key Manager</span>
+                        </button>
+                        <button id="logout-btn" class="sidebar-btn btn-danger" style="display: none;">
+                            <i class="fa-solid fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
                 </div>
             </aside>
 
@@ -647,7 +735,7 @@
             <h2 id="key-manager-title">Key Manager (Master Admin)</h2>
             <p id="key-manager-msg" class="feedback-msg" role="status"></p>
 
-            <div id="add-org-section">
+            <div id="add-org-section" style="width: 450px;">
                 <h3>Add New Organization</h3>
                 <table style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
                     <thead>
@@ -682,10 +770,10 @@
                 </table>
             </div>
 
-            <hr style="margin: 25px 0;">
+            <hr style="margin: 25px 0; width: 450px;">
 
             <h3>Organizations Management</h3>
-            <div class="table-container">
+            <div class="table-container key-manager-table-wrapper">
                 <table id="org-management-table">
                     <thead>
                         <tr>

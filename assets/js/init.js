@@ -137,6 +137,25 @@ document.addEventListener('DOMContentLoaded', () =>
     const userManagementBtn = document.getElementById('user-management-btn');
     const userListTableBody = document.querySelector('#user-list-table tbody');
 
+    // Mobile Admin Tools Toggle
+    const mobileAdminToolsToggle = document.getElementById('mobile-admin-tools-toggle');
+    const sidebarSectionsContainer = document.querySelector('.sidebar-sections-container');
+    if (mobileAdminToolsToggle && sidebarSectionsContainer) {
+        mobileAdminToolsToggle.addEventListener('click', () => {
+            sidebarSectionsContainer.classList.toggle('active');
+            const toggleIcon = mobileAdminToolsToggle.querySelector('.toggle-icon');
+            if (toggleIcon) {
+                if (sidebarSectionsContainer.classList.contains('active')) {
+                    toggleIcon.classList.remove('fa-chevron-down');
+                    toggleIcon.classList.add('fa-chevron-up');
+                } else {
+                    toggleIcon.classList.remove('fa-chevron-up');
+                    toggleIcon.classList.add('fa-chevron-down');
+                }
+            }
+        });
+    }
+
     const songSearchInput = document.getElementById('song-search-input');
     const keySelectDropdown = document.getElementById('key-select-dropdown');
     const addSongToSetlistBtn = document.getElementById('add-song-to-setlist-btn');
@@ -827,6 +846,13 @@ document.addEventListener('DOMContentLoaded', () =>
         if (event.target == loginModal) loginModal.style.display = 'none';
         if (event.target == signupModal) signupModal.style.display = 'none';
         // Removed outside-click closure for setlist, user management, and key manager
+
+        // Close action dropdowns when clicking outside
+        if (!event.target.closest('.action-dropdown-btn')) {
+            document.querySelectorAll('.action-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        }
     });
 
     // --- NEW ORGANIZATION LISTENERS ---

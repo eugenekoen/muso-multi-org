@@ -406,6 +406,10 @@ body.logged-in .user-info {
     margin-bottom: var(--spacing-2xl);
 }
 
+.mobile-admin-tools-header {
+    display: none;
+}
+
 .sidebar-title {
     font-size: var(--font-size-sm);
     font-weight: 600;
@@ -2376,13 +2380,33 @@ body:not(.logged-in) #logout-btn {
         border-bottom: 1px solid var(--gray-200);
         padding: var(--spacing-lg);
         display: flex;
-        gap: var(--spacing-lg);
-        overflow-x: auto;
+        flex-direction: column;
+    }
+
+    .mobile-admin-tools-header {
+        display: block;
+        width: 100%;
+    }
+
+    .sidebar-sections-container {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: var(--spacing-md);
+    }
+
+    .sidebar-sections-container.active {
+        display: flex;
+        animation: fadeIn var(--transition-base);
     }
 
     .sidebar-section {
+        margin-bottom: var(--spacing-lg);
+        min-width: 100%;
+    }
+    
+    .sidebar-section:last-child {
         margin-bottom: 0;
-        min-width: 200px;
     }
 
     .features-grid {
