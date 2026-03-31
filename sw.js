@@ -3,7 +3,7 @@
  * Caches app shell files for offline use.
  */
 
-const CACHE_NAME = 'mihn-app-v3';
+const CACHE_NAME = 'mihn-app-v4';
 
 const APP_SHELL_FILES = [
     '/',
@@ -73,7 +73,7 @@ self.addEventListener('activate', (event) =>
     self.clients.claim();
 });
 
-// Fetch — cache-first for app shell, network-first for API calls
+// Fetch — network-first for local app shell, cache-first for external resources
 self.addEventListener('fetch', (event) =>
 {
     const url = new URL(event.request.url);
@@ -90,20 +90,14 @@ self.addEventListener('fetch', (event) =>
         return;
     }
 
-    // For all other requests: try cache first, then network
-    event.respondWith(
-        caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) =>
-        {
-            if (cachedResponse)
+    // For our own app files (HTML, JS, CSS) use Network-First
+    // This ensures updates are seen immediately when the user refreshes
+    if (url.origin === self.location.origin)
+    {
+        event.respondWith(
+            fetch(event.request).then((networkResponse) =>
             {
-                return cachedResponse;
-            }
-
-            return fetch(event.request).then((networkResponse) =>
-            {
-                // Cache new same-origin resources we haven't seen before
-                if (networkResponse && networkResponse.status === 200
-                    && url.origin === self.location.origin)
+                if (networkResponse && networkResponse.status === 200)
                 {
                     const responseClone = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) =>
@@ -114,11 +108,45 @@ self.addEventListener('fetch', (event) =>
                 return networkResponse;
             }).catch(() =>
             {
-                // If both cache and network fail, return a basic offline fallback
-                if (event.request.mode === 'navigate')
+                // Fallback to cache if network fails
+                return caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) =>
                 {
-                    return caches.match('/index.html');
+                    if (cachedResponse)
+                    {
+                        return cachedResponse;
+                    }
+                    if (event.request.mode === 'navigate')
+                    {
+                        return caches.match('/index.html');
+                    }
+                });
+            })
+        );
+        return;
+    }
+
+    // For external resources (CDNs) use Cache-First, then network
+    event.respondWith(
+        caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) =>
+        {
+            if (cachedResponse)
+            {
+                return cachedResponse;
+            }
+
+            return fetch(event.request).then((networkResponse) =>
+            {
+                if (networkResponse && networkResponse.status === 200)
+                {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) =>
+                    {
+                        cache.put(event.request, responseClone);
+                    });
                 }
+                return networkResponse;
+            }).catch(() => {
+                // Return nothing if both fail
             });
         })
     );
