@@ -2940,6 +2940,10 @@ body.theme-dark table i {
     color: #9ca3af;
 }
 
+body.theme-dark table i.cached-badge {
+    color: #2ecc71;
+}
+
 body.theme-dark table a i:hover {
     color: #60a5fa;
 }
@@ -3243,6 +3247,10 @@ body.theme-midnight-blue table a:hover {
 
 body.theme-midnight-blue table i {
     color: #7dd3fc;
+}
+
+body.theme-midnight-blue table i.cached-badge {
+    color: #2ecc71;
 }
 
 body.theme-midnight-blue table a i:hover {
@@ -3704,4 +3712,59 @@ body.theme-dark .prefs-section-desc {
 
 body.theme-midnight-blue .prefs-section-desc {
     color: #7dd3fc;
+}
+
+/* ===== LIGHT THEME TABLE STYLING ===== */
+/* Light theme: Apply dark text on light background for better readability */
+body:not(.theme-dark):not(.theme-midnight-blue) table th,
+body:not(.theme-dark):not(.theme-midnight-blue) table thead td {
+    background: var(--gray-400);
+    color: white;
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table td,
+body:not(.theme-dark):not(.theme-midnight-blue) table tbody td {
+    color: var(--gray-900);
+    border-bottom-color: var(--gray-200);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table tbody {
+    outline-color: var(--gray-200);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) tr:nth-child(even) {
+    background-color: var(--gray-50);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) tr:nth-child(odd) {
+    background-color: white;
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) tbody tr:hover {
+    background-color: rgba(37, 99, 235, 0.08);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table a {
+    color: var(--primary);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table a:hover {
+    color: var(--primary-dark);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table i {
+    color: var(--gray-500);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table i.cached-badge {
+    color: #2ecc71;
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table a i:hover {
+    color: var(--primary);
+}
+
+body:not(.theme-dark):not(.theme-midnight-blue) table td.selected-key {
+    color: var(--primary);
+    background-color: rgba(37, 99, 235, 0.1);
 }
