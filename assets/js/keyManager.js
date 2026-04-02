@@ -48,7 +48,7 @@ async function populateKeyManagerModal()
                 </td>
                 <td class="actions-col">
                     <div class="action-dropdown">
-                        <button class="action-dropdown-btn" onclick="this.parentElement.classList.toggle('show')">
+                        <button class="action-dropdown-btn" onclick="toggleActionDropdown(this)">
                             Actions <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
                         </button>
                         <div class="action-dropdown-content">
@@ -192,11 +192,13 @@ async function deleteOrganization(orgId)
         if (error) throw error;
         showKeyManagerMessage("Successfully deleted organization.");
         await populateKeyManagerModal();
-        
+
         // Also update local membership state if the user was a member
-        if (window.organizationModule) {
+        if (window.organizationModule)
+        {
             // Remove from userMemberships directly to update UI instantly if the switch church modal is opened
-            if (window.activeOrganizationId === orgId) {
+            if (window.activeOrganizationId === orgId)
+            {
                 window.organizationModule.clearOrganizationState();
             }
             // Force re-initialization
@@ -218,6 +220,36 @@ function showKeyManagerMessage(message, isError = false)
     setTimeout(() => { msgEl.textContent = ''; }, 4000);
 }
 
+function toggleActionDropdown(btn)
+{
+    const dropdown = btn.parentElement;
+    const wasOpen = dropdown.classList.contains('show');
+
+    // Close all other dropdowns first
+    document.querySelectorAll('.action-dropdown').forEach(d =>
+    {
+        d.classList.remove('show', 'drop-up');
+    });
+
+    if (wasOpen) return;
+
+    // Check if dropdown would overflow the modal-content scroll area
+    const modalContent = dropdown.closest('.modal-content');
+    if (modalContent)
+    {
+        const modalRect = modalContent.getBoundingClientRect();
+        const btnRect = btn.getBoundingClientRect();
+        const spaceBelow = modalRect.bottom - btnRect.bottom;
+
+        if (spaceBelow < 160)
+        {
+            dropdown.classList.add('drop-up');
+        }
+    }
+
+    dropdown.classList.add('show');
+}
+
 // Export functions
 window.keyManagerModule = {
     populateKeyManagerModal,
@@ -227,3 +259,6 @@ window.keyManagerModule = {
     deleteOrganization,
     showKeyManagerMessage
 };
+
+// Expose globally for inline onclick handlers
+window.toggleActionDropdown = toggleActionDropdown;

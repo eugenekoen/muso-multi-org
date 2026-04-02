@@ -69,7 +69,8 @@
             width: 100%;
             overflow: visible !important;
             max-height: none !important;
-            padding-bottom: 80px; /* Ensures space at the bottom for the last dropdown to push modal naturally */
+            padding-bottom: 80px;
+            /* Ensures space at the bottom for the last dropdown to push modal naturally */
         }
 
         #org-management-table th,
@@ -170,6 +171,14 @@
             display: block;
         }
 
+        /* Upward dropdown for rows near the bottom */
+        .action-dropdown.drop-up .action-dropdown-content {
+            bottom: 100%;
+            top: auto;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
         #org-management-table input.org-code-input {
             width: 100%;
             padding: 8px 12px;
@@ -187,6 +196,206 @@
             gap: 5px;
             flex: 1;
             min-width: 250px;
+        }
+
+        /* ===== Add Organization Form ===== */
+        .add-org-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            width: 100%;
+        }
+
+        .add-org-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .add-org-field:nth-child(1) {
+            flex: 0 0 30%;
+        }
+
+        .add-org-field:nth-child(2) {
+            flex: 0 0 45%;
+        }
+
+        .add-org-field label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--gray-700);
+        }
+
+        .add-org-field input[type="text"] {
+            margin: 0;
+            width: 100%;
+            padding: 8px 12px;
+            box-sizing: border-box;
+            height: 40px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-family: var(--font-family);
+            font-size: 14px;
+        }
+
+        .add-org-btn-field {
+            flex: 1;
+        }
+
+        .add-org-btn-field .modal-btn {
+            height: 40px;
+            padding: 0 24px;
+            white-space: nowrap;
+            font-family: var(--font-family);
+        }
+
+        .key-manager-divider {
+            margin: 25px 0;
+            border: none;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* ===== Key Manager Mobile Responsive ===== */
+        @media (max-width: 700px) {
+            #key-manager-modal .modal-content {
+                padding: 20px 15px;
+            }
+
+            #key-manager-modal h2 {
+                font-size: var(--font-size-xl);
+                margin-bottom: 10px;
+            }
+
+            #key-manager-modal h3 {
+                font-size: var(--font-size-base);
+            }
+
+            /* Stack the add-org form vertically */
+            .add-org-form {
+                flex-direction: column;
+                gap: 12px;
+                max-width: 100%;
+            }
+
+            .add-org-field,
+            .add-org-field:nth-child(1),
+            .add-org-field:nth-child(2) {
+                flex: 0 0 100%;
+                width: 100%;
+            }
+
+            .add-org-btn-field {
+                width: 100%;
+            }
+
+            .add-org-btn-field .modal-btn {
+                width: 100%;
+                height: 44px;
+            }
+
+            /* Convert org table to card layout */
+            #org-management-table thead {
+                display: none;
+            }
+
+            #org-management-table,
+            #org-management-table tbody,
+            #org-management-table tr,
+            #org-management-table td {
+                display: block;
+                width: 100%;
+            }
+
+            #org-management-table tr {
+                background: var(--gray-50);
+                border: 1px solid var(--gray-200);
+                border-radius: var(--radius-lg);
+                padding: 14px;
+                margin-bottom: 12px;
+                position: relative;
+            }
+
+            #org-management-table td {
+                border: none;
+                padding: 4px 0;
+                text-align: left !important;
+            }
+
+            #org-management-table td.name-col {
+                font-weight: 700;
+                font-size: var(--font-size-base);
+                color: var(--gray-900);
+                padding-bottom: 8px;
+                width: 100%;
+            }
+
+            #org-management-table td.code-col {
+                width: 100%;
+                padding-bottom: 8px;
+            }
+
+            #org-management-table td.code-col::before {
+                content: 'Signup Code';
+                display: block;
+                font-size: var(--font-size-xs);
+                font-weight: 600;
+                color: var(--gray-500);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 4px;
+            }
+
+            #org-management-table td.status-col {
+                width: 100%;
+                padding-bottom: 10px;
+            }
+
+            #org-management-table td.status-col::before {
+                content: 'Status: ';
+                font-size: var(--font-size-sm);
+                font-weight: 600;
+                color: var(--gray-500);
+            }
+
+            #org-management-table td.actions-col {
+                width: 100%;
+                text-align: left !important;
+                padding-top: 6px;
+                border-top: 1px solid var(--gray-200);
+            }
+
+            #org-management-table input.org-code-input {
+                font-size: 16px;
+                /* Prevents iOS zoom */
+            }
+
+            /* Make action dropdown full-width on mobile */
+            .action-dropdown {
+                display: block;
+                width: 100%;
+            }
+
+            .action-dropdown-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 16px;
+                font-size: 14px;
+                background: var(--gray-100);
+            }
+
+            .action-dropdown-content {
+                position: relative;
+                right: auto;
+                width: 100%;
+                margin-top: 6px;
+                box-shadow: none;
+                border: 1px solid var(--gray-200);
+            }
+
+            .action-dropdown-content button {
+                justify-content: center;
+                padding: 12px 15px;
+            }
         }
     </style>
     <script>
@@ -738,42 +947,24 @@
             <h2 id="key-manager-title">Key Manager (Master Admin)</h2>
             <p id="key-manager-msg" class="feedback-msg" role="status"></p>
 
-            <div id="add-org-section" style="width: 450px;">
+            <div id="add-org-section">
                 <h3>Add New Organization</h3>
-                <table style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left; width: 40%; padding-right: 15px;">
-                                <label for="new-org-name" style="font-weight: 600;">Church Name:</label>
-                            </th>
-                            <th style="text-align: left; width: 40%; padding-right: 15px;">
-                                <label for="new-org-code" style="font-weight: 600;">Signup Code:</label>
-                            </th>
-                            <th style="width: 20%;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input type="text" id="new-org-name" placeholder="e.g., Grace Church"
-                                    style="margin: 0; width: 100%; padding: 8px; box-sizing: border-box; height: 38px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
-                            </td>
-                            <td>
-                                <input type="text" id="new-org-code" placeholder="e.g., GCC2026"
-                                    style="margin: 0; width: 100%; padding: 8px; box-sizing: border-box; height: 38px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
-                            </td>
-                            <td>
-                                <button id="save-new-org-btn" class="modal-btn"
-                                    style="height: 38px; padding: 0 20px; width: 100%; white-space: nowrap; font-family: 'Montserrat', sans-serif;">Add
-                                    Church</button>
-                            </td>
-                        </tr>
-                    </tbody>
-
-                </table>
+                <div class="add-org-form">
+                    <div class="add-org-field">
+                        <label for="new-org-name">Church Name:</label>
+                        <input type="text" id="new-org-name" placeholder="e.g., Grace Church">
+                    </div>
+                    <div class="add-org-field">
+                        <label for="new-org-code">Signup Code:</label>
+                        <input type="text" id="new-org-code" placeholder="e.g., GCC2026">
+                    </div>
+                    <div class="add-org-field add-org-btn-field">
+                        <button id="save-new-org-btn" class="modal-btn">Add Church</button>
+                    </div>
+                </div>
             </div>
 
-            <hr style="margin: 25px 0; width: 450px;">
+            <hr class="key-manager-divider">
 
             <h3>Organizations Management</h3>
             <div class="table-container key-manager-table-wrapper">

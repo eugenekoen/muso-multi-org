@@ -140,15 +140,20 @@ document.addEventListener('DOMContentLoaded', () =>
     // Mobile Admin Tools Toggle
     const mobileAdminToolsToggle = document.getElementById('mobile-admin-tools-toggle');
     const sidebarSectionsContainer = document.querySelector('.sidebar-sections-container');
-    if (mobileAdminToolsToggle && sidebarSectionsContainer) {
-        mobileAdminToolsToggle.addEventListener('click', () => {
+    if (mobileAdminToolsToggle && sidebarSectionsContainer)
+    {
+        mobileAdminToolsToggle.addEventListener('click', () =>
+        {
             sidebarSectionsContainer.classList.toggle('active');
             const toggleIcon = mobileAdminToolsToggle.querySelector('.toggle-icon');
-            if (toggleIcon) {
-                if (sidebarSectionsContainer.classList.contains('active')) {
+            if (toggleIcon)
+            {
+                if (sidebarSectionsContainer.classList.contains('active'))
+                {
                     toggleIcon.classList.remove('fa-chevron-down');
                     toggleIcon.classList.add('fa-chevron-up');
-                } else {
+                } else
+                {
                     toggleIcon.classList.remove('fa-chevron-up');
                     toggleIcon.classList.add('fa-chevron-down');
                 }
@@ -750,8 +755,8 @@ document.addEventListener('DOMContentLoaded', () =>
     {
         orgManagementTableBody.addEventListener('click', async (event) =>
         {
-            const target = event.target;
-            const orgId = target.dataset.orgId;
+            const target = event.target.closest('button[data-org-id]') || event.target;
+            const orgId = target.dataset?.orgId;
 
             if (target.classList.contains('update-org-code-btn'))
             {
@@ -848,9 +853,11 @@ document.addEventListener('DOMContentLoaded', () =>
         // Removed outside-click closure for setlist, user management, and key manager
 
         // Close action dropdowns when clicking outside
-        if (!event.target.closest('.action-dropdown-btn')) {
-            document.querySelectorAll('.action-dropdown').forEach(dropdown => {
-                dropdown.classList.remove('show');
+        if (!event.target.closest('.action-dropdown-btn'))
+        {
+            document.querySelectorAll('.action-dropdown').forEach(dropdown =>
+            {
+                dropdown.classList.remove('show', 'drop-up');
             });
         }
     });
