@@ -192,6 +192,16 @@ async function deleteOrganization(orgId)
         if (error) throw error;
         showKeyManagerMessage("Successfully deleted organization.");
         await populateKeyManagerModal();
+        
+        // Also update local membership state if the user was a member
+        if (window.organizationModule) {
+            // Remove from userMemberships directly to update UI instantly if the switch church modal is opened
+            if (window.activeOrganizationId === orgId) {
+                window.organizationModule.clearOrganizationState();
+            }
+            // Force re-initialization
+            await window.organizationModule.initializeOrganizationState();
+        }
     } catch (error)
     {
         console.error("Error deleting organization:", error);

@@ -189,9 +189,11 @@ async function initializeOrganizationState(passedUser)
         if (orgError) throw orgError;
 
         // Combine
-        userMemberships = memberships.map(m => ({
+        // Filter out memberships where the organization no longer exists
+        const validMemberships = memberships.filter(m => orgs.some(o => o.id === m.organization_id));
+        userMemberships = validMemberships.map(m => ({
             ...m,
-            organization: orgs.find(o => o.id === m.organization_id) || { name: 'Unknown', is_disabled: false }
+            organization: orgs.find(o => o.id === m.organization_id)
         }));
 
         // UPDATE CACHE
