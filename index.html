@@ -56,6 +56,7 @@
     <script type="text/javascript" src="./assets/js/ui.js"></script>
     <script type="text/javascript" src="./assets/js/organization.js"></script>
     <script type="text/javascript" src="./assets/js/keyManager.js"></script>
+    <script type="text/javascript" src="./assets/js/preferences.js"></script>
     <script type="text/javascript" src="./assets/js/schedule.js?v=1.2"></script>
     <script type="text/javascript" src="./assets/js/init.js"></script>
     <style>
@@ -428,6 +429,10 @@
                     <span class="user-org-name" id="nav-org-name">Loading...</span>
                     <span class="user-role" id="nav-user-role">Member</span>
                 </div>
+                <button id="user-preferences-btn" class="nav-gear-btn" title="User Preferences" style="display: none;"
+                    onclick="window.preferencesModule && window.preferencesModule.openPreferencesModal()">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
             </div>
         </div>
         <div id="textdiv">TURNING POINT MUSOS</div>
@@ -983,6 +988,84 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Preferences Modal -->
+    <div id="user-preferences-modal" class="modal" aria-modal="true" role="dialog"
+        aria-labelledby="user-preferences-title">
+        <div class="modal-content prefs-modal">
+            <span class="close-user-preferences-modal-btn close-modal-btn"
+                aria-label="Close User Preferences dialog">&times;</span>
+            <h2 id="user-preferences-title"><i class="fa-solid fa-sliders"
+                    style="margin-right: 10px; color: var(--primary);"></i>User Preferences</h2>
+            <p id="user-preferences-msg" class="feedback-msg" role="status"></p>
+
+            <!-- Display Name Section -->
+            <div class="prefs-section">
+                <div class="prefs-section-header">
+                    <i class="fa-solid fa-user-pen"></i>
+                    <h3>Display Name</h3>
+                </div>
+                <p class="prefs-section-desc">This is how your name appears to other team members.</p>
+                <div class="prefs-name-row">
+                    <input type="text" id="pref-display-name" placeholder="Your display name" aria-label="Display name">
+                    <button id="save-display-name-btn" class="modal-btn">Save Name</button>
+                </div>
+            </div>
+
+            <!-- Theme Section -->
+            <div class="prefs-section">
+                <div class="prefs-section-header">
+                    <i class="fa-solid fa-palette"></i>
+                    <h3>Theme</h3>
+                </div>
+                <p class="prefs-section-desc">Choose a look that suits your style.</p>
+                <div class="theme-picker">
+                    <label class="theme-card" data-theme="light">
+                        <input type="radio" name="theme" value="light">
+                        <div class="theme-preview theme-preview-light">
+                            <div class="theme-preview-nav"></div>
+                            <div class="theme-preview-body">
+                                <div class="theme-preview-sidebar"></div>
+                                <div class="theme-preview-content">
+                                    <div class="theme-preview-line"></div>
+                                    <div class="theme-preview-line short"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="theme-label">Light</span>
+                    </label>
+                    <label class="theme-card" data-theme="dark">
+                        <input type="radio" name="theme" value="dark">
+                        <div class="theme-preview theme-preview-dark">
+                            <div class="theme-preview-nav"></div>
+                            <div class="theme-preview-body">
+                                <div class="theme-preview-sidebar"></div>
+                                <div class="theme-preview-content">
+                                    <div class="theme-preview-line"></div>
+                                    <div class="theme-preview-line short"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="theme-label">Dark</span>
+                    </label>
+                    <label class="theme-card" data-theme="midnight-blue">
+                        <input type="radio" name="theme" value="midnight-blue">
+                        <div class="theme-preview theme-preview-midnight">
+                            <div class="theme-preview-nav"></div>
+                            <div class="theme-preview-body">
+                                <div class="theme-preview-sidebar"></div>
+                                <div class="theme-preview-content">
+                                    <div class="theme-preview-line"></div>
+                                    <div class="theme-preview-line short"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="theme-label">Midnight</span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>

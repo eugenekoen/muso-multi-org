@@ -230,6 +230,10 @@ async function updateAuthState(user)
         const switchChurchBtn = document.getElementById('switch-church-btn');
         if (switchChurchBtn) switchChurchBtn.style.display = 'inline-block';
 
+        // Show the preferences gear button
+        const prefsBtn = document.getElementById('user-preferences-btn');
+        if (prefsBtn) prefsBtn.style.display = 'flex';
+
         // Fetch and set the user's name
         currentUserName = await fetchUserName(user.id);
         updateNavUserInfo();
@@ -245,6 +249,10 @@ async function updateAuthState(user)
         // Hide the switch church button when logged out
         const switchChurchBtn = document.getElementById('switch-church-btn');
         if (switchChurchBtn) switchChurchBtn.style.display = 'none';
+
+        // Hide the preferences gear button
+        const prefsBtn = document.getElementById('user-preferences-btn');
+        if (prefsBtn) prefsBtn.style.display = 'none';
 
         currentUserRole = null;
         currentUserName = null;
@@ -295,7 +303,8 @@ window.authModule = {
     updatePassword,
     updateNavUserInfo,
     getCurrentUserRole: () => currentUserRole,
-    getCurrentUserName: () => currentUserName
+    getCurrentUserName: () => currentUserName,
+    setCurrentUserName: (name) => { currentUserName = name; }
 };
 
 /**

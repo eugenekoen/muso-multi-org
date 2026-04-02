@@ -777,6 +777,37 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     }
 
+    // --- USER PREFERENCES LISTENERS ---
+    const userPreferencesBtn = document.getElementById('user-preferences-btn');
+    const userPreferencesModal = document.getElementById('user-preferences-modal');
+
+    if (userPreferencesBtn)
+    {
+        userPreferencesBtn.addEventListener('click', () =>
+        {
+            window.preferencesModule.openPreferencesModal();
+        });
+    }
+
+    document.getElementById('save-display-name-btn')?.addEventListener('click', () =>
+    {
+        window.preferencesModule.saveDisplayName();
+    });
+
+    // Theme picker: listen for radio changes
+    document.querySelectorAll('input[name="theme"]').forEach(radio =>
+    {
+        radio.addEventListener('change', (e) =>
+        {
+            window.preferencesModule.handleThemeChange(e.target.value);
+        });
+    });
+
+    document.querySelector('.close-user-preferences-modal-btn')?.addEventListener('click', () =>
+    {
+        userPreferencesModal.style.display = 'none';
+    });
+
     // --- SCHEDULE MANAGER LISTENERS ---
     const scheduleManagerBtn = document.getElementById('schedule-manager-btn');
     const viewScheduleBtn = document.getElementById('view-schedule-btn');
