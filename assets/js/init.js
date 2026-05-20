@@ -1061,7 +1061,7 @@ document.addEventListener('DOMContentLoaded', () =>
         }
     });
 
-    // Enforce 55-character line length limit on all chords and lyrics textareas
+    // Enforce 50-character line length limit on all chords and lyrics textareas
     const songTextareas = [
         document.getElementById('edit-song-textarea'),
         document.getElementById('edit-song-lyrics-textarea'),
@@ -1073,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', () =>
         if (!textarea) return;
 
         textarea.addEventListener('input', function() {
-            const maxCharsPerLine = 55;
+            const maxCharsPerLine = 50;
             const selectionStart = this.selectionStart;
             const selectionEnd = this.selectionEnd;
             const originalValue = this.value;
