@@ -190,10 +190,14 @@
         document.addEventListener('DOMContentLoaded', async function ()
         {
             // Load and apply theme from preferences
-            const savedTheme = localStorage.getItem('muso-theme') || 'light';
-            if (savedTheme && savedTheme !== 'light')
+            let songTheme = localStorage.getItem('muso-song-theme') || 'auto';
+            if (songTheme === 'auto')
             {
-                document.body.classList.add(`theme-${savedTheme}`);
+                songTheme = localStorage.getItem('muso-theme') || 'light';
+            }
+            if (songTheme && songTheme !== 'light')
+            {
+                document.body.classList.add(`theme-${songTheme}`);
             }
 
             const preElement = document.getElementById('songContent');

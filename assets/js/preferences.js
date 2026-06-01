@@ -51,6 +51,11 @@ async function openPreferencesModal()
     const radio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
     if (radio) radio.checked = true;
 
+    // Set current song theme radio
+    const savedSongTheme = localStorage.getItem('muso-song-theme') || 'auto';
+    const songRadio = document.querySelector(`input[name="song-theme"][value="${savedSongTheme}"]`);
+    if (songRadio) songRadio.checked = true;
+
     modal.style.display = 'block';
 }
 
@@ -114,6 +119,15 @@ function handleThemeChange(theme)
     showPrefsMessage(`Theme changed to ${theme === 'midnight-blue' ? 'Midnight' : theme.charAt(0).toUpperCase() + theme.slice(1)}.`);
 }
 
+/**
+ * Handles song theme selection from the picker
+ */
+function handleSongThemeChange(theme)
+{
+    localStorage.setItem('muso-song-theme', theme || 'auto');
+    showPrefsMessage(`Song view theme changed to ${theme === 'midnight-blue' ? 'Midnight' : theme === 'auto' ? 'Match App Theme' : theme.charAt(0).toUpperCase() + theme.slice(1)}.`);
+}
+
 function showPrefsMessage(message, isError = false)
 {
     const msgEl = document.getElementById('user-preferences-msg');
@@ -137,6 +151,7 @@ window.preferencesModule = {
     openPreferencesModal,
     saveDisplayName,
     handleThemeChange,
+    handleSongThemeChange,
     applyTheme,
     loadSavedTheme
 };

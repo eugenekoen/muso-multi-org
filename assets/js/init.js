@@ -803,6 +803,15 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     });
 
+    // Song theme picker: listen for radio changes
+    document.querySelectorAll('input[name="song-theme"]').forEach(radio =>
+    {
+        radio.addEventListener('change', (e) =>
+        {
+            window.preferencesModule.handleSongThemeChange(e.target.value);
+        });
+    });
+
     document.querySelector('.close-user-preferences-modal-btn')?.addEventListener('click', () =>
     {
         userPreferencesModal.style.display = 'none';
