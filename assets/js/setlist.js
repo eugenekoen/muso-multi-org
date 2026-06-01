@@ -187,7 +187,7 @@ function updateTableOneWithSetlist()
         const msg = window.activeOrganizationId
             ? 'Setlist is empty for this weekend.'
             : 'Please select a church to view the setlist.';
-        tableOneBody.innerHTML = `<tr><td colspan="4" class="text-center">${msg}</td></tr>`;
+        tableOneBody.innerHTML = `<tr><td colspan="3" class="text-center">${msg}</td></tr>`;
         return;
     }
     const orgId = window.activeOrganizationId;
@@ -198,7 +198,6 @@ function updateTableOneWithSetlist()
 
         // Check if this song has fresh cache
         let chordsBadge = '';
-        let lyricsBadge = '';
         if (orgId)
         {
             const cached = readSongCache(orgId, songName);
@@ -207,10 +206,6 @@ function updateTableOneWithSetlist()
             {
                 chordsBadge = ' <i class="fa-solid fa-circle cached-badge" title="Available offline"></i>';
             }
-            if (isFresh && cached.lyricsContent)
-            {
-                lyricsBadge = ' <i class="fa-solid fa-circle cached-badge" title="Available offline"></i>';
-            }
         }
 
         const row = tableOneBody.insertRow();
@@ -218,7 +213,6 @@ function updateTableOneWithSetlist()
             <td>${displayName}</td>
             <td class="text-center selected-key">${key}</td>
             <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a>${chordsBadge}</td>
-            <td class="text-center"><a href="#" data-song-identifier="${songName}" data-content-type="lyrics" title="Lyrics"><i class="fa-solid fa-align-left"></i></a>${lyricsBadge}</td>
         `;
     });
 }

@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -37,12 +38,28 @@
     <!-- Content will be injected here by script -->
   </pre>
 
+    <!-- Space-saving Floating Action Button (FAB) Toggle -->
+    <button id="song-fab-toggle" class="floating-toggle" style="display: none;" onclick="toggleContentType()" title="Toggle Chords/Lyrics">
+        <i class="fa-solid fa-align-left"></i>
+    </button>
+
     <script>
         // Updated credentials to match supabaseClient.js
         const SUPABASE_URL = 'https://xikllcuwvyuqcvcjjimw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpa2xsY3V3dnl1cWN2Y2pqaW13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4NjkyMTYsImV4cCI6MjA4NDQ0NTIxNn0.DqAsJ2BXAzwnggId0nMihzfxN9UpslAUQzm-V5sgfWY';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const OFFLINE_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
+
+        // Dynamic State
+        let activeSongData = {
+            songIdentifier: '',
+            displayName: '',
+            chordsContent: '',
+            lyricsContent: '',
+            orgId: '',
+            targetKey: ''
+        };
+        let currentContentType = 'chords';
 
         function getSongCacheKey(orgId, songIdentifier)
         {
@@ -65,39 +82,12 @@
             }
         }
 
-        function writeSongCache(orgId, songIdentifier, displayName, contentType, content, cachedEntry)
-        {
-            if (!orgId || !songIdentifier) return;
-            const now = Date.now();
-            const cachePayload = {
-                songIdentifier: songIdentifier,
-                displayName: displayName || (cachedEntry ? cachedEntry.displayName : ''),
-                chordsContent: cachedEntry?.chordsContent || '',
-                lyricsContent: cachedEntry?.lyricsContent || '',
-                cachedAt: now,
-                expiresAt: now + OFFLINE_CACHE_TTL_MS
-            };
-
-            if (contentType === 'chords')
-            {
-                cachePayload.chordsContent = content || '';
-            } else
-            {
-                cachePayload.lyricsContent = content || '';
-            }
-
-            localStorage.setItem(getSongCacheKey(orgId, songIdentifier), JSON.stringify(cachePayload));
-        }
-
-        function getCachedContent(cachedEntry, contentType)
-        {
-            if (!cachedEntry) return null;
-            return contentType === 'chords' ? cachedEntry.chordsContent : cachedEntry.lyricsContent;
-        }
-
         function renderSongContent(preElement, songContent, contentType, displayName, targetKey)
         {
             document.title = displayName || 'Song';
+
+            // Clean up any previously injected transposer key bars
+            $('.transpose-keys').remove();
 
             let lines = songContent.split('\n');
 
@@ -126,91 +116,177 @@
             const finalKey = key;
             preElement.setAttribute('data-key', finalKey);
 
-            $('#songContent').transpose();
-
-            if (contentType === 'chords' && targetKey && targetKey !== key)
+            if (contentType === 'chords')
             {
-                const transposeLinks = document.querySelectorAll('.transpose-keys a');
-                for (let link of transposeLinks)
+                $('#songContent').transpose();
+
+                if (targetKey && targetKey !== key)
                 {
-                    if (link.textContent.trim() === targetKey)
+                    const transposeLinks = document.querySelectorAll('.transpose-keys a');
+                    for (let link of transposeLinks)
                     {
-                        link.click();
-                        break;
+                        if (link.textContent.trim() === targetKey)
+                        {
+                            link.click();
+                            break;
+                        }
                     }
                 }
             }
         }
 
+        function renderCurrentContent()
+        {
+            const preElement = document.getElementById('songContent');
+            const songContent = currentContentType === 'chords' ? activeSongData.chordsContent : activeSongData.lyricsContent;
+
+            if (!songContent)
+            {
+                preElement.textContent = `Error: No ${currentContentType} content available for this song.`;
+                const fabButton = document.getElementById('song-fab-toggle');
+                if (fabButton) fabButton.style.display = 'none';
+                return;
+            }
+
+            renderSongContent(preElement, songContent, currentContentType, activeSongData.displayName, activeSongData.targetKey);
+
+            // Update floating toggle FAB
+            const fabButton = document.getElementById('song-fab-toggle');
+            if (fabButton)
+            {
+                // Only show toggle FAB if both types are available in the data
+                if (activeSongData.chordsContent && activeSongData.lyricsContent)
+                {
+                    fabButton.style.display = 'flex';
+                } else
+                {
+                    fabButton.style.display = 'none';
+                }
+
+                if (currentContentType === 'chords')
+                {
+                    fabButton.innerHTML = '<i class="fa-solid fa-align-left"></i>';
+                    fabButton.title = 'Switch to Lyrics';
+                } else
+                {
+                    fabButton.innerHTML = '<i class="fa-solid fa-music"></i>';
+                    fabButton.title = 'Switch to Chords';
+                }
+            }
+        }
+
+        function toggleContentType()
+        {
+            currentContentType = currentContentType === 'chords' ? 'lyrics' : 'chords';
+            renderCurrentContent();
+        }
+
+        // Listen for transposer clicks to keep track of the selected transposition key
+        $(document).on('click', '.transpose-keys a', function()
+        {
+            activeSongData.targetKey = $(this).text().trim();
+        });
+
         document.addEventListener('DOMContentLoaded', async function ()
         {
+            // Load and apply theme from preferences
+            const savedTheme = localStorage.getItem('muso-theme') || 'light';
+            if (savedTheme && savedTheme !== 'light')
+            {
+                document.body.classList.add(`theme-${savedTheme}`);
+            }
+
             const preElement = document.getElementById('songContent');
             preElement.textContent = "Loading song...";
 
             const params = new URLSearchParams(window.location.search);
             const songIdentifier = params.get('song');
-            const contentType = params.get('contentType');
+            const contentType = params.get('contentType') || 'chords';
             const orgId = params.get('org');
             const targetKey = params.get('targetKey');
-            const shouldHideTranspose = params.get('hideTranspose');
 
-            if (!songIdentifier || !contentType)
+            if (!songIdentifier)
             {
-                console.error("Missing song identifier or content type in the URL.");
+                console.error("Missing song identifier in the URL.");
                 preElement.textContent = "Error: Song not specified in the URL.";
                 return;
             }
 
-            if (shouldHideTranspose === 'true')
-            {
-                const style = document.createElement('style');
-                style.innerHTML = '.transpose-keys { display: none !important; }';
-                document.head.appendChild(style);
-            }
+            currentContentType = contentType;
 
             const cachedEntry = readSongCache(orgId, songIdentifier);
-            const cachedContent = getCachedContent(cachedEntry, contentType);
             const cacheIsFresh = !!(cachedEntry && cachedEntry.expiresAt && cachedEntry.expiresAt > Date.now());
 
-            if (cacheIsFresh && cachedContent)
+            if (cacheIsFresh && cachedEntry)
             {
-                renderSongContent(preElement, cachedContent, contentType, cachedEntry.displayName, targetKey);
+                activeSongData.songIdentifier = songIdentifier;
+                activeSongData.displayName = cachedEntry.displayName;
+                activeSongData.chordsContent = cachedEntry.chordsContent || '';
+                activeSongData.lyricsContent = cachedEntry.lyricsContent || '';
+                activeSongData.orgId = orgId;
+                activeSongData.targetKey = targetKey;
+
+                renderCurrentContent();
                 return;
             }
 
             try
             {
-                const columnName = contentType === 'chords' ? 'chords_content' : 'lyrics_content';
-
                 await supabaseClient.auth.getSession();
 
                 const { data, error } = await supabaseClient
                     .from('songs')
-                    .select(`${columnName}, display_name`)
+                    .select('chords_content, lyrics_content, display_name')
                     .eq('song_identifier', songIdentifier)
                     .eq('organization_id', orgId)
                     .maybeSingle();
 
                 if (error) throw error;
 
-                if (!data || !data[columnName])
+                if (!data)
                 {
-                    preElement.textContent = `Error: Could not find ${contentType} for song '${songIdentifier}'.`;
+                    preElement.textContent = `Error: Could not find song '${songIdentifier}'.`;
                     return;
                 }
 
                 const displayName = data.display_name || 'Song';
-                const songContent = data[columnName];
+                const chordsContent = data.chords_content || '';
+                const lyricsContent = data.lyrics_content || '';
 
-                writeSongCache(orgId, songIdentifier, displayName, contentType, songContent, cachedEntry);
-                renderSongContent(preElement, songContent, contentType, displayName, targetKey);
+                // Save both to offline cache in a single write
+                const now = Date.now();
+                const cachePayload = {
+                    songIdentifier: songIdentifier,
+                    displayName: displayName,
+                    chordsContent: chordsContent,
+                    lyricsContent: lyricsContent,
+                    cachedAt: now,
+                    expiresAt: now + OFFLINE_CACHE_TTL_MS
+                };
+                localStorage.setItem(getSongCacheKey(orgId, songIdentifier), JSON.stringify(cachePayload));
+
+                activeSongData.songIdentifier = songIdentifier;
+                activeSongData.displayName = displayName;
+                activeSongData.chordsContent = chordsContent;
+                activeSongData.lyricsContent = lyricsContent;
+                activeSongData.orgId = orgId;
+                activeSongData.targetKey = targetKey;
+
+                renderCurrentContent();
 
             } catch (err)
             {
                 console.error('Error fetching song content:', err);
-                if (cachedContent)
+                if (cachedEntry)
                 {
-                    renderSongContent(preElement, cachedContent, contentType, cachedEntry.displayName, targetKey);
+                    activeSongData.songIdentifier = songIdentifier;
+                    activeSongData.displayName = cachedEntry.displayName;
+                    activeSongData.chordsContent = cachedEntry.chordsContent || '';
+                    activeSongData.lyricsContent = cachedEntry.lyricsContent || '';
+                    activeSongData.orgId = orgId;
+                    activeSongData.targetKey = targetKey;
+
+                    renderCurrentContent();
                 } else
                 {
                     preElement.textContent = 'Error: Failed to load song data. Please check your connection.';
@@ -219,5 +295,4 @@
         });
     </script>
 </body>
-
 </html>

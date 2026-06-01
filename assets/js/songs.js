@@ -11,12 +11,12 @@ async function populateSongDatabaseTable(organizationId)
     const tableTwoBody = document.querySelector('#tabletwo tbody');
 
     if (!supabaseClient || !tableTwoBody) return;
-    tableTwoBody.innerHTML = '<tr><td colspan="4" class="text-center">Loading song database...</td></tr>';
+    tableTwoBody.innerHTML = '<tr><td colspan="3" class="text-center">Loading song database...</td></tr>';
 
     // If no organization is selected, show a message and stop.
     if (!organizationId)
     {
-        tableTwoBody.innerHTML = '<tr><td colspan="4" class="text-center">Please select a church to view songs.</td></tr>';
+        tableTwoBody.innerHTML = '<tr><td colspan="3" class="text-center">Please select a church to view songs.</td></tr>';
         allSongsData = [];
         // Ensure Edit header is hidden if we are logged out / no org selected
         const editHeader = document.querySelector('#tabletwo thead .edit-col');
@@ -37,7 +37,7 @@ async function populateSongDatabaseTable(organizationId)
         } catch (e) { console.warn("Invalid cached songs", e); }
     } else
     {
-        tableTwoBody.innerHTML = '<tr><td colspan="4" class="text-center">Loading song database...</td></tr>';
+        tableTwoBody.innerHTML = '<tr><td colspan="3" class="text-center">Loading song database...</td></tr>';
     }
 
     try
@@ -80,7 +80,7 @@ async function populateSongDatabaseTable(organizationId)
         if (allSongsData.length === 0)
         {
             const msg = error.name === 'AbortError' ? 'Network timeout. Please refresh.' : 'Error loading songs.';
-            tableTwoBody.innerHTML = `<tr><td colspan="4" class="text-center" style="color: red;">${msg}</td></tr>`;
+            tableTwoBody.innerHTML = `<tr><td colspan="3" class="text-center" style="color: red;">${msg}</td></tr>`;
         }
     }
 }
@@ -93,7 +93,7 @@ function renderSongTable()
     tableTwoBody.innerHTML = '';
     if (allSongsData.length === 0)
     {
-        tableTwoBody.innerHTML = '<tr><td colspan="4" class="text-center">No songs found in the database.</td></tr>';
+        tableTwoBody.innerHTML = '<tr><td colspan="3" class="text-center">No songs found in the database.</td></tr>';
         return;
     }
     const currentUserRole = window.authModule ? window.authModule.getCurrentUserRole() : null;
@@ -136,9 +136,6 @@ function renderSongTable()
             </td>
             <td class="text-center">
                 <a href="#" data-song-identifier="${song.identifier}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a>
-            </td>
-            <td class="text-center">
-                <a href="#" data-song-identifier="${song.identifier}" data-content-type="lyrics" title="Lyrics"><i class="fa-solid fa-align-left"></i></a>
             </td>
         `;
     });
