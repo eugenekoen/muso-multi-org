@@ -1060,4 +1060,58 @@ document.addEventListener('DOMContentLoaded', () =>
             }
         }
     });
+
+    // Enforce 50-character line length limit on all chords and lyrics textareas
+    const songTextareas = [
+        document.getElementById('edit-song-textarea'),
+        document.getElementById('edit-song-lyrics-textarea'),
+        document.getElementById('new-song-chords'),
+        document.getElementById('new-song-lyrics')
+    ];
+
+    songTextareas.forEach(textarea => {
+        if (!textarea) return;
+
+        textarea.addEventListener('input', function() {
+            const maxCharsPerLine = 50;
+            const selectionStart = this.selectionStart;
+            const selectionEnd = this.selectionEnd;
+            const originalValue = this.value;
+            const lines = originalValue.split('\n');
+            let modified = false;
+            const newLines = [];
+            
+            let cursorShift = 0;
+            let currentOriginalPos = 0;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.length > maxCharsPerLine) {
+                    modified = true;
+                    const chunks = [];
+                    for (let j = 0; j < line.length; j += maxCharsPerLine) {
+                        chunks.push(line.substring(j, j + maxCharsPerLine));
+                    }
+                    
+                    newLines.push(...chunks);
+                    
+                    const cursorInLine = selectionStart - currentOriginalPos;
+                    if (cursorInLine > 0) {
+                        const boundaryCrosses = Math.floor((cursorInLine - 1) / maxCharsPerLine);
+                        if (boundaryCrosses > 0) {
+                            cursorShift += boundaryCrosses;
+                        }
+                    }
+                } else {
+                    newLines.push(line);
+                }
+                currentOriginalPos += line.length + 1;
+            }
+            
+            if (modified) {
+                this.value = newLines.join('\n');
+                this.setSelectionRange(selectionStart + cursorShift, selectionEnd + cursorShift);
+            }
+        });
+    });
 });
