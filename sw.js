@@ -3,7 +3,7 @@
  * Caches app shell files for offline use.
  */
 
-const CACHE_NAME = 'mihn-app-v4';
+const CACHE_NAME = 'mihn-app-v5';
 
 const APP_SHELL_FILES = [
     '/',
