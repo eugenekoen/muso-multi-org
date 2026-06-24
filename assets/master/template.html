@@ -219,21 +219,30 @@
             currentContentType = contentType;
 
             const cachedEntry = readSongCache(orgId, songIdentifier);
-            const cacheIsFresh = !!(cachedEntry && cachedEntry.expiresAt && cachedEntry.expiresAt > Date.now());
 
-            if (cacheIsFresh && cachedEntry)
+            // If offline, use cache immediately if available
+            if (!navigator.onLine)
             {
-                activeSongData.songIdentifier = songIdentifier;
-                activeSongData.displayName = cachedEntry.displayName;
-                activeSongData.chordsContent = cachedEntry.chordsContent || '';
-                activeSongData.lyricsContent = cachedEntry.lyricsContent || '';
-                activeSongData.orgId = orgId;
-                activeSongData.targetKey = targetKey;
+                if (cachedEntry)
+                {
+                    console.log("Offline: Loading song from cache.");
+                    activeSongData.songIdentifier = songIdentifier;
+                    activeSongData.displayName = cachedEntry.displayName;
+                    activeSongData.chordsContent = cachedEntry.chordsContent || '';
+                    activeSongData.lyricsContent = cachedEntry.lyricsContent || '';
+                    activeSongData.orgId = orgId;
+                    activeSongData.targetKey = targetKey;
 
-                renderCurrentContent();
+                    renderCurrentContent();
+                }
+                else
+                {
+                    preElement.textContent = "Offline: Song is not cached. Please connect to the internet to load.";
+                }
                 return;
             }
 
+            // If online, always fetch from network to get the absolute latest edits.
             try
             {
                 await supabaseClient.auth.getSession();
@@ -257,7 +266,7 @@
                 const chordsContent = data.chords_content || '';
                 const lyricsContent = data.lyrics_content || '';
 
-                // Save both to offline cache in a single write
+                // Save both to offline cache in a single write so it's available next time offline
                 const now = Date.now();
                 const cachePayload = {
                     songIdentifier: songIdentifier,
@@ -283,6 +292,7 @@
                 console.error('Error fetching song content:', err);
                 if (cachedEntry)
                 {
+                    console.log("Network fetch failed. Falling back to cached song.");
                     activeSongData.songIdentifier = songIdentifier;
                     activeSongData.displayName = cachedEntry.displayName;
                     activeSongData.chordsContent = cachedEntry.chordsContent || '';

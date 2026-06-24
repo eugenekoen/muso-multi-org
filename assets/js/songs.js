@@ -241,6 +241,24 @@ async function saveSongChanges()
         editSongMsg.textContent = 'Saved successfully!';
         editSongMsg.style.color = 'green';
 
+        // Update offline cache for the edited song (regardless of setlist status)
+        if (orgId)
+        {
+            const TTL = (window.setlistModule && window.setlistModule.OFFLINE_CACHE_TTL_MS) || (4 * 60 * 60 * 1000);
+            const cacheKey = `cachedSong_${orgId}_${songIdentifier}`;
+            const now = Date.now();
+            const cachePayload = {
+                songIdentifier: songIdentifier,
+                displayName: newDisplayName,
+                chordsContent: newChordsContent,
+                lyricsContent: newLyricsContent,
+                cachedAt: now,
+                expiresAt: now + TTL
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
+            console.log('Offline cache updated for song:', songIdentifier);
+        }
+
         // Update offline cache if this song is on the setlist
         if (window.setlistModule && orgId)
         {
@@ -256,20 +274,6 @@ async function saveSongChanges()
                         item.displayName = newDisplayName;
                     }
                 });
-
-                const TTL = window.setlistModule.OFFLINE_CACHE_TTL_MS || (4 * 60 * 60 * 1000);
-                const cacheKey = window.setlistModule.getSongCacheKey(orgId, songIdentifier);
-                const now = Date.now();
-                const cachePayload = {
-                    songIdentifier: songIdentifier,
-                    displayName: newDisplayName,
-                    chordsContent: newChordsContent,
-                    lyricsContent: newLyricsContent,
-                    cachedAt: now,
-                    expiresAt: now + TTL
-                };
-                localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
-                console.log('Offline cache updated for setlist song:', songIdentifier);
 
                 // Save updated setlist (updates database and setlist cache)
                 await window.setlistModule.saveSetlistToSupabase();
@@ -343,6 +347,15 @@ async function deleteSong()
 
         editSongMsg.textContent = 'Song deleted successfully!';
         editSongMsg.style.color = 'green';
+
+        // Clear offline cache for the deleted song
+        if (orgId)
+        {
+            const cacheKey = `cachedSong_${orgId}_${songIdentifier}`;
+            localStorage.removeItem(cacheKey);
+            console.log('Offline cache removed for deleted song:', songIdentifier);
+        }
+
         setTimeout(() =>
         {
             editSongModal.style.display = 'none';
