@@ -952,6 +952,25 @@ input[type="text"]#myInput:focus {
     margin-left: 15px;
 }
 
+#setlist-modal .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md, 10px);
+    margin-top: var(--spacing-lg, 15px);
+}
+
+@media (max-width: 600px) {
+    #setlist-modal .modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    #setlist-modal .modal-footer button {
+        width: 100%;
+        margin: 0;
+    }
+}
+
 /* Song Search in Modal */
 #song-search-results .results-list {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);

@@ -504,10 +504,10 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     }
 
-    // --- SETLIST LISTENERS ---
     manageSetlistBtn.addEventListener('click', () =>
     {
         setlistModal.style.display = 'block';
+        window.setlistModule.initSetlistEdit();
         window.setlistModule.renderSetlistUI();
     });
 
@@ -575,16 +575,15 @@ document.addEventListener('DOMContentLoaded', () =>
     // Setlist item listeners
     if (currentSetlistItemsUl)
     {
-        currentSetlistItemsUl.addEventListener('click', async (event) =>
+        currentSetlistItemsUl.addEventListener('click', (event) =>
         {
             if (event.target.classList.contains('remove-song-btn'))
             {
                 const indexToRemove = parseInt(event.target.dataset.index, 10);
-                let setlist = window.setlistModule.getCurrentSetlist();
-                setlist.splice(indexToRemove, 1);
-                window.setlistModule.setCurrentSetlist(setlist);
+                let tempSetlist = window.setlistModule.getTempSetlist();
+                tempSetlist.splice(indexToRemove, 1);
+                window.setlistModule.setTempSetlist(tempSetlist);
                 window.setlistModule.renderSetlistUI();
-                await window.setlistModule.saveSetlistToSupabase();
             }
         });
 
@@ -632,18 +631,53 @@ document.addEventListener('DOMContentLoaded', () =>
             }
         });
 
-        currentSetlistItemsUl.addEventListener('dragend', async (e) =>
+        currentSetlistItemsUl.addEventListener('dragend', (e) =>
         {
             const draggingElement = currentSetlistItemsUl.querySelector('.dragging');
             if (draggingElement)
             {
                 draggingElement.classList.remove('dragging');
                 const newOrderedIndices = Array.from(currentSetlistItemsUl.querySelectorAll('li')).map(li => parseInt(li.dataset.index));
-                let currentSetlist = window.setlistModule.getCurrentSetlist();
-                const newOrderedSetlist = newOrderedIndices.map(originalIndex => currentSetlist[originalIndex]);
-                window.setlistModule.setCurrentSetlist(newOrderedSetlist);
+                let tempSetlist = window.setlistModule.getTempSetlist();
+                const newOrderedSetlist = newOrderedIndices.map(originalIndex => tempSetlist[originalIndex]);
+                window.setlistModule.setTempSetlist(newOrderedSetlist);
                 window.setlistModule.renderSetlistUI();
+            }
+        });
+    }
+
+    // Cancel and Update setlist event listeners
+    const cancelSetlistBtn = document.getElementById('cancel-setlist-btn');
+    if (cancelSetlistBtn)
+    {
+        cancelSetlistBtn.addEventListener('click', () =>
+        {
+            setlistModal.style.display = 'none';
+        });
+    }
+
+    const updateSetlistBtn = document.getElementById('update-setlist-btn');
+    if (updateSetlistBtn)
+    {
+        updateSetlistBtn.addEventListener('click', async () =>
+        {
+            const originalText = updateSetlistBtn.textContent;
+            updateSetlistBtn.textContent = 'Saving...';
+            updateSetlistBtn.disabled = true;
+
+            const tempSetlist = window.setlistModule.getTempSetlist();
+            window.setlistModule.setCurrentSetlist(tempSetlist);
+
+            try
+            {
                 await window.setlistModule.saveSetlistToSupabase();
+                window.location.reload();
+            }
+            catch (e)
+            {
+                console.error("Error saving setlist:", e);
+                updateSetlistBtn.textContent = originalText;
+                updateSetlistBtn.disabled = false;
             }
         });
     }

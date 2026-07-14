@@ -4,6 +4,7 @@
  */
 
 let currentSetlist = [];
+let tempSetlist = [];
 const setlistLabel = 'current_weekend';
 const OFFLINE_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
 let isPrefetchingSetlist = false;
@@ -150,7 +151,7 @@ async function saveSetlistToSupabase()
     if (!supabaseClient || !organizationId)
     {
         console.error("Cannot save setlist: No active organization.");
-        return;
+        return false;
     }
 
     // --- CRITICAL: Update Cache Immediately ---
@@ -170,10 +171,12 @@ async function saveSetlistToSupabase()
         if (error) throw error;
         console.log('Setlist saved successfully.');
         prefetchSetlistSongs(organizationId);
+        return true;
     } catch (error)
     {
         console.error('Error saving setlist:', error);
         alert('Failed to save setlist.');
+        throw error;
     }
 }
 
@@ -222,12 +225,12 @@ function renderSetlistUI()
     const currentSetlistItemsUl = document.getElementById('current-setlist-items');
     if (!currentSetlistItemsUl) return;
     currentSetlistItemsUl.innerHTML = '';
-    if (!Array.isArray(currentSetlist) || currentSetlist.length === 0)
+    if (!Array.isArray(tempSetlist) || tempSetlist.length === 0)
     {
         currentSetlistItemsUl.innerHTML = '<li>Setlist is empty.</li>';
         return;
     }
-    currentSetlist.forEach((item, index) =>
+    tempSetlist.forEach((item, index) =>
     {
         const listItem = document.createElement('li');
         listItem.setAttribute('draggable', 'true');
@@ -245,12 +248,11 @@ function renderSetlistUI()
     });
 }
 
-async function addSongToSetlist(songFileIdentifier, displayName, key)
+function addSongToSetlist(songFileIdentifier, displayName, key)
 {
     const songSearchInput = document.getElementById('song-search-input');
-    currentSetlist.push({ songName: songFileIdentifier, displayName: displayName, key: key });
+    tempSetlist.push({ songName: songFileIdentifier, displayName: displayName, key: key });
     renderSetlistUI();
-    await saveSetlistToSupabase();
     songSearchInput.value = '';
 }
 
@@ -263,6 +265,9 @@ window.setlistModule = {
     addSongToSetlist,
     getCurrentSetlist: () => currentSetlist,
     setCurrentSetlist: (newSetlist) => { currentSetlist = newSetlist; },
+    initSetlistEdit: () => { tempSetlist = JSON.parse(JSON.stringify(currentSetlist)); },
+    getTempSetlist: () => tempSetlist,
+    setTempSetlist: (newSetlist) => { tempSetlist = newSetlist; },
     getSongCacheKey,
     readSongCache,
     OFFLINE_CACHE_TTL_MS
