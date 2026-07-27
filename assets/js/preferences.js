@@ -130,19 +130,15 @@ function subscribeSelectedCalendar()
     const webcalFeedUrl = httpsFeedUrl.replace(/^https:\/\//i, 'webcal://');
     const provider = select ? select.value : 'gcal';
 
-    // Detect mobile browser
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    if (provider === 'gcal' && !isMobile)
+    if (provider === 'gcal')
     {
-        // Desktop Google Calendar one-click URL
-        const gcalUrl = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(httpsFeedUrl)}`;
+        // Google Calendar requires the raw webcal:// URL as the cid param
+        // Do NOT use encodeURIComponent on the full URL - Google rejects double-encoded URLs
+        const gcalUrl = 'https://calendar.google.com/calendar/render?cid=' + encodeURIComponent(webcalFeedUrl);
         window.open(gcalUrl, '_blank');
-    }
-    else
+    } else
     {
-        // Direct native webcal subscription (triggers native iOS / Android 1-tap calendar prompt)
-        window.location.href = webcalFeedUrl;
+        window.open(webcalFeedUrl, '_blank');
     }
 }
 
