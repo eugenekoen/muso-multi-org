@@ -134,8 +134,8 @@ function subscribeSelectedCalendar()
 
     if (provider === 'gcal')
     {
-        // Google Calendar web interface — works on both desktop and mobile
-        window.location.href = 'https://calendar.google.com/calendar/render?cid=' + encodeURIComponent(webcalFeedUrl);
+        // Force Google Desktop pipeline /calendar/r?cid= so mobile Chrome actually saves subscription to Google Account
+        window.location.href = 'https://calendar.google.com/calendar/r?cid=' + encodeURIComponent(webcalFeedUrl);
     } else
     {
         // Apple/Outlook/iCal — open the feed URL directly
