@@ -3786,3 +3786,118 @@ body:not(.theme-dark):not(.theme-midnight-blue) table td.selected-key {
     color: var(--primary);
     background-color: rgba(37, 99, 235, 0.1);
 }
+
+/* --- Calendar Sync Controls Styling --- */
+#calendar-provider-select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #ccc);
+    font-family: inherit;
+    font-size: 13px;
+    background-color: #ffffff;
+    color: #1e293b;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+#calendar-provider-select option {
+    background-color: #ffffff;
+    color: #1e293b;
+    padding: 8px;
+}
+
+body.theme-dark #calendar-provider-select {
+    background-color: #0f1117;
+    color: #f3f4f6;
+    border-color: #374151;
+}
+
+body.theme-dark #calendar-provider-select option {
+    background-color: #1a1d27;
+    color: #f3f4f6;
+}
+
+body.theme-midnight-blue #calendar-provider-select {
+    background-color: #0c1929;
+    color: #e0f2fe;
+    border-color: #1e3a5f;
+}
+
+body.theme-midnight-blue #calendar-provider-select option {
+    background-color: #132240;
+    color: #e0f2fe;
+}
+
+/* Professional Subscribe Primary Button */
+.subscribe-primary-btn {
+    background: linear-gradient(135deg, #005a9c 0%, #003d6b 100%);
+    color: #ffffff !important;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 90, 156, 0.25);
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.subscribe-primary-btn:hover {
+    background: linear-gradient(135deg, #006bb8 0%, #004b82 100%);
+    box-shadow: 0 4px 12px rgba(0, 90, 156, 0.4);
+    transform: translateY(-1px);
+}
+
+.subscribe-primary-btn:active {
+    transform: translateY(0);
+}
+
+body.theme-dark .subscribe-primary-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+body.theme-dark .subscribe-primary-btn:hover {
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.45);
+}
+
+body.theme-midnight-blue .subscribe-primary-btn {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+}
+
+body.theme-midnight-blue .subscribe-primary-btn:hover {
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.45);
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 600px) {
+    .calendar-feed-input-row {
+        flex-direction: row;
+        align-items: center !important;
+    }
+    
+    .calendar-controls-row {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 6px !important;
+    }
+
+    .calendar-controls-row select,
+    .calendar-controls-row .subscribe-primary-btn,
+    .calendar-controls-row #reset-calendar-token-btn {
+        width: 100% !important;
+        box-sizing: border-box;
+        justify-content: center;
+        margin-left: 0 !important;
+        text-align: center;
+    }
+}

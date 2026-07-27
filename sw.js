@@ -3,7 +3,7 @@
  * Caches app shell files for offline use.
  */
 
-const CACHE_NAME = 'mihn-app-v8';
+const CACHE_NAME = 'mihn-app-v9';
 
 const APP_SHELL_FILES = [
     '/',
@@ -20,6 +20,7 @@ const APP_SHELL_FILES = [
     '/assets/js/ui.js',
     '/assets/js/organization.js',
     '/assets/js/keyManager.js',
+    '/assets/js/preferences.js',
     '/assets/js/schedule.js',
     '/assets/js/init.js',
     '/assets/master/template.html',

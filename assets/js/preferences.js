@@ -56,7 +56,145 @@ async function openPreferencesModal()
     const songRadio = document.querySelector(`input[name="song-theme"][value="${savedSongTheme}"]`);
     if (songRadio) songRadio.checked = true;
 
+    // Load and populate calendar feed token & URLs
+    await loadUserCalendarToken();
+
     modal.style.display = 'block';
+}
+
+/**
+ * Loads or generates the user's calendar token from profiles table
+ */
+async function loadUserCalendarToken()
+{
+    const supabaseClient = window.getSupabaseClient();
+    const feedInput = document.getElementById('pref-calendar-feed-url');
+
+    if (!supabaseClient || !feedInput) return;
+
+    try
+    {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+
+        let { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('calendar_token')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        let token = profile?.calendar_token;
+
+        // If user profile does not have a calendar_token yet, generate and save one
+        if (!token)
+        {
+            token = crypto.randomUUID();
+            await supabaseClient
+                .from('profiles')
+                .update({ calendar_token: token })
+                .eq('id', user.id);
+        }
+
+        updateCalendarFeedElements(token);
+
+    } catch (err)
+    {
+        console.error('Error loading calendar token:', err);
+    }
+}
+
+/**
+ * Updates DOM input elements with calendar token
+ */
+function updateCalendarFeedElements(token)
+{
+    const feedInput = document.getElementById('pref-calendar-feed-url');
+    const supabaseUrl = 'https://xikllcuwvyuqcvcjjimw.supabase.co';
+    const httpsFeedUrl = `${supabaseUrl}/functions/v1/ical-feed?token=${token}`;
+
+    if (feedInput) feedInput.value = httpsFeedUrl;
+}
+
+/**
+ * Triggers subscription to the calendar selected in the dropdown
+ */
+function subscribeSelectedCalendar()
+{
+    const select = document.getElementById('calendar-provider-select');
+    const feedInput = document.getElementById('pref-calendar-feed-url');
+    if (!feedInput || !feedInput.value) return;
+
+    const httpsFeedUrl = feedInput.value;
+    const webcalFeedUrl = httpsFeedUrl.replace(/^https:\/\//i, 'webcal://');
+    const provider = select ? select.value : 'gcal';
+
+    if (provider === 'gcal')
+    {
+        const gcalUrl = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcalFeedUrl)}`;
+        window.open(gcalUrl, '_blank');
+    } else
+    {
+        window.open(webcalFeedUrl, '_blank');
+    }
+}
+
+/**
+ * Copies the calendar feed URL to clipboard and highlights text
+ */
+async function copyCalendarFeedUrl()
+{
+    const feedInput = document.getElementById('pref-calendar-feed-url');
+    if (!feedInput || !feedInput.value) return;
+
+    try
+    {
+        feedInput.select();
+        await navigator.clipboard.writeText(feedInput.value);
+        showPrefsMessage('Calendar feed link copied to clipboard!');
+    } catch (e)
+    {
+        feedInput.select();
+        document.execCommand('copy');
+        showPrefsMessage('Calendar feed link copied to clipboard!');
+    }
+}
+
+/**
+ * Resets the user's calendar token and updates feed links
+ */
+async function resetCalendarToken()
+{
+    const supabaseClient = window.getSupabaseClient();
+    if (!supabaseClient) return;
+
+    if (!confirm('Are you sure you want to reset your calendar token? Any calendar apps currently subscribed will lose access until updated.'))
+    {
+        return;
+    }
+
+    try
+    {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) throw new Error('Not logged in');
+
+        const newToken = crypto.randomUUID();
+        const { error } = await supabaseClient
+            .from('profiles')
+            .update({ calendar_token: newToken })
+            .eq('id', user.id);
+
+        if (error) throw error;
+
+        updateCalendarFeedElements(newToken);
+        showPrefsMessage('Calendar token reset successfully! Please update your calendar subscriptions.');
+
+    } catch (err)
+    {
+        console.error('Error resetting calendar token:', err);
+        showPrefsMessage(`Error resetting token: ${err.message}`, true);
+    }
 }
 
 /**
@@ -153,5 +291,10 @@ window.preferencesModule = {
     handleThemeChange,
     handleSongThemeChange,
     applyTheme,
-    loadSavedTheme
+    loadSavedTheme,
+    loadUserCalendarToken,
+    copyCalendarFeedUrl,
+    resetCalendarToken,
+    subscribeSelectedCalendar
 };
+
