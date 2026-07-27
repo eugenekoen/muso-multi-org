@@ -134,8 +134,10 @@ function subscribeSelectedCalendar()
 
     if (provider === 'gcal')
     {
-        // Force Google Desktop pipeline /calendar/r?cid= so mobile Chrome actually saves subscription to Google Account
-        window.location.href = 'https://calendar.google.com/calendar/r?cid=' + encodeURIComponent(webcalFeedUrl);
+        // Use Google Web Redirector to bypass Android App Links hijack and force Chrome to open Google Calendar Web page directly
+        const targetGcalUrl = 'https://calendar.google.com/calendar/u/0/r?cid=' + encodeURIComponent(webcalFeedUrl);
+        const bypassAppLinksUrl = 'https://www.google.com/url?q=' + encodeURIComponent(targetGcalUrl);
+        window.location.href = bypassAppLinksUrl;
     } else
     {
         // Apple/Outlook/iCal — open the feed URL directly
