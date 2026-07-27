@@ -119,8 +119,11 @@ function updateCalendarFeedElements(token)
 
 /**
  * Triggers subscription to the calendar selected in the dropdown.
- * Uses window.location.href for guaranteed mobile compatibility —
- * this cannot be blocked by any popup blocker on any mobile browser.
+ * On mobile: uses webcal:// directly for ALL providers, which triggers
+ * the native calendar app (Google Calendar / Apple Calendar) to handle 
+ * the subscription properly.
+ * On desktop: uses Google Calendar's web render endpoint for Google,
+ * and webcal:// for Apple/Outlook.
  */
 function subscribeSelectedCalendar()
 {
@@ -132,11 +135,17 @@ function subscribeSelectedCalendar()
     const webcalFeedUrl = httpsFeedUrl.replace(/^https:\/\//i, 'webcal://');
     const provider = select ? select.value : 'gcal';
 
-    if (provider === 'gcal')
+    // Detect mobile devices
+    const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (provider === 'gcal' && !isMobile)
     {
+        // Desktop: Google Calendar web interface works reliably
         window.location.href = 'https://calendar.google.com/calendar/render?cid=' + encodeURIComponent(webcalFeedUrl);
     } else
     {
+        // Mobile (all providers) + Desktop Apple/Outlook:
+        // webcal:// triggers the native calendar app directly
         window.location.href = webcalFeedUrl;
     }
 }
