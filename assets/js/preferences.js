@@ -119,8 +119,8 @@ function updateCalendarFeedElements(token)
 
 /**
  * Triggers subscription to the calendar selected in the dropdown.
- * Uses a temporary anchor element instead of window.open() to bypass
- * mobile popup blockers on iOS Safari and Android Chrome.
+ * Uses window.location.href for guaranteed mobile compatibility —
+ * this cannot be blocked by any popup blocker on any mobile browser.
  */
 function subscribeSelectedCalendar()
 {
@@ -132,24 +132,13 @@ function subscribeSelectedCalendar()
     const webcalFeedUrl = httpsFeedUrl.replace(/^https:\/\//i, 'webcal://');
     const provider = select ? select.value : 'gcal';
 
-    let targetUrl;
     if (provider === 'gcal')
     {
-        targetUrl = 'https://calendar.google.com/calendar/render?cid=' + encodeURIComponent(webcalFeedUrl);
+        window.location.href = 'https://calendar.google.com/calendar/render?cid=' + encodeURIComponent(webcalFeedUrl);
     } else
     {
-        targetUrl = webcalFeedUrl;
+        window.location.href = webcalFeedUrl;
     }
-
-    // Use a temporary <a> tag to navigate — this is never blocked on mobile
-    const a = document.createElement('a');
-    a.href = targetUrl;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
 }
 
 /**
