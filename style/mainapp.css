@@ -4141,26 +4141,41 @@ body.theme-midnight-blue .subscribe-primary-btn:hover {
 }
 
 #demo-transposer-mount .transpose-keys {
-    margin: 0 0 14px 0;
-    padding: 6px;
+    border: 1px solid #ddd;
     border-radius: 8px;
+    padding: 5px 5px;
+    margin: 10px 0;
     display: flex;
-    gap: 4px;
+    gap: 2px;
     flex-wrap: nowrap;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#demo-transposer-mount .transpose-keys::-webkit-scrollbar {
+    height: 4px;
+}
+
+#demo-transposer-mount .transpose-keys::-webkit-scrollbar-thumb {
+    background-color: #bbb;
+    border-radius: 4px;
 }
 
 #demo-transposer-mount .transpose-keys a {
     flex-shrink: 0;
-    width: 2.3em;
+    width: 2em;
     padding: 7px 0;
-    font-size: 12px;
-    font-family: var(--font-family);
-    font-weight: 700;
-    border-radius: 6px;
+    font-size: 11px;
+    font-family: sans-serif;
+    font-weight: bold;
+    border-radius: 5px;
     text-align: center;
     text-decoration: none;
-    transition: all 0.15s ease;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    outline: none;
     float: none;
     margin: 0;
 }
@@ -4521,20 +4536,183 @@ body.theme-midnight-blue .faq-section {
     background: #111827;
 }
 
-@media (max-width: 640px) {
-    #demo-transposer-mount pre {
-        font-size: 13px;
+/* Mobile & Touch Responsive Polish for Live Transposer & Landing Page */
+@media (max-width: 768px) {
+    .btn-tertiary-large {
+        width: 100%;
+        justify-content: center;
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--font-size-base);
     }
+
+    .hero-trust-pills {
+        gap: 8px;
+        margin-top: var(--spacing-lg);
+    }
+
+    .hero-trust-pills span {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+
+    .transposer-demo-section,
+    .how-it-works-section,
+    .faq-section {
+        padding: var(--spacing-xl) 12px;
+    }
+
+    .demo-section-header {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .demo-eyebrow {
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+
+    .demo-subtitle {
+        font-size: var(--font-size-sm);
+    }
+
     .demo-toolbar {
         flex-direction: column;
         align-items: stretch;
+        padding: 12px;
+        gap: 10px;
     }
+
+    .demo-toolbar-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        width: 100%;
+    }
+
+    #demo-song-select {
+        width: 100%;
+        height: 42px;
+        font-size: 15px; /* Prevents iOS auto-zoom on tap */
+    }
+
+    .demo-theme-toggles {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 6px;
+    }
+
+    .demo-theme-toggles .toolbar-label {
+        width: 100%;
+        margin-bottom: 2px;
+    }
+
+    .demo-theme-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+
+    .demo-custom-paste-box {
+        padding: 12px;
+    }
+
+    .demo-paste-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .demo-paste-header > div {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    #demo-custom-key {
+        height: 36px;
+        font-size: 15px;
+    }
+
+    #demo-render-custom-btn {
+        flex: 1;
+        height: 36px;
+    }
+
+    #demo-custom-textarea {
+        font-size: 14px;
+    }
+
+    .demo-stage-surface {
+        padding: 14px 12px 18px 12px;
+    }
+
+    .demo-stage-meta {
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    #demo-transposer-mount pre {
+        font-size: 12.5px;
+        line-height: 1.5;
+        margin-top: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+
     .demo-footer-cta {
         flex-direction: column;
         text-align: center;
+        padding: 14px 12px;
+        gap: 10px;
     }
+
+    .demo-footer-text {
+        flex-direction: column;
+        gap: 6px;
+        font-size: 13px;
+    }
+
     .demo-save-cta-btn {
         width: 100%;
         justify-content: center;
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .step-card {
+        padding: var(--spacing-lg);
+    }
+
+    .faq-item {
+        padding: 14px 16px;
+    }
+
+    .faq-item summary {
+        font-size: var(--font-size-sm);
+        gap: 10px;
+    }
+
+    .landing-bottom-cta {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    .landing-bottom-cta h3 {
+        font-size: var(--font-size-xl);
+    }
+
+    .landing-footer-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 390px) {
+    #demo-transposer-mount pre {
+        font-size: 11px;
     }
 }
