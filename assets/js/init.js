@@ -193,8 +193,12 @@ document.addEventListener('DOMContentLoaded', () =>
         const supabaseClient = window.getSupabaseClient();
 
         // --- MOVED UP: Clear UI Immediately ---
-        // 2. Clear Local State & UI Immediately
+        // 2. Clear Local State & UI Immediately (preserve theme preferences)
+        const savedTheme = localStorage.getItem('muso-theme');
+        const savedSongTheme = localStorage.getItem('muso-song-theme');
         localStorage.clear(); // FULL CLEAR as requested
+        if (savedTheme) localStorage.setItem('muso-theme', savedTheme);
+        if (savedSongTheme) localStorage.setItem('muso-song-theme', savedSongTheme);
         window.activeOrganizationId = null;
 
         try
