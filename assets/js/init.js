@@ -99,6 +99,173 @@ document.addEventListener('DOMContentLoaded', () =>
     window.uiModule.setupLegalHandlers();
     window.uiModule.setupConnectionStatusToast();
 
+    // Initialize Landing Page Live Transposer Demo
+    const DEMO_SONGS = {
+        'amazing-grace': {
+            key: 'G',
+            content: [
+                'AMAZING GRACE',
+                '=============',
+                'VERSE 1:',
+                'G             G7/B         C       G',
+                'Amazing grace how sweet the sound',
+                'G                        D      D7',
+                'That saved a wretch like me',
+                'G              G7/B        C       G',
+                'I once was lost, but now am found',
+                'Em             D         G',
+                'Was blind, but now I see',
+                '',
+                'VERSE 2:',
+                'G                 G7/B        C        G',
+                '\'Twas grace that taught my heart to fear',
+                'G                     D      D7',
+                'And grace my fears relieved',
+                'G                G7/B      C       G',
+                'How precious did that grace appear',
+                'Em           D       G',
+                'The hour I first believed'
+            ].join('\n')
+        },
+        'how-great': {
+            key: 'A',
+            content: [
+                'HOW GREAT THOU ART',
+                '==================',
+                'CHORUS:',
+                'A                    D                A',
+                'Then sings my soul, my Savior God, to Thee',
+                '              E                  A',
+                'How great Thou art, how great Thou art',
+                'A                    D                A',
+                'Then sings my soul, my Savior God, to Thee',
+                '              Bm       E         A',
+                'How great Thou art, how great Thou art'
+            ].join('\n')
+        },
+        'doxology': {
+            key: 'D',
+            content: [
+                'DOXOLOGY (PRAISE GOD)',
+                '=====================',
+                'VERSE:',
+                'D          G       D        A',
+                'Praise God from whom all blessings flow',
+                'D          Bm      Em       A',
+                'Praise Him all creatures here below',
+                'D          G       D     Bm',
+                'Praise Him above ye heavenly host',
+                'G          D          A       D',
+                'Praise Father, Son, and Holy Ghost'
+            ].join('\n')
+        }
+    };
+
+    function renderLandingDemoSong(rawChart, fallbackKey)
+    {
+        const mount = document.getElementById('demo-transposer-mount');
+        const activeKeyLabel = document.getElementById('demo-active-key-label');
+        if (!mount) return;
+
+        let lines = (rawChart || '').split('\n');
+        let startKey = fallbackKey || 'G';
+        let contentStartIndex = 0;
+
+        for (let i = 0; i < lines.length; i++)
+        {
+            const trimmed = lines[i].trim();
+            if (trimmed !== '')
+            {
+                if (/^[A-G][b#]?m?$/.test(trimmed))
+                {
+                    startKey = trimmed;
+                    contentStartIndex = i + 1;
+                } else
+                {
+                    contentStartIndex = i;
+                }
+                break;
+            }
+        }
+
+        const cleanBody = lines.slice(contentStartIndex).join('\n');
+        mount.innerHTML = '';
+        const pre = document.createElement('pre');
+        pre.id = 'demo-song-pre';
+        pre.setAttribute('data-key', startKey);
+        pre.textContent = cleanBody;
+        mount.appendChild(pre);
+
+        if (activeKeyLabel) activeKeyLabel.textContent = startKey;
+
+        if (window.jQuery && typeof window.jQuery.fn.transpose === 'function')
+        {
+            window.jQuery('#demo-song-pre').transpose();
+            window.jQuery('#demo-transposer-mount .transpose-keys a').on('click', function ()
+            {
+                if (activeKeyLabel) activeKeyLabel.textContent = window.jQuery(this).text().trim();
+            });
+        }
+    }
+
+    const demoSongSelect = document.getElementById('demo-song-select');
+    const demoCustomBox = document.getElementById('demo-custom-paste-box');
+    const demoCustomTextarea = document.getElementById('demo-custom-textarea');
+    const demoCustomKey = document.getElementById('demo-custom-key');
+    const demoRenderCustomBtn = document.getElementById('demo-render-custom-btn');
+    const demoStageSurface = document.getElementById('demo-stage-surface');
+
+    if (demoSongSelect)
+    {
+        renderLandingDemoSong(DEMO_SONGS['amazing-grace'].content, DEMO_SONGS['amazing-grace'].key);
+
+        demoSongSelect.addEventListener('change', (e) =>
+        {
+            const val = e.target.value;
+            if (val === 'custom')
+            {
+                if (demoCustomBox) demoCustomBox.style.display = 'block';
+                if (demoCustomTextarea && !demoCustomTextarea.value.trim())
+                {
+                    demoCustomTextarea.value = DEMO_SONGS['amazing-grace'].content;
+                }
+                demoCustomTextarea?.focus();
+            } else if (DEMO_SONGS[val])
+            {
+                if (demoCustomBox) demoCustomBox.style.display = 'none';
+                renderLandingDemoSong(DEMO_SONGS[val].content, DEMO_SONGS[val].key);
+            }
+        });
+    }
+
+    if (demoRenderCustomBtn && demoCustomTextarea)
+    {
+        demoRenderCustomBtn.addEventListener('click', () =>
+        {
+            const text = demoCustomTextarea.value;
+            const key = demoCustomKey ? demoCustomKey.value : 'G';
+            if (text.trim())
+            {
+                renderLandingDemoSong(text, key);
+            }
+        });
+    }
+
+    document.querySelectorAll('.demo-theme-btn').forEach(btn =>
+    {
+        btn.addEventListener('click', () =>
+        {
+            document.querySelectorAll('.demo-theme-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const theme = btn.dataset.stageTheme;
+            if (demoStageSurface)
+            {
+                demoStageSurface.classList.remove('stage-theme-midnight', 'stage-theme-dark', 'stage-theme-classic');
+                demoStageSurface.classList.add(`stage-theme-${theme}`);
+            }
+        });
+    });
+
     // Data loading (songs, setlists) is now DEFERRED until valid user & org are confirmed.
     // See initializeOrganizationState in organization.js
 

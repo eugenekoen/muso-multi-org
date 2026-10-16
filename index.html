@@ -4,29 +4,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music In His Name | Muso Chord & Setlist Management</title>
+    <title>Music In His Name | Free Worship Chord Transposer, Setlist & Church Roster App</title>
     <meta name="description"
-        content="The ultimate chord and setlist management tool for worship teams and churches. Organize your songs, transposes keys instantly, and share with your team.">
+        content="Instant worship chord transposition, weekend setlist builder, offline stage chord charts, and automated worship team scheduling for churches. Try our live chord transposer free!">
     <meta name="keywords"
-        content="worship leader tools, church music management, chord transposer, setlist builder, Muso app">
+        content="worship chord transposer, church setlist app, worship team scheduling software, transpose guitar chords online, church music management South Africa, offline worship chord charts, Muso app, Music In His Name">
     <meta name="author" content="Music In His Name">
     <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mihn.co.za/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mihn.co.za/">
-    <meta property="og:title" content="Music In His Name - Chords & Setlists">
+    <meta property="og:title" content="Music In His Name - Worship Chords, Setlists & Team Scheduling">
     <meta property="og:description"
-        content="Instant chord transposition and professional setlist management for your church.">
+        content="Transpose worship chords in one click, build weekend setlists with offline stage mode, and automate Sunday team reminders.">
     <meta property="og:image" content="https://mihn.co.za/style/images/LOGO.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://mihn.co.za/">
-    <meta property="twitter:title" content="Music In His Name - Chords & Setlists">
+    <meta property="twitter:title" content="Music In His Name - Worship Chords, Setlists & Team Scheduling">
     <meta property="twitter:description"
-        content="Instant chord transposition and professional setlist management for your church.">
+        content="Transpose worship chords in one click, build weekend setlists with offline stage mode, and automate Sunday team reminders.">
     <meta property="twitter:image" content="https://mihn.co.za/style/images/LOGO.png">
+
+    <!-- Structured Data (JSON-LD) for Google Rich Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "Music In His Name (Muso)",
+          "url": "https://mihn.co.za/",
+          "applicationCategory": "MusicApplication",
+          "operatingSystem": "Web, iOS, Android, Windows, macOS",
+          "description": "Complete worship chord transposer, weekend setlist manager with offline stage support, and quarterly church roster scheduling with automated email and calendar sync.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "ZAR"
+          },
+          "featureList": [
+            "One-click instant chord transposition across all 12 keys",
+            "Offline stage mode for weekend worship setlists",
+            "Stage-ready Dark, Midnight Blue, and Classic Green themes",
+            "Quarterly worship team scheduling and role assignments",
+            "Automated Wednesday reminder emails and live iCal/Google Calendar sync",
+            "Cross-church shared worship chord database"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How do I transpose worship chords to another key online?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "With Music In His Name, you can click any key button (Ab through G#) at the top of any chord chart—or try our free live chord transposer directly on the home page—to transpose every chord in the song instantly while keeping chord spacing aligned over the lyrics."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do chord charts work offline on stage if church Wi-Fi drops?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! Music In His Name automatically caches your weekend setlist songs to your phone, tablet, or laptop so your worship team can open and transpose charts on stage even with zero internet connection."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can worship team members sync their Sunday schedule with Google Calendar or Apple Calendar?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Every team member gets a personal 1-click live calendar subscription feed (Google Calendar, Apple Calendar, and Outlook) plus automated Wednesday email reminders showing the full Sunday band and tech roster."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 
     <!-- Stylesheets -->
     <link rel="shortcut icon" href="./style/images/LOGO.svg" />
@@ -41,7 +101,7 @@
 
     <!-- Fonts -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
 
     <!-- Scripts -->
@@ -442,62 +502,236 @@
     <div id="landing-page" style="display: none;">
         <section class="hero-section">
             <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Built for Worship Leaders, Bands &amp; Churches</span>
+                </div>
                 <h1 class="hero-title">Worship Made <span class="gradient-text">Simple</span></h1>
-                <p class="hero-subtitle">The complete platform for managing chords, setlists, and schedules. Built for
-                    worship leaders who want to focus on what matters most.</p>
+                <p class="hero-subtitle">Instant 1-click chord transposition, offline-ready weekend setlists, and
+                    automated Sunday team scheduling—all in one lightweight app your whole band will actually love using.</p>
                 <div class="hero-cta">
                     <button id="hero-signup-btn" class="btn-primary-large">
                         <i class="fa-solid fa-user-plus"></i>
-                        Register
+                        Register Free
                     </button>
                     <button id="hero-login-btn" class="btn-secondary-large">
                         <i class="fa-solid fa-sign-in-alt"></i>
                         Login
                     </button>
+                    <a href="#live-transposer-demo" class="btn-tertiary-large">
+                        <i class="fa-solid fa-sliders"></i>
+                        Try Live Transposer
+                    </a>
+                </div>
+                <div class="hero-trust-pills">
+                    <span><i class="fa-solid fa-wifi"></i> Works Offline on Stage</span>
+                    <span><i class="fa-solid fa-mobile-screen"></i> Phone, Tablet &amp; Laptop Ready</span>
+                    <span><i class="fa-solid fa-calendar-check"></i> Google &amp; Apple Calendar Sync</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIVE INTERACTIVE CHORD TRANSPOSER SANDBOX (SEO + Conversion Magnet) -->
+        <section id="live-transposer-demo" class="transposer-demo-section">
+            <div class="demo-container">
+                <div class="demo-section-header">
+                    <span class="demo-eyebrow"><i class="fa-solid fa-wand-magic-sparkles"></i> Interactive Stage Preview — No Login Required</span>
+                    <h2 class="section-title" style="margin-bottom: 10px;">Try the Free Worship Chord Transposer Live</h2>
+                    <p class="demo-subtitle">Click any key below to transpose the entire chord chart on the fly, switch stage lighting themes, or paste your own worship song to test it out.</p>
+                </div>
+
+                <div class="demo-stage-wrapper">
+                    <!-- Top Toolbar -->
+                    <div class="demo-toolbar">
+                        <div class="demo-toolbar-group">
+                            <label for="demo-song-select"><i class="fa-solid fa-music"></i> Sample Song:</label>
+                            <select id="demo-song-select" aria-label="Choose a sample worship song">
+                                <option value="amazing-grace">Amazing Grace (Key of G)</option>
+                                <option value="how-great">How Great Thou Art (Key of A)</option>
+                                <option value="doxology">Praise God From Whom All Blessings Flow (Key of D)</option>
+                                <option value="custom">✍️ Paste Your Own Chord Chart...</option>
+                            </select>
+                        </div>
+
+                        <div class="demo-toolbar-group demo-theme-toggles" role="group" aria-label="Stage Display Theme">
+                            <span class="toolbar-label"><i class="fa-solid fa-palette"></i> Stage View:</span>
+                            <button type="button" class="demo-theme-btn active" data-stage-theme="midnight" title="Midnight Blue Stage Theme">
+                                <i class="fa-solid fa-moon"></i> Midnight
+                            </button>
+                            <button type="button" class="demo-theme-btn" data-stage-theme="dark" title="Dark Stage Theme">
+                                <i class="fa-solid fa-circle-half-stroke"></i> Dark
+                            </button>
+                            <button type="button" class="demo-theme-btn" data-stage-theme="classic" title="Classic Green Chart Theme">
+                                <i class="fa-solid fa-leaf"></i> Classic
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Paste Area (Hidden unless 'Paste Your Own' is selected) -->
+                    <div id="demo-custom-paste-box" class="demo-custom-paste-box" style="display: none;">
+                        <div class="demo-paste-header">
+                            <span><strong>Paste your chord chart below</strong> (put the starting key like <code>G</code> or <code>C</code> on the first line, or choose it below):</span>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <label for="demo-custom-key" style="font-size: 12px; font-weight: 600;">Original Key:</label>
+                                <select id="demo-custom-key" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1;">
+                                    <option value="C">C</option>
+                                    <option value="Db">Db</option>
+                                    <option value="D">D</option>
+                                    <option value="Eb">Eb</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="F#">F#</option>
+                                    <option value="G" selected>G</option>
+                                    <option value="Ab">Ab</option>
+                                    <option value="A">A</option>
+                                    <option value="Bb">Bb</option>
+                                    <option value="B">B</option>
+                                </select>
+                                <button type="button" id="demo-render-custom-btn" class="modal-btn" style="padding: 6px 14px; font-size: 12px; margin: 0;">Transpose My Chart</button>
+                            </div>
+                        </div>
+                        <textarea id="demo-custom-textarea" rows="6" placeholder="G&#10;VERSE 1&#10;G              C              G&#10;Paste your chords and lyrics here..."></textarea>
+                    </div>
+
+                    <!-- Live Stage Viewer Surface -->
+                    <div id="demo-stage-surface" class="demo-stage-surface stage-theme-midnight">
+                        <div class="demo-stage-meta">
+                            <div class="demo-badge-live">
+                                <i class="fa-solid fa-circle cached-dot"></i> Offline Stage Ready
+                            </div>
+                            <div class="demo-current-key-pill">
+                                Current Key: <strong id="demo-active-key-label">G</strong>
+                            </div>
+                        </div>
+                        <div id="demo-transposer-mount">
+                            <pre id="demo-song-pre" data-key="G"></pre>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Call-To-Action Strip inside Demo -->
+                    <div class="demo-footer-cta">
+                        <div class="demo-footer-text">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Want to save this chart to your church's weekend setlist and share it with your band?</span>
+                        </div>
+                        <button type="button" class="demo-save-cta-btn" onclick="document.getElementById('signup-modal-btn').click()">
+                            Save to Your Church Setlist — Free <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section class="features-section">
             <div class="features-container">
-                <h2 class="section-title">Everything Your Team Needs</h2>
+                <h2 class="section-title">Everything Your Worship Team Needs</h2>
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon"
                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                             <i class="fa-solid fa-guitar"></i>
                         </div>
-                        <h3>Instant Transposition</h3>
-                        <p>Change keys on the fly with one click. Never waste time rewriting chord charts again.</p>
+                        <h3>Instant Key Transposition</h3>
+                        <p>Change keys on the fly with one click—even for capo players or last-minute vocal adjustments during Sunday rehearsal. Never rewrite a chord chart again.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon"
                             style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <i class="fa-solid fa-list-check"></i>
                         </div>
-                        <h3>Setlist Management</h3>
-                        <p>Organize your weekend services with drag-and-drop simplicity. Share with your entire team
-                            instantly.</p>
+                        <h3>Weekend Setlist &amp; Offline Mode</h3>
+                        <p>Build your Sunday setlist with drag-and-drop simplicity, pre-select each song's key, and let the app automatically cache charts for offline stage use.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon"
                             style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                            <i class="fa-solid fa-users"></i>
+                            <i class="fa-solid fa-globe"></i>
                         </div>
-                        <h3>Team Collaboration</h3>
-                        <p>Multiple churches, unlimited members. Role-based permissions keep everything organized.</p>
+                        <h3>Shared Church Song Library</h3>
+                        <p>Search and import formatted chord charts shared by other churches in one click, or build your own private congregation song database.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon"
                             style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                             <i class="fa-solid fa-calendar-days"></i>
                         </div>
-                        <h3>Schedule Planning</h3>
-                        <p>Plan services months in advance. Automated reminders keep your team informed.</p>
+                        <h3>Quarterly Roster &amp; Reminders</h3>
+                        <p>Schedule Worship Leaders, Vocals, Band, Sound, and AV by quarter. Automated Wednesday reminder emails and live iCal feeds keep everyone on time.</p>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- HOW IT WORKS SECTION -->
+        <section class="how-it-works-section">
+            <div class="features-container">
+                <h2 class="section-title">From Wednesday Prep to Sunday Morning</h2>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Build Your Weekend Setlist</h3>
+                        <p>Pick songs from your church library (or import from our shared online database) and assign the exact key for this Sunday's worship leader.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Automatic Team Reminders</h3>
+                        <p>Schedule your band, vocalists, and sound desk for the quarter. Every Wednesday, scheduled members automatically receive their Sunday roster by email and calendar sync.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Step on Stage with Confidence</h3>
+                        <p>Musicians open the weekend setlist on any tablet or phone. Songs open directly in the scheduled key, in glare-free Dark or Midnight mode, even if church Wi-Fi drops.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO FAQ SECTION -->
+        <section class="faq-section">
+            <div class="faq-container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-list">
+                    <details class="faq-item" open>
+                        <summary>How does the instant worship chord transposer work?</summary>
+                        <p>Our chord transposer automatically detects standard, slash, minor, sus, and extended worship chords above your lyrics. When you tap a new key (from Ab to G#), every chord updates immediately while preserving exact spacing above the syllables.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>What happens if our church Wi-Fi disconnects during the Sunday service?</summary>
+                        <p>Music In His Name is built with an offline-first Service Worker and automatic setlist caching. As soon as a musician loads the weekend setlist at home or during rehearsal, every song on the setlist is saved to their device with a green offline-ready indicator.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Can musicians belong to more than one church or worship ministry?</summary>
+                        <p>Yes! Musicians who serve across multiple congregations, youth bands, or special events can join multiple churches with a simple invite code and switch between them in one click.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Does the schedule manager sync with Google Calendar, Apple Calendar, and Outlook?</summary>
+                        <p>Yes. Every team member has a personal live calendar feed in their Preferences that subscribes directly to Google Calendar, Apple iCal, or Outlook, showing their assigned roles alongside the full band roster for each Sunday.</p>
+                    </details>
+                </div>
+
+                <div class="landing-bottom-cta">
+                    <h3>Ready to simplify your worship team's Sunday prep?</h3>
+                    <p>Join with your church code or create your free account in under 30 seconds.</p>
+                    <button type="button" class="btn-primary-large" onclick="document.getElementById('signup-modal-btn').click()">
+                        <i class="fa-solid fa-rocket"></i> Get Started Free
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Landing Footer -->
+        <footer class="landing-footer">
+            <div class="landing-footer-inner">
+                <p>&copy; 2026 Music In His Name (Muso). Built for worship teams &amp; churches.</p>
+                <div class="landing-footer-links">
+                    <a href="#live-transposer-demo">Free Chord Transposer</a>
+                    <span>&bull;</span>
+                    <a href="#" class="open-legal-btn">Terms of Use</a>
+                    <span>&bull;</span>
+                    <a href="#" class="open-legal-btn">Privacy Policy</a>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <!-- Dashboard (Visible when logged in) -->
