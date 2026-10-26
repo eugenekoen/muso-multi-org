@@ -842,11 +842,15 @@ document.addEventListener('DOMContentLoaded', () =>
             try
             {
                 await window.setlistModule.saveSetlistToSupabase();
-                window.location.reload();
+                window.setlistModule.updateTableOneWithSetlist();
+                setlistModal.style.display = 'none';
             }
             catch (e)
             {
                 console.error("Error saving setlist:", e);
+            }
+            finally
+            {
                 updateSetlistBtn.textContent = originalText;
                 updateSetlistBtn.disabled = false;
             }
@@ -1241,18 +1245,38 @@ document.addEventListener('DOMContentLoaded', () =>
             }
         }
 
-        lastSessionUserId = currentUserId;
+        let effectiveUser = session?.user || null;
+        if (effectiveUser)
+        {
+            try { localStorage.setItem('cachedAuthUser', JSON.stringify(effectiveUser)); } catch (e) {}
+        }
+        else if (!navigator.onLine && event !== 'SIGNED_OUT')
+        {
+            try
+            {
+                const cachedUserStr = localStorage.getItem('cachedAuthUser');
+                if (cachedUserStr) effectiveUser = JSON.parse(cachedUserStr);
+            } catch (e) {}
+        }
+
+        lastSessionUserId = effectiveUser?.id || null;
 
         // 1. Update visual Auth State (buttons, etc.)
-        window.authModule.updateAuthState(session?.user);
+        window.authModule.updateAuthState(effectiveUser);
 
         // 2. Initialize Organization State
-        await window.organizationModule.initializeOrganizationState(session?.user || null);
+        await window.organizationModule.initializeOrganizationState(effectiveUser);
     });
 
     // Handle Back/Forward Cache (bfcache) navigation
     window.addEventListener('pageshow', async (event) =>
     {
+        // Always refresh setlist table badges when returning from a song page
+        if (window.setlistModule && window.setlistModule.updateTableOneWithSetlist)
+        {
+            window.setlistModule.updateTableOneWithSetlist();
+        }
+
         // Only refresh if truly needed. 
         // If we have an active org and user, we probably don't need to do anything as the DOM is living.
         if (event.persisted)

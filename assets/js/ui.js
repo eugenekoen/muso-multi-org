@@ -89,12 +89,14 @@ async function handleSongClick(event, linkElement)
     const contentType = linkElement.dataset.contentType;
     if (!songIdentifier || !contentType) return;
 
-    // Offline guard — prevent navigating to songs that aren't cached
-    if (!navigator.onLine && window.setlistModule && window.activeOrganizationId)
+    const orgId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
+
+    // Offline guard — prevent navigating to songs that aren't cached or have expired
+    if (!navigator.onLine && window.setlistModule && orgId)
     {
-        const cached = window.setlistModule.readSongCache(window.activeOrganizationId, songIdentifier);
-        const hasCachedContent = cached && cached.expiresAt && cached.expiresAt > Date.now()
-            && (contentType === 'chords' ? cached.chordsContent : cached.lyricsContent);
+        const cached = window.setlistModule.readSongCache(orgId, songIdentifier);
+        const isFresh = !!(cached && cached.expiresAt && cached.expiresAt > Date.now());
+        const hasCachedContent = isFresh && !!(cached.chordsContent || cached.lyricsContent);
 
         if (!hasCachedContent)
         {
@@ -105,7 +107,7 @@ async function handleSongClick(event, linkElement)
     }
 
     const templateURL = "./assets/master/template.html";
-    let targetURL = `${templateURL}?song=${encodeURIComponent(songIdentifier)}&contentType=${encodeURIComponent(contentType)}&org=${encodeURIComponent(window.activeOrganizationId)}`;
+    let targetURL = `${templateURL}?song=${encodeURIComponent(songIdentifier)}&contentType=${encodeURIComponent(contentType)}&org=${encodeURIComponent(orgId || '')}`;
 
     if (contentType === 'lyrics')
     {
@@ -357,8 +359,23 @@ function setupConnectionStatusToast()
 
     updateConnectionStatus(true);
 
-    window.addEventListener('online', () => updateConnectionStatus(true));
-    window.addEventListener('offline', () => updateConnectionStatus(true));
+    window.addEventListener('online', () =>
+    {
+        updateConnectionStatus(true);
+        const orgId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
+        if (orgId && window.setlistModule && window.setlistModule.prefetchSetlistSongs)
+        {
+            window.setlistModule.prefetchSetlistSongs(orgId);
+        }
+    });
+    window.addEventListener('offline', () =>
+    {
+        updateConnectionStatus(true);
+        if (window.setlistModule && window.setlistModule.updateTableOneWithSetlist)
+        {
+            window.setlistModule.updateTableOneWithSetlist();
+        }
+    });
 
     connectionCheckIntervalId = setInterval(() => updateConnectionStatus(false), 60000);
 }

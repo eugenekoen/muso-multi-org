@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=0.75" />
     <link rel="shortcut icon" href="./../../style/images/LOGO.svg" />
     <link rel="stylesheet" type="text/css" href="./../../style/song.css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,500,500i,600" rel="stylesheet">
-
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -47,8 +46,19 @@
         // Updated credentials to match supabaseClient.js
         const SUPABASE_URL = 'https://xikllcuwvyuqcvcjjimw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpa2xsY3V3dnl1cWN2Y2pqaW13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4NjkyMTYsImV4cCI6MjA4NDQ0NTIxNn0.DqAsJ2BXAzwnggId0nMihzfxN9UpslAUQzm-V5sgfWY';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const OFFLINE_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
+        let supabaseClient = null;
+        try
+        {
+            if (window.supabase && typeof window.supabase.createClient === 'function')
+            {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e)
+        {
+            console.warn('Supabase client could not be initialized (offline mode):', e);
+        }
+
+        const OFFLINE_CACHE_TTL_MS = 5 * 60 * 60 * 1000;
 
         // Dynamic State
         let activeSongData = {
@@ -99,9 +109,10 @@
                 const trimmedLine = lines[i].trim();
                 if (trimmedLine !== '')
                 {
-                    if (/^[A-G][b#]?m?$/.test(trimmedLine))
+                    const cleanKeyCandidate = trimmedLine.replace(/^\[|\]$/g, '').trim();
+                    if (/^[A-G][b#]?m?$/.test(cleanKeyCandidate))
                     {
-                        key = trimmedLine;
+                        key = cleanKeyCandidate;
                         contentStartIndex = i + 1;
                     } else
                     {
@@ -182,14 +193,15 @@
         }
 
         // Listen for transposer clicks to keep track of the selected transposition key
-        $(document).on('click', '.transpose-keys a', function()
+        $(document).on('click', '.transpose-keys a', function ()
         {
             activeSongData.targetKey = $(this).text().trim();
         });
 
-        document.addEventListener('DOMContentLoaded', async function ()
+        async function loadAndRenderSong()
         {
             // Load and apply theme from preferences
+            document.body.classList.remove('theme-dark', 'theme-midnight-blue');
             let songTheme = localStorage.getItem('muso-song-theme') || 'auto';
             if (songTheme === 'auto')
             {
@@ -201,12 +213,15 @@
             }
 
             const preElement = document.getElementById('songContent');
-            preElement.textContent = "Loading song...";
 
             const params = new URLSearchParams(window.location.search);
             const songIdentifier = params.get('song');
             const contentType = params.get('contentType') || 'chords';
-            const orgId = params.get('org');
+            let orgId = params.get('org');
+            if (!orgId || orgId === 'null' || orgId === 'undefined')
+            {
+                orgId = localStorage.getItem('activeOrganizationId');
+            }
             const targetKey = params.get('targetKey');
 
             if (!songIdentifier)
@@ -219,46 +234,72 @@
             currentContentType = contentType;
 
             const cachedEntry = readSongCache(orgId, songIdentifier);
+            const isFreshCache = !!(cachedEntry && cachedEntry.expiresAt && cachedEntry.expiresAt > Date.now());
+            const hasCachedSong = isFreshCache && !!(cachedEntry.chordsContent || cachedEntry.lyricsContent);
 
-            // If offline, use cache immediately if available
-            if (!navigator.onLine)
+            // 1. Instant Cache Render: if cached data exists, display it immediately (0ms wait)
+            if (hasCachedSong)
             {
-                if (cachedEntry)
-                {
-                    console.log("Offline: Loading song from cache.");
-                    activeSongData.songIdentifier = songIdentifier;
-                    activeSongData.displayName = cachedEntry.displayName;
-                    activeSongData.chordsContent = cachedEntry.chordsContent || '';
-                    activeSongData.lyricsContent = cachedEntry.lyricsContent || '';
-                    activeSongData.orgId = orgId;
-                    activeSongData.targetKey = targetKey;
+                console.log("Rendering song from offline cache:", songIdentifier);
+                activeSongData.songIdentifier = songIdentifier;
+                activeSongData.displayName = cachedEntry.displayName || 'Song';
+                activeSongData.chordsContent = cachedEntry.chordsContent || '';
+                activeSongData.lyricsContent = cachedEntry.lyricsContent || '';
+                activeSongData.orgId = orgId;
+                activeSongData.targetKey = targetKey;
 
-                    renderCurrentContent();
-                }
-                else
+                renderCurrentContent();
+            } else
+            {
+                preElement.textContent = "Loading song...";
+            }
+
+            // 2. If offline or Supabase client unavailable, rely on cache
+            if (!navigator.onLine || !supabaseClient)
+            {
+                if (!hasCachedSong)
                 {
                     preElement.textContent = "Offline: Song is not cached. Please connect to the internet to load.";
                 }
                 return;
             }
 
-            // If online, always fetch from network to get the absolute latest edits.
+            // 3. If online, fetch from network to ensure the absolute latest edits are shown and cached
             try
             {
-                await supabaseClient.auth.getSession();
+                // Non-blocking session check with short timeout
+                try
+                {
+                    await Promise.race([
+                        supabaseClient.auth.getSession(),
+                        new Promise(resolve => setTimeout(resolve, 2000))
+                    ]);
+                } catch (sessionErr)
+                {
+                    console.warn('Session check warning:', sessionErr);
+                }
+
+                const abortController = new AbortController();
+                const timeoutId = setTimeout(() => abortController.abort(), 4000);
 
                 const { data, error } = await supabaseClient
                     .from('songs')
                     .select('chords_content, lyrics_content, display_name')
                     .eq('song_identifier', songIdentifier)
                     .eq('organization_id', orgId)
-                    .maybeSingle();
+                    .maybeSingle()
+                    .abortSignal(abortController.signal);
+
+                clearTimeout(timeoutId);
 
                 if (error) throw error;
 
                 if (!data)
                 {
-                    preElement.textContent = `Error: Could not find song '${songIdentifier}'.`;
+                    if (!hasCachedSong)
+                    {
+                        preElement.textContent = `Error: Could not find song '${songIdentifier}'.`;
+                    }
                     return;
                 }
 
@@ -283,30 +324,33 @@
                 activeSongData.chordsContent = chordsContent;
                 activeSongData.lyricsContent = lyricsContent;
                 activeSongData.orgId = orgId;
-                activeSongData.targetKey = targetKey;
+                if (!activeSongData.targetKey)
+                {
+                    activeSongData.targetKey = targetKey;
+                }
 
                 renderCurrentContent();
 
             } catch (err)
             {
-                console.error('Error fetching song content:', err);
-                if (cachedEntry)
-                {
-                    console.log("Network fetch failed. Falling back to cached song.");
-                    activeSongData.songIdentifier = songIdentifier;
-                    activeSongData.displayName = cachedEntry.displayName;
-                    activeSongData.chordsContent = cachedEntry.chordsContent || '';
-                    activeSongData.lyricsContent = cachedEntry.lyricsContent || '';
-                    activeSongData.orgId = orgId;
-                    activeSongData.targetKey = targetKey;
-
-                    renderCurrentContent();
-                } else
+                console.warn('Network fetch for song failed; using cached version if available:', err);
+                if (!hasCachedSong)
                 {
                     preElement.textContent = 'Error: Failed to load song data. Please check your connection.';
                 }
             }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAndRenderSong);
+
+        window.addEventListener('pageshow', (event) =>
+        {
+            if (event.persisted)
+            {
+                loadAndRenderSong();
+            }
         });
     </script>
 </body>
+
 </html>

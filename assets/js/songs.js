@@ -40,9 +40,14 @@ async function populateSongDatabaseTable(organizationId)
         tableTwoBody.innerHTML = '<tr><td colspan="3" class="text-center">Loading song database...</td></tr>';
     }
 
+    if (!navigator.onLine)
+    {
+        return;
+    }
+
     try
     {
-        // Add 7s timeout to prevent hanging "Loading..."
+        // Add timeout to prevent hanging "Loading..."
         const abortController = new AbortController();
         const timeoutId = setTimeout(() => abortController.abort(), 3000);
 
@@ -109,36 +114,25 @@ function renderSongTable()
     allSongsData.forEach(song =>
     {
         const row = tableTwoBody.insertRow();
-
-        let editCellHtml = '';
-        if (canEdit)
-        {
-            editCellHtml = `<td class="edit-col text-center"><a href="#" class="edit-btn" data-song-identifier="${song.identifier}" data-display-name="${song.displayName}">Edit</a></td>`;
-        } else
-        {
-            // If not admin, we don't render the cell at all if we are hiding the column. 
-            // However, the header is "display: none". So we should prob make the cell "display: none" too 
-            // OR just not render it if the table structure requires matching columns.
-            // Better to match the existing structure: use class edit-col and toggle display via CSS or JS loop?
-            // Since we are rebuilding the row, let's just make the cell hidden style if !canEdit
-            editCellHtml = `<td class="edit-col text-center" style="display: none;"><span style="color:#ccc;">-</span></td>`;
-        }
-
-        // Wait, if we use display:none on the header, we must use it on the cell too.
-        // Or we can just omit the column entirely from HTML?
-        // But the original code had 4 columns.
-        // Let's use the style approach for simplest integration.
+        const safeDisplayNameAttr = String(song.displayName || '').replace(/"/g, '&quot;');
 
         row.innerHTML = `
             <td>${song.displayName}</td>
             <td class="edit-col text-center" style="${canEdit ? '' : 'display:none'}">
-                <a href="#" class="edit-btn" data-song-identifier="${song.identifier}" data-display-name="${song.displayName}">Edit</a>
+                <a href="#" class="edit-btn" data-song-identifier="${song.identifier}" data-display-name="${safeDisplayNameAttr}">Edit</a>
             </td>
             <td class="text-center">
                 <a href="#" data-song-identifier="${song.identifier}" data-content-type="chords" title="Chords"><i class="fa-solid fa-music"></i></a>
             </td>
         `;
     });
+
+    // Re-apply search filter if user has text in the search input
+    const searchInput = document.getElementById('myInput');
+    if (searchInput && searchInput.value && typeof window.myFunction === 'function')
+    {
+        window.myFunction();
+    }
 }
 
 async function openEditModal(songIdentifier, displayName)
@@ -185,21 +179,39 @@ async function openEditModal(songIdentifier, displayName)
 
     try
     {
-        const orgId = window.activeOrganizationId;
+        const orgId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
         const { data, error } = await supabaseClient
             .from('songs')
-            .select('chords_content, lyrics_content, is_shared')
+            .select('display_name, chords_content, lyrics_content, is_shared')
             .eq('song_identifier', songIdentifier)
             .eq('organization_id', orgId)
             .single();
         if (error) throw error;
+        if (data.display_name)
+        {
+            editSongTitle.textContent = `Edit Song: ${data.display_name}`;
+            if (editSongDisplayName) editSongDisplayName.value = data.display_name;
+        }
         editSongTextarea.value = data.chords_content || '';
         editSongLyricsTextarea.value = data.lyrics_content || '';
         if (editSongShared) editSongShared.value = String(data.is_shared || false);
     } catch (error)
     {
-        editSongTextarea.value = 'Error loading song content.';
-        editSongLyricsTextarea.value = 'Error loading lyrics content.';
+        const orgId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
+        const cached = window.setlistModule ? window.setlistModule.readSongCache(orgId, songIdentifier) : null;
+        if (cached)
+        {
+            editSongTextarea.value = cached.chordsContent || '';
+            editSongLyricsTextarea.value = cached.lyricsContent || '';
+            if (cached.displayName && editSongDisplayName)
+            {
+                editSongDisplayName.value = cached.displayName;
+            }
+        } else
+        {
+            editSongTextarea.value = 'Error loading song content.';
+            editSongLyricsTextarea.value = 'Error loading lyrics content.';
+        }
         console.error('Error fetching song for edit:', error);
     }
 }
@@ -220,7 +232,7 @@ async function saveSongChanges()
     const newLyricsContent = editSongLyricsTextarea.value;
     const editSongShared = document.getElementById('edit-song-shared');
     const isShared = editSongShared ? editSongShared.value === 'true' : false;
-    const orgId = window.activeOrganizationId;
+    const orgId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
 
     if (!songIdentifier) { alert('Error: No song identifier found.'); return; }
     if (!newDisplayName) { alert('Error: Song Title cannot be empty.'); return; }
@@ -229,61 +241,86 @@ async function saveSongChanges()
     saveSongBtn.textContent = 'Saving...';
     try
     {
-        const { error } = await supabaseClient.from('songs').update({
+        const { data: updatedRows, error } = await supabaseClient.from('songs').update({
             display_name: newDisplayName,
             chords_content: newChordsContent,
             lyrics_content: newLyricsContent,
             is_shared: isShared
         })
             .eq('song_identifier', songIdentifier)
-            .eq('organization_id', orgId);
+            .eq('organization_id', orgId)
+            .select();
         if (error) throw error;
+        if (!updatedRows || updatedRows.length === 0)
+        {
+            throw new Error("Could not update song in database. Please verify your permissions.");
+        }
+
         editSongMsg.textContent = 'Saved successfully!';
         editSongMsg.style.color = 'green';
 
-        // Update offline cache for the edited song (regardless of setlist status)
+        // Update offline cache for the edited song immediately
+        const TTL = (window.setlistModule && window.setlistModule.OFFLINE_CACHE_TTL_MS) || (5 * 60 * 60 * 1000);
+        const cacheKey = window.setlistModule
+            ? window.setlistModule.getSongCacheKey(orgId, songIdentifier)
+            : `cachedSong_${orgId}_${songIdentifier}`;
+        const now = Date.now();
+        const cachePayload = {
+            songIdentifier: songIdentifier,
+            displayName: newDisplayName,
+            chordsContent: newChordsContent,
+            lyricsContent: newLyricsContent,
+            cachedAt: now,
+            expiresAt: now + TTL
+        };
+
         if (orgId)
         {
-            const TTL = (window.setlistModule && window.setlistModule.OFFLINE_CACHE_TTL_MS) || (4 * 60 * 60 * 1000);
-            const cacheKey = `cachedSong_${orgId}_${songIdentifier}`;
-            const now = Date.now();
-            const cachePayload = {
-                songIdentifier: songIdentifier,
-                displayName: newDisplayName,
-                chordsContent: newChordsContent,
-                lyricsContent: newLyricsContent,
-                cachedAt: now,
-                expiresAt: now + TTL
-            };
             localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
             console.log('Offline cache updated for song:', songIdentifier);
+
+            // Also update local allSongsData cache immediately
+            allSongsData.forEach(s =>
+            {
+                if (s.identifier === songIdentifier)
+                {
+                    s.displayName = newDisplayName;
+                }
+            });
+            localStorage.setItem(`cachedSongs_${orgId}`, JSON.stringify(allSongsData));
+            renderSongTable();
         }
 
-        // Update offline cache if this song is on the setlist
+        // If this song is currently on the setlist, automatically update the setlist and its offline cache
         if (window.setlistModule && orgId)
         {
             const currentSetlist = window.setlistModule.getCurrentSetlist();
-            const isOnSetlist = currentSetlist.some(item => item.songName === songIdentifier);
+            const isOnSetlist = Array.isArray(currentSetlist) && currentSetlist.some(item => item && item.songName === songIdentifier);
             if (isOnSetlist)
             {
                 // Update display name in the setlist itself
                 currentSetlist.forEach(item =>
                 {
-                    if (item.songName === songIdentifier)
+                    if (item && item.songName === songIdentifier)
                     {
                         item.displayName = newDisplayName;
                     }
                 });
+                window.setlistModule.setCurrentSetlist(currentSetlist);
+                window.setlistModule.initSetlistEdit();
 
-                // Save updated setlist (updates database and setlist cache)
+                // Save updated setlist (updates database, setlist cache, and prefetches setlist songs)
                 await window.setlistModule.saveSetlistToSupabase();
+
+                // Explicitly ensure the edited song's offline cache has the newly saved content
+                localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
 
                 // Refresh setlist table to update cached badges and display name
                 window.setlistModule.updateTableOneWithSetlist();
             }
         }
 
-        // Refresh song table to show new display name
+        // Refresh song table from Supabase to show new display name in sorted order
         populateSongDatabaseTable(orgId);
 
         setTimeout(() => { editSongModal.style.display = 'none'; }, 1500);
@@ -330,7 +367,7 @@ async function deleteSong()
 
     try
     {
-        const orgId = window.activeOrganizationId;
+        const orgId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
         // Use .select() to ensure we get confirmation that a row was actually deleted
         const { data, error } = await supabaseClient
             .from('songs')

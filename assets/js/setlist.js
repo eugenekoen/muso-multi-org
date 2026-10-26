@@ -6,8 +6,10 @@
 let currentSetlist = [];
 let tempSetlist = [];
 const setlistLabel = 'current_weekend';
-const OFFLINE_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
+const OFFLINE_CACHE_TTL_MS = 5 * 60 * 60 * 1000;
 let isPrefetchingSetlist = false;
+let activePrefetchPromise = null;
+let pendingPrefetchOrgId = null;
 
 function getSongCacheKey(organizationId, songIdentifier)
 {
@@ -16,6 +18,7 @@ function getSongCacheKey(organizationId, songIdentifier)
 
 function readSongCache(organizationId, songIdentifier)
 {
+    if (!organizationId || !songIdentifier) return null;
     const cacheKey = getSongCacheKey(organizationId, songIdentifier);
     const cachedData = localStorage.getItem(cacheKey);
     if (!cachedData) return null;
@@ -31,8 +34,24 @@ function readSongCache(organizationId, songIdentifier)
 
 async function prefetchSetlistSongs(organizationId)
 {
-    if (!organizationId || !Array.isArray(currentSetlist) || currentSetlist.length === 0) return;
-    if (isPrefetchingSetlist) return;
+    const orgId = organizationId || window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
+    if (!orgId || !Array.isArray(currentSetlist) || currentSetlist.length === 0) return;
+
+    if (!navigator.onLine)
+    {
+        updateTableOneWithSetlist();
+        return;
+    }
+
+    if (isPrefetchingSetlist)
+    {
+        pendingPrefetchOrgId = orgId;
+        if (activePrefetchPromise)
+        {
+            await activePrefetchPromise;
+        }
+        return;
+    }
 
     const supabaseClient = window.getSupabaseClient();
     if (!supabaseClient) return;
@@ -48,39 +67,69 @@ async function prefetchSetlistSongs(organizationId)
 
     isPrefetchingSetlist = true;
     const now = Date.now();
-    try
+
+    activePrefetchPromise = (async () =>
     {
-        const { data, error } = await supabaseClient
-            .from('songs')
-            .select('song_identifier, display_name, chords_content, lyrics_content')
-            .eq('organization_id', organizationId)
-            .in('song_identifier', identifiersToFetch);
-
-        if (error) throw error;
-
-        const expiresAt = now + OFFLINE_CACHE_TTL_MS;
-        (data || []).forEach(song =>
+        try
         {
-            const cachePayload = {
-                songIdentifier: song.song_identifier,
-                displayName: song.display_name || '',
-                chordsContent: song.chords_content || '',
-                lyricsContent: song.lyrics_content || '',
-                cachedAt: now,
-                expiresAt: expiresAt
-            };
-            localStorage.setItem(getSongCacheKey(organizationId, song.song_identifier), JSON.stringify(cachePayload));
-        });
+            const { data, error } = await supabaseClient
+                .from('songs')
+                .select('song_identifier, display_name, chords_content, lyrics_content')
+                .eq('organization_id', orgId)
+                .in('song_identifier', identifiersToFetch);
 
-        // Re-render setlist table to show cached badges
-        updateTableOneWithSetlist();
-    } catch (e)
-    {
-        console.warn('Setlist prefetch failed. Songs may be unavailable offline.', e);
-    } finally
-    {
-        isPrefetchingSetlist = false;
-    }
+            if (error) throw error;
+
+            const expiresAt = now + OFFLINE_CACHE_TTL_MS;
+            let setlistDisplayNamesUpdated = false;
+
+            (data || []).forEach(song =>
+            {
+                const cachePayload = {
+                    songIdentifier: song.song_identifier,
+                    displayName: song.display_name || '',
+                    chordsContent: song.chords_content || '',
+                    lyricsContent: song.lyrics_content || '',
+                    cachedAt: now,
+                    expiresAt: expiresAt
+                };
+                localStorage.setItem(getSongCacheKey(orgId, song.song_identifier), JSON.stringify(cachePayload));
+
+                // Ensure setlist display names stay synced with the song database
+                currentSetlist.forEach(item =>
+                {
+                    if (item && item.songName === song.song_identifier && song.display_name && item.displayName !== song.display_name)
+                    {
+                        item.displayName = song.display_name;
+                        setlistDisplayNamesUpdated = true;
+                    }
+                });
+            });
+
+            if (setlistDisplayNamesUpdated)
+            {
+                localStorage.setItem(`cachedSetlist_${orgId}`, JSON.stringify(currentSetlist));
+            }
+
+            // Re-render setlist table to show cached badges
+            updateTableOneWithSetlist();
+        } catch (e)
+        {
+            console.warn('Setlist prefetch failed. Songs may be unavailable offline.', e);
+        } finally
+        {
+            isPrefetchingSetlist = false;
+            activePrefetchPromise = null;
+            if (pendingPrefetchOrgId)
+            {
+                const nextOrgId = pendingPrefetchOrgId;
+                pendingPrefetchOrgId = null;
+                await prefetchSetlistSongs(nextOrgId);
+            }
+        }
+    })();
+
+    await activePrefetchPromise;
 }
 
 async function loadSetlistFromSupabase(organizationId)
@@ -107,6 +156,12 @@ async function loadSetlistFromSupabase(organizationId)
             currentSetlist = JSON.parse(cachedData);
             updateTableOneWithSetlist(); // Render immediately
         } catch (e) { console.warn("Invalid cached setlist", e); }
+    }
+
+    if (!navigator.onLine)
+    {
+        updateTableOneWithSetlist();
+        return;
     }
 
     try
@@ -137,16 +192,16 @@ async function loadSetlistFromSupabase(organizationId)
         {
             console.error("Error loading setlist", e);
         }
-        // If it timed out, don't clear the list if we already have something
+        // If it timed out or failed offline, don't clear the list if we already have something
     }
     updateTableOneWithSetlist();
-    prefetchSetlistSongs(organizationId);
+    await prefetchSetlistSongs(organizationId);
 }
 
 async function saveSetlistToSupabase()
 {
     const supabaseClient = window.getSupabaseClient();
-    const organizationId = window.activeOrganizationId;
+    const organizationId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
 
     if (!supabaseClient || !organizationId)
     {
@@ -170,7 +225,8 @@ async function saveSetlistToSupabase()
 
         if (error) throw error;
         console.log('Setlist saved successfully.');
-        prefetchSetlistSongs(organizationId);
+        updateTableOneWithSetlist();
+        await prefetchSetlistSongs(organizationId);
         return true;
     } catch (error)
     {
@@ -185,27 +241,27 @@ function updateTableOneWithSetlist()
     const tableOneBody = document.querySelector('#tableone tbody');
     if (!tableOneBody) return;
     tableOneBody.innerHTML = '';
+    const orgId = window.activeOrganizationId || localStorage.getItem('activeOrganizationId');
     if (!Array.isArray(currentSetlist) || currentSetlist.length === 0)
     {
-        const msg = window.activeOrganizationId
+        const msg = orgId
             ? 'Setlist is empty for this weekend.'
             : 'Please select a church to view the setlist.';
         tableOneBody.innerHTML = `<tr><td colspan="3" class="text-center">${msg}</td></tr>`;
         return;
     }
-    const orgId = window.activeOrganizationId;
     currentSetlist.forEach(item =>
     {
         const { songName, displayName = 'Unknown Song', key = '?' } = item || {};
         if (!songName) return;
 
-        // Check if this song has fresh cache
+        // Check if this song has fresh cache (within 5-hour TTL)
         let chordsBadge = '';
         if (orgId)
         {
             const cached = readSongCache(orgId, songName);
             const isFresh = cached && cached.expiresAt && cached.expiresAt > Date.now();
-            if (isFresh && cached.chordsContent)
+            if (isFresh && (cached.chordsContent || cached.lyricsContent))
             {
                 chordsBadge = ' <i class="fa-solid fa-circle cached-badge" title="Available offline"></i>';
             }
@@ -260,6 +316,7 @@ function addSongToSetlist(songFileIdentifier, displayName, key)
 window.setlistModule = {
     loadSetlistFromSupabase,
     saveSetlistToSupabase,
+    prefetchSetlistSongs,
     updateTableOneWithSetlist,
     renderSetlistUI,
     addSongToSetlist,
